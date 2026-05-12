@@ -1,0 +1,12 @@
+﻿public enum EventID
+{
+
+    NONE,
+    //HOME SCRENE
+    CHANGE_COIN = 50,
+    CHANGE_HEART = 51,
+
+    BOOSTER_USE_REQUEST = 100,
+    BOOSTER_CANCEL_REQUEST = 101
+
+}
