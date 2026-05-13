@@ -22,6 +22,7 @@ public class GameManager : ManagerSingleton<GameManager>
     } 
     private async UniTaskVoid Init()
     {
+        UseProfile.Heart.Value = 4;
         Application.targetFrameRate = 60;
         loadingBox.Init();
         

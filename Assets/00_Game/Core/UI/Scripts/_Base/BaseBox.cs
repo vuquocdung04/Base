@@ -39,7 +39,7 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
         isInstantiating = true;
         handle = Addressables.InstantiateAsync(addressableKey, parent);
         GameObject obj = await handle.Task;
-        
+
         if (obj == null)
         {
             Debug.LogError($"[BaseBox] Không tìm thấy key: {addressableKey}");
@@ -55,7 +55,7 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
             return null;
         }
         Instance.ForceHide();
-        
+
         Instance.Init();
 
         isInstantiating = false;
@@ -82,7 +82,8 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
     // ==========================================
     // 2. UI ANIMATION & CANVAS GROUP LOGIC
     // ==========================================
-    [Header("UI Animation Settings")] [SerializeField]
+    [Header("UI Animation Settings")]
+    [SerializeField]
     protected RectTransform mainPanel;
 
     [SerializeField] protected CanvasGroup canvasGroup;
@@ -96,19 +97,19 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
     public void Show()
     {
         InitState();
-        
+
         KillCurrentTweens();
         transform.SetAsLastSibling();
         if (isAnim)
         {
             mainPanel.localScale = Vector3.zero;
-            canvasGroup.SetCanvasState(true,0);
+            canvasGroup.SetCanvasState(true, 0);
             DoAppearAnimation();
         }
         else
         {
             mainPanel.localScale = Vector3.one;
-            canvasGroup.SetCanvasState(true,1);
+            canvasGroup.SetCanvasState(true, 1);
         }
     }
 
@@ -155,7 +156,7 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
         float startX = slideInFromLeft ? -slideWidth : slideWidth;
         self.anchoredPosition = new Vector2(startX, 0);
 
-        currentTween = self.SlideTo(Vector2.zero, durationSlide);
+        currentTween = self.DOAnchorPos(Vector2.zero, durationSlide).SetEase(Ease.OutCubic);
         return currentTween;
     }
 
@@ -168,7 +169,8 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
         float endX = slideOutToLeft ? -slideWidth : slideWidth;
 
         var seq = DOTween.Sequence();
-        seq.Append(self.SlideTo(new Vector2(endX, 0), durationSlide, Ease.InCubic));
+
+        seq.Append(self.DOAnchorPos(new Vector2(endX, 0), durationSlide).SetEase(Ease.OutCubic));
         seq.AppendCallback(() => canvasGroup.SetCanvasState(false, 0f));
 
         currentTween = seq;
