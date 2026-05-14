@@ -1,17 +1,25 @@
-
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class WinBox : BaseBox<WinBox>
 {
+
+    public Button btnReward;
+    public Button btnDoubleReward;
+
+
     protected override void Init()
     {
-        throw new System.NotImplementedException();
+        btnReward.OnClicked(delegate
+        {
+            FXManager.Instance.LoadSceneWithIrisWipe(SceneName.GAME_PLAY);
+        });
+
+        
     }
 
     protected override void InitState()
     {
-        throw new System.NotImplementedException();
+        
     }
 }

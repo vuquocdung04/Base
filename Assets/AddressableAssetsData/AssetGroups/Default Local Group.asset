@@ -50,6 +50,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9fe37d573ffb5f84f99fc75967960531
+    m_Address: WinBox
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ad9fa8a04286a452d954169b3892e83d
     m_Address: MoreLivesBox
     m_ReadOnly: 0
