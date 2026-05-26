@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class MoreLivesBox : BaseBox<MoreLivesBox>
 {
     public Button btnClose;
-    public Button btnCloseByPanel;
     public TextMeshProUGUI txtDisplayLives;
     public TextMeshProUGUI txtDisplayCooldownLives;
     public Button btnRefill;
@@ -20,46 +19,14 @@ public class MoreLivesBox : BaseBox<MoreLivesBox>
     {
         cost = 900;
         btnClose.OnClicked(Close);
-        btnCloseByPanel.OnClicked(Close);
-
         btnRefill.OnClicked(delegate
         {
-            if (ConsumableManager.TotalHeart() < LivesManager.Instance.maxHearts)
-            {
-                if (ConsumableManager.TrySubtractCoin(cost))
-                {
-                    ConsumableManager.AddHeart(1);
-                    this.PostEvent(EventID.CHANGE_COIN);
-                    AudioManager.Instance.PlaySfx("Reward");
-                    Close();
-                }
-                else
-                {
-                    ToastManager.Instance.ShowToast("Not Enough Coins");
-                }
-            }
+            OnRefillByCoin();
         });
 
         btnRefillByAds.OnClicked(delegate
         {
-            if (ConsumableManager.TotalHeart() >= LivesManager.Instance.maxHearts)
-            {
-                AudioManager.Instance.PlaySfx("Heart is full");
-                //return;
-            }
 
-            // LevelPlaySystem.Instance.ShowRewardAds(AdPlacement.RefillLife,
-            //     delegate
-            //     {
-            //         CurrencyManager.AddHeart(1);
-            //         AudioManager.Instance.PlaySfx("Reward");
-            //         Close();
-            //     },
-            //     delegate
-            //     {
-            //         ToastManager.Instance.ShowToast("Ad skipped. No Heart rewarded.");
-            //     }
-            // );
         });
         txtDisplayCoin.text = cost.ToString();
         this.RegisterListener(EventID.CHANGE_HEART, UpdateHeartUI);
@@ -75,7 +42,7 @@ public class MoreLivesBox : BaseBox<MoreLivesBox>
         UpdateHeartUI(null);
 
         txtDisplayCooldownLives.BindCountdownRealtime(
-            getTimeRemaining: () => LivesManager.Instance.GetTimeToNextHeart(),
+            getTimeRemaining: () => HeartManager.Instance.GetTimeToNextHeart(),
             textWhenZero: "Full",
             checkUnlimited: () => UseProfile.IsUnlimitedHeart,
             token: this.GetCancellationTokenOnDestroy()
@@ -84,12 +51,45 @@ public class MoreLivesBox : BaseBox<MoreLivesBox>
 
     private void UpdateHeartUI(object param)
     {
-        txtDisplayLives.text = ConsumableManager.TotalHeart().ToString();
+        txtDisplayLives.text = HeartManager.Instance.CurrentHeart.ToString();
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         this.RemoveListener(EventID.CHANGE_HEART, UpdateHeartUI);
+    }
+    private void OnRefillByCoin()
+    {
+        if (HeartManager.Instance.IsFull || HeartManager.Instance.IsUnlimited)
+        {
+            ToastManager.Instance.ShowToast("Heart is full");
+            return;
+        }
+
+        if (!CurrencyManager.Instance.CanAfford(CurrencyType.Coin, cost))
+        {
+            HandleNotEnoughCoin();
+            return;
+        }
+
+        CurrencyManager.Instance.TrySpend(CurrencyType.Coin, cost);
+        HeartManager.Instance.TryAddHeart(1);
+        AudioManager.Instance.PlaySfx("Reward");
+        Close();
+    }
+
+    private void HandleNotEnoughCoin()
+    {
+        SceneUtils.ExecuteInScene(SceneName.LOBBY_SCENE, () =>
+        {
+            Close();
+            NavController.Instance.NavigateTo(ENavType.Shop);
+        });
+
+        SceneUtils.ExecuteInScene(SceneName.GAME_PLAY, () =>
+        {
+            _ = ShopBox.Setup(GameScene.GetPopupHolder(), box => box.Show(BoxAnimationFactory.NoAnim));
+        });
     }
 }

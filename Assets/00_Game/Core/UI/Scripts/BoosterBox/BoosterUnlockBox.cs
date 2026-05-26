@@ -17,13 +17,12 @@ public class BoosterUnlockBox : BaseBox<BoosterUnlockBox>
         int boosterIndex = BoosterController.Instance.GetCurrentTutorialBoosterIndex();
 
         if (boosterIndex == -1) boosterIndex = 0;
-        _targetBoosterItem = BoosterController.Instance.GetBoosterItemByIndex(boosterIndex);
-        
-        var targetSize =  BoosterController.Instance.targetSize;
+        _targetBoosterItem = BoosterController.Instance.GetItemByIndex(boosterIndex);
+
         if (_targetBoosterItem != null)
         {
             imgBooster.sprite = _targetBoosterItem.iconBooster.sprite;
-            imgBooster.FitToTargetHeight(targetSize);
+            //imgBooster.FitToTargetHeight(targetSize);
             imgBooster.transform.localScale = Vector3.one * 3f;
         }
     }

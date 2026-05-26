@@ -5,15 +5,16 @@ using UnityEngine;
 
 public class NavController : MonoBehaviour
 {
+    public static NavController Instance { get; private set; }
     [SerializeField] private Sprite sprSelected;
     public List<NavButton> navButtons;
     private Vector2 sizeSelected;
     private Vector2 sizeUnselected;
-
     private NavButton currentNavSelected;
 
     public void Init()
     {
+        Instance = this;
 
         foreach (var nav in navButtons)
         {
@@ -48,7 +49,12 @@ public class NavController : MonoBehaviour
             sizeUnselected = new Vector2(widthUnselected, height);
         }
     }
-
+    public void NavigateTo(ENavType type)
+    {
+        var target = navButtons.Find(n => n.navType == type);
+        if (target == null || target == currentNavSelected) return;
+        UpdateNavButtonState(target);
+    }
     private void InitNavButtonStateWith(ENavType type)
     {
         InitSize();
@@ -78,43 +84,41 @@ public class NavController : MonoBehaviour
     }
     private void HandleScreenSliding(NavButton clicked)
     {
-        bool slideToLeft = clicked.transform.localPosition.x > currentNavSelected.transform.localPosition.x;
+        bool clickedIsRight = clicked.transform.localPosition.x > currentNavSelected.transform.localPosition.x;
 
+        var outAnim = clickedIsRight ? BoxAnimationFactory.SlideToLeft : BoxAnimationFactory.SlideToRight;
+        var inAnim = clickedIsRight ? BoxAnimationFactory.SlideFromRight : BoxAnimationFactory.SlideFromLeft;
 
-        ClosePrevBox(currentNavSelected.navType, slideToLeft);
-        OpenCurrentBox(clicked.navType, !slideToLeft);
+        ClosePrevBox(currentNavSelected.navType, outAnim);
+        OpenCurrentBox(clicked.navType, inAnim);
     }
-    private void OpenCurrentBox(ENavType type, bool slideInFromLeft)
+    private void OpenCurrentBox(ENavType type, IShowAnimation anim)
     {
-        //var heartHolder = HomeController.Instance.lobbyScene.consumableBox;
         switch (type)
         {
             case ENavType.Shop:
-                ShopBox.Instance.ShowSliding(slideInFromLeft);
-                //heartHolder.EnableHeartHolder(false);
+                ShopBox.Instance.Show(anim);
                 break;
             case ENavType.Lobby:
-                LobbyBox.Instance.ShowSliding(slideInFromLeft);
-                //heartHolder.EnableHeartHolder(true);
+                LobbyBox.Instance.Show(anim);
                 break;
             case ENavType.Rank:
-                RankBox.Instance.ShowSliding(slideInFromLeft);
-                //heartHolder.EnableHeartHolder(true);
+                RankBox.Instance.Show(anim);
                 break;
         }
     }
-    private void ClosePrevBox(ENavType type, bool slideOutToLeft)
+    private void ClosePrevBox(ENavType type, IShowAnimation anim)
     {
         switch (type)
         {
             case ENavType.Shop:
-                if (ShopBox.Instance != null) ShopBox.Instance.CloseSliding(slideOutToLeft);
+                if (ShopBox.Instance != null) ShopBox.Instance.Close(anim);
                 break;
             case ENavType.Lobby:
-                if (LobbyBox.Instance != null) LobbyBox.Instance.CloseSliding(slideOutToLeft);
+                if (LobbyBox.Instance != null) LobbyBox.Instance.Close(anim);
                 break;
             case ENavType.Rank:
-                if (RankBox.Instance != null) RankBox.Instance.CloseSliding(slideOutToLeft);
+                if (RankBox.Instance != null) RankBox.Instance.Close(anim);
                 break;
         }
     }

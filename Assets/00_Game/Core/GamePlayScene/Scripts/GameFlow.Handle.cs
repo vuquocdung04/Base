@@ -7,25 +7,23 @@ public partial class GameFlow
         switch (state)
         {
             case GameState.Playing:
-                // resume input, AI tick
                 break;
             case GameState.Paused:
-                // show pause UI
                 break;
             case GameState.Win:
                 // show win popup, save progress
-                _ = LoseBox.Setup(popupHolder, box =>
+                _ = WinBox.Setup(popupHolder, box =>
                {
                    box.Show();
                });
-                Debug.LogError("Win");
+                AudioManager.Instance.PlaySfx("sfx-Win");
                 break;
             case GameState.Lose:
-                Debug.LogError("LOSEE");
                 _ = LoseBox.Setup(popupHolder, box =>
                 {
                     box.Show();
                 });
+                AudioManager.Instance.PlaySfx("sfx-Lose");
                 break;
             case GameState.BoosterActive:
                 // open booster UI

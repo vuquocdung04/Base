@@ -24,9 +24,8 @@ MonoBehaviour:
     probeSamplingDebugMesh: {fileID: 0}
     probeSamplingDebugTexture: {fileID: 0}
     probeVolumeBlendStatesCS: {fileID: 0}
-  m_RendererFeatures:
-  - {fileID: 7904949594275602545}
-  m_RendererFeatureMap: 71602a16c605b46d
+  m_RendererFeatures: []
+  m_RendererFeatureMap: 
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -68,8 +67,6 @@ MonoBehaviour:
   m_Name: HighlightRendererFeature
   m_EditorClassIdentifier: Assembly-CSharp::HighlightRendererFeature
   m_Active: 1
-  settings:
-    overlayMaterial: {fileID: 2100000, guid: 25c69dc03091e4eab9f95fc11cff7b6f, type: 2}
-    highlightLayerMask:
-      serializedVersion: 2
+  settings: {overlayMaterial: {fileID: 2100000, guid: 25c69dc03091e4eab9f95fc11cff7b6f, type: 2}, highlightLayerMask:
       m_Bits: 64
+}

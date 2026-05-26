@@ -11,12 +11,11 @@ public class GameScene : StaffSingleton<GameScene>
     [Header("Button")]
     public Button btnSetting;
     public Button btnCoin;
-    public Button btnHeart;
     public override void Init()
     {
         btnSetting.OnClicked(delegate
         {
-            _ = SettingBox.Setup(popupHolder, box => box.Show());
+            _ = SettingGameBox.Setup(popupHolder, box => box.Show());
         });
 
         btnCoin.OnClicked(delegate
@@ -24,10 +23,6 @@ public class GameScene : StaffSingleton<GameScene>
             _ = ShopBox.Setup(popupHolder, box => box.Show());
         });
 
-        btnHeart.OnClicked(delegate
-        {
-
-        });
     }
     public static void EnableDarkPanel(bool state)
     {
