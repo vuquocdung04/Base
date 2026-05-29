@@ -6,7 +6,7 @@ public class SettingGameBox : BaseBox<SettingGameBox>
     public Button btnClose;
     public Button btnReturnHome;
     public Button btnRestart;
-
+    public Button btnCheat;
     public Button btnSound;
     public Button btnMusic;
     public Button btnVib;
@@ -23,7 +23,7 @@ public class SettingGameBox : BaseBox<SettingGameBox>
 
         btnSound.OnClicked(delegate
         {
-            UseProfile.OnSound.Value = !UseProfile.OnSound;
+            AudioManager.Instance.ToggleSound();
             imgSound.SetSprite(UseProfile.OnSound ? sprOn : sprOff);
         });
 
@@ -35,7 +35,7 @@ public class SettingGameBox : BaseBox<SettingGameBox>
 
         btnMusic.OnClicked(delegate
         {
-            UseProfile.OnMusic.Value = !UseProfile.OnMusic;
+            AudioManager.Instance.ToggleMusic();
             imgMusic.SetSprite(UseProfile.OnMusic ? sprOn : sprOff);
         });
 
@@ -47,6 +47,11 @@ public class SettingGameBox : BaseBox<SettingGameBox>
         btnRestart.OnClicked(delegate
         {
             _ = QuitLevelBox.Setup(transform.parent, box => box.SetupAndShow(QuitLevelBox.Mode.Restart));
+        });
+
+        btnCheat.OnClicked(delegate
+        {
+            _ = CheatBox.Setup(transform.parent, box => box.Show());
         });
 
         Refresh();

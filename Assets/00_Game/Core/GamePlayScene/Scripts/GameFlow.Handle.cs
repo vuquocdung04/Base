@@ -7,22 +7,24 @@ public partial class GameFlow
         switch (state)
         {
             case GameState.Playing:
+                
                 break;
             case GameState.Paused:
+                
                 break;
             case GameState.Win:
-                // show win popup, save progress
+
                 _ = WinBox.Setup(popupHolder, box =>
-               {
-                   box.Show();
-               });
+                    {
+                        box.Show();
+                    });
                 AudioManager.Instance.PlaySfx("sfx-Win");
                 break;
             case GameState.Lose:
                 _ = LoseBox.Setup(popupHolder, box =>
-                {
-                    box.Show();
-                });
+                    {
+                        box.Show();
+                    });
                 AudioManager.Instance.PlaySfx("sfx-Lose");
                 break;
             case GameState.BoosterActive:

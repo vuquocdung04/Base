@@ -742,7 +742,7 @@ MonoBehaviour:
   fxManager: {fileID: 2062787737}
   audioManager: {fileID: 1730948399}
   localizationManager: {fileID: 1373294505}
-  heartManager: {fileID: 1828064798}
+  heartManager: {fileID: 1828064796}
   currencyManager: {fileID: 1828064797}
   loadingBox: {fileID: 783918718}
   toastManager: {fileID: 175757017}
@@ -2065,8 +2065,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1828064795}
+  - component: {fileID: 1828064796}
   - component: {fileID: 1828064797}
-  - component: {fileID: 1828064798}
   m_Layer: 0
   m_Name: HeartManager
   m_TagString: Untagged
@@ -2089,6 +2089,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 643601519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1828064796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828064794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d3de7576dd73bb4cbfb244d6a81ff16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LivesManager
 --- !u!114 &1828064797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2101,18 +2113,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6e17b19e17f03b44b522ad5ff5d1b6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CurrencyManager
---- !u!114 &1828064798
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1828064794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04cf72ec90e566f42b670910aa95fcef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HeartManager
 --- !u!1 &1980457470
 GameObject:
   m_ObjectHideFlags: 0
@@ -2387,6 +2387,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 798689fa1ad04b648520649d38657c2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinFlyPrefab: {fileID: 2139813145170573173, guid: e20ba0b3d6ece437f95b631a518e062b, type: 3}
+  coinCount: 10
+  spawnInterval: 0.05
+  spreadRadius: 0.75
   wipeCanvas: {fileID: 4322210418281459487}
   transitionDurationOut: 1
   transitionDurationIn: 1

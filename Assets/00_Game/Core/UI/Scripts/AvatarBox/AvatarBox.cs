@@ -64,7 +64,6 @@ public class AvatarBox : BaseBox<AvatarBox>
     private void OnSaveClicked()
     {
         UseProfile.AvatarId.Value = _previewId;
-        Debug.LogError($"{UseProfile.AvatarId.Value}");
         _savedId = _previewId;
         this.PostEvent(EventID.CHANGE_AVATAR);
         Close();

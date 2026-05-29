@@ -68,7 +68,7 @@ public class BoosterItem : MonoBehaviour
                 this.PostEvent(EventID.BOOSTER_USE_REQUEST, type);
                 break;
             case BoosterState.InUse:
-                this.PostEvent(EventID.BOOSTER_DEACTIVATE_REQUEST, type);
+            
                 break;
             case BoosterState.Empty:
                 this.PostEvent(EventID.BOOSTER_BUY_REQUEST, type);
@@ -105,26 +105,4 @@ public class BoosterItem : MonoBehaviour
         else if (CurrentState == BoosterState.Empty && qty > 0)
             ChangeState(BoosterState.Available);
     }
-
-#if UNITY_EDITOR
-    [ContextMenu("🔗 Auto Bind References")]
-    private void AutoBindReferences()
-    {
-        btnMain = transform.Find("UnlockedContainer/btn").GetComponent<Button>();
-        iconBooster = transform.Find("UnlockedContainer/btn/IconBooster").GetComponent<Image>();
-
-        unlockedContainer = transform.Find("UnlockedContainer").gameObject;
-        lockedContainer = transform.Find("LockedContainer").gameObject;
-
-        quantityInfoGroup = transform.Find("UnlockedContainer/QuantityInfoGroup").gameObject;
-        addIconOverlay = transform.Find("UnlockedContainer/AddIconOverlay").gameObject;
-        inUseHighlight = transform.Find("UnlockedContainer/InUseHighlight").gameObject;
-
-        quantityText = transform.Find("UnlockedContainer/QuantityInfoGroup/QuantityText").GetComponent<TextMeshProUGUI>();
-        unlockLevelText = transform.Find("LockedContainer/UnlockLevelText").GetComponent<TextMeshProUGUI>();
-
-        UnityEditor.EditorUtility.SetDirty(this);
-        Debug.Log($"[{name}] ✅ Auto-bind done");
-    }
-#endif
 }

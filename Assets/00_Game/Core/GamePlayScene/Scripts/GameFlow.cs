@@ -22,28 +22,15 @@ public partial class GameFlow : StaffSingleton<GameFlow>
     private int pauseRequest;
 
     private Transform popupHolder;
-
-    [Button("Pause")]
-    private void TestingState()
-    {
-        RequestPause();
-    }
-
-    [Button("Resume")]
-    private void TestingState2()
-    {
-        RequestResume();
-    }
-
-
     public override void Init()
     {
         popupHolder = GameScene.GetPopupHolder();
-
         OnStateEntered += HandleStateEntered;
         OnStateExited += HandleStateExited;
 
         this.RegisterListener(EventID.LEVEL_COMPLETE, OnLevelComplete);
+        this.RegisterListener(EventID.POPUP_OPENED, OnPopupOpened);
+        this.RegisterListener(EventID.POPUP_CLOSED, OnPopupClosed);
     }
     protected override void OnDestroy()
     {
@@ -52,6 +39,8 @@ public partial class GameFlow : StaffSingleton<GameFlow>
         OnStateExited -= HandleStateExited;
 
         this.RemoveListener(EventID.LEVEL_COMPLETE, OnLevelComplete);
+        this.RemoveListener(EventID.POPUP_OPENED, OnPopupOpened);
+        this.RemoveListener(EventID.POPUP_CLOSED, OnPopupClosed);
     }
 
     public bool ChangeState(GameState next)
@@ -73,6 +62,7 @@ public partial class GameFlow : StaffSingleton<GameFlow>
 
             case GameState.Paused:
                 return to == GameState.Playing ||
+                       to == GameState.Win ||
                        to == GameState.Lose ||
                        to == GameState.BoosterActive ||
                        to == GameState.Tutorial;
@@ -88,17 +78,21 @@ public partial class GameFlow : StaffSingleton<GameFlow>
         }
         return false;
     }
+    private void OnPopupOpened(object _) => RequestPause();
+    private void OnPopupClosed(object _) => RequestResume();
     public void RequestPause()
     {
         pauseRequest++;
         if (pauseRequest == 1) ChangeState(GameState.Paused);
     }
+
     public void RequestResume()
     {
         pauseRequest = Mathf.Max(0, pauseRequest - 1);
         if (pauseRequest == 0 && CurrentState == GameState.Paused)
             ChangeState(GameState.Playing);
     }
+
     void OnLevelComplete(object _) => ChangeState(GameState.Win);
     public void TriggerLose() => ChangeState(GameState.Lose);
     public void EnterBooster() => ChangeState(GameState.BoosterActive);

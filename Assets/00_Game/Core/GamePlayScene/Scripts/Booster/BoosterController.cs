@@ -5,6 +5,7 @@ using UnityEngine;
 
 public partial class BoosterController : StaffSingleton<BoosterController>
 {
+
     [Header("Refs")]
     public Transform boosterHolder;
 
@@ -36,6 +37,7 @@ public partial class BoosterController : StaffSingleton<BoosterController>
         _items = new List<BoosterItem>(boosterHolder.GetComponentsInChildren<BoosterItem>());
         foreach (var item in _items)
         {
+            bool hasQty = item.GetQuantity() > 0;
             item.ChangeState(BoosterState.Available, force: true);
             item.RefreshFromQuantity();
         }
@@ -45,7 +47,7 @@ public partial class BoosterController : StaffSingleton<BoosterController>
         this.RegisterListener(EventID.BOOSTER_BUY_REQUEST, OnBuyRequest);
         GameFlow.Instance.OnStateEntered += OnGameStateChanged;
 
-        CheckTutorialHighlight();
+        //CheckTutorialHighlight();
     }
 
     protected override void OnDestroy()
@@ -64,7 +66,6 @@ public partial class BoosterController : StaffSingleton<BoosterController>
         if (_active == null) return;
         ForceCancelActiveBooster();
     }
-
     private void ForceCancelActiveBooster()
     {
         sfxPopup.ForceClose();
@@ -74,6 +75,8 @@ public partial class BoosterController : StaffSingleton<BoosterController>
         _active.ChangeState(BoosterState.Available);
         _active.RefreshFromQuantity();
         _active = null;
+
+        InputController.Instance.RestoreNormalMode();
     }
 
     private void OnBuyRequest(object param)
@@ -81,7 +84,6 @@ public partial class BoosterController : StaffSingleton<BoosterController>
         var type = (BoosterType)param;
         _ = BuyBoosterBox.Setup(GameScene.GetPopupHolder(), box => box.SetupAndShow(type));
     }
-
     // ============= USE / DEACTIVATE =============
     private void OnUseRequest(object param)
     {
@@ -97,13 +99,17 @@ public partial class BoosterController : StaffSingleton<BoosterController>
             return;
         }
 
+        if (!CanUseBooster(type)) return;
+
         _active = item;
         item.ChangeState(BoosterState.InUse);
 
         switch (type)
         {
             case BoosterType.Booster0:
-                ShowSfxFlow(type, item, new Vector3(0f, 32.3f, -14.2f), 50f);
+                InputController.Instance.SetBooster0Mode();
+                var targetPos1 = new Vector3(0f, 32.3f, -14.2f);
+                ShowSfxFlow(type, item, targetPos1, 50f);
                 break;
 
             case BoosterType.Booster1:
@@ -111,26 +117,42 @@ public partial class BoosterController : StaffSingleton<BoosterController>
                 break;
 
             case BoosterType.Booster2:
-                ShowSfxFlow(type, item, new Vector3(0f, 33.5f, -11f), -650f);
+                InputController.Instance.SetBooster2Mode();
+                var targetPos2 = new Vector3(0f, 33.5f, -11f);
+                ShowSfxFlow(type, item, targetPos2, -650f);
                 break;
         }
     }
 
+    private bool CanUseBooster(BoosterType type)
+    {
+        switch (type)
+        {
+            case BoosterType.Booster0:
+                return true;
+
+            case BoosterType.Booster1:
+                return true;
+
+            case BoosterType.Booster2:
+                return true;
+        }
+        return true;
+    }
     private void OnDeactivateRequest(object param)
     {
         if (_active == null || _active.Type != (BoosterType)param) return;
         Deactivate();
     }
-
     public void Deactivate()
     {
         if (_active == null) return;
         HandleTutorialCancel(_active.Type);
         _active.ChangeState(BoosterState.Available);
-        _active.RefreshFromQuantity();
+        _active.RefreshFromQuantity();  // auto chuyển sang Empty nếu qty = 0
         _active = null;
+        InputController.Instance.RestoreNormalMode();
     }
-
     public void OnBoosterActionSuccess()
     {
         if (_active == null) return;
@@ -171,6 +193,7 @@ public partial class BoosterController : StaffSingleton<BoosterController>
     {
         MoveIn();
         MoveCameraTo(cameraDefaultPos);
+        InputController.Instance.RestoreNormalMode();
         _active.ChangeState(BoosterState.Available);
         _active = null;
     }
@@ -197,4 +220,6 @@ public partial class BoosterController : StaffSingleton<BoosterController>
         BoosterType.Booster2 => "Select a color to shoot with super powers",
         _ => ""
     };
+
+
 }

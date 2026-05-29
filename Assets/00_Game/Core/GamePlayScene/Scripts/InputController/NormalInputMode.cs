@@ -5,8 +5,8 @@ public class NormalInputMode : InputMode
 {
     public override void HandleClick(RaycastHit hit)
     {
-
+        
     }
 
-    
+
 }
