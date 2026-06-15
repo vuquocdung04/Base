@@ -12,7 +12,7 @@ public class AudioManager : MonoBehaviour
     public GameObject sfxPrefab;
     public float sfxSpamCooldown = 0.08f;
 
-    private AudioDataBase audioDataBase;
+    private List<AudioDataBase> audioDataBases;
     private Dictionary<string, AudioConfig> audioLookup;
     private Dictionary<string, float> lastPlayTimes = new();
     private float currentSfxVolume = 1f;
@@ -20,7 +20,7 @@ public class AudioManager : MonoBehaviour
     public void Init()
     {
         Instance = this;
-        audioDataBase = DataRepo.Instance.audioData;
+        audioDataBases = DataRepo.Instance.audioDataList;
         BuildAudioLookup();
         ApplyMusicVolume();
         ApplySoundVolume();
@@ -29,16 +29,25 @@ public class AudioManager : MonoBehaviour
     private void BuildAudioLookup()
     {
         audioLookup = new Dictionary<string, AudioConfig>();
-        foreach (var config in audioDataBase.audioConfigs)
-        {
-            if (string.IsNullOrEmpty(config.key)) continue;
 
-            string lowerKey = config.key.ToLower();
-            if (!audioLookup.TryAdd(lowerKey, config))
-                Debug.LogWarning($"Tìm thấy AudioKey bị trùng: {config.key}");
+        foreach (var dataBase in audioDataBases)
+        {
+            if (dataBase == null)
+            {
+                Debug.LogWarning("AudioDataBase null trong DataRepo!");
+                continue;
+            }
+
+            foreach (var config in dataBase.audioConfigs)
+            {
+                if (string.IsNullOrEmpty(config.key)) continue;
+
+                string lowerKey = config.key.ToLower();
+                if (!audioLookup.TryAdd(lowerKey, config))
+                    Debug.LogWarning($"AudioKey bị trùng giữa các database: {config.key} (trong {dataBase.name})");
+            }
         }
     }
-
     public void PlaySfx(string key)
     {
         if (string.IsNullOrEmpty(key)) return;
@@ -120,7 +129,7 @@ public class AudioManager : MonoBehaviour
 
     private void ApplyMusicVolume()
     {
-        asBg.volume = UseProfile.OnMusic ? 0.4f : 0f;
+        asBg.volume = UseProfile.OnMusic ? 0.65f : 0f;
     }
 
     private void ApplySoundVolume()

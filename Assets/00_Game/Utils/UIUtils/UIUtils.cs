@@ -79,8 +79,8 @@ public static partial class UIUtils
                 }
                 catch (OperationCanceledException)
                 {
-                    if (token.IsCancellationRequested) return;   
-                                                            
+                    if (token.IsCancellationRequested) return;
+
                 }
                 finally
                 {
@@ -101,33 +101,34 @@ public static partial class UIUtils
             },
             doneText: HeartManager.FULL_LABEL,
             format: TimeManager.Format,
-            refreshOn: EventID.CHANGE_HEART);  
+            refreshOn: EventID.CHANGE_HEART);
     }
 
     // ============= COUNT UP/DOWN NUMBER =============
     public static async UniTask CountTo(
-        this TMP_Text text, int target, float duration = 0.5f,
-        int? from = null, Func<int, string> format = null,
-        CancellationToken token = default)
+      this TMP_Text text, double target, float duration = 0.5f,
+      double? from = null, Func<double, string> format = null,
+      CancellationToken token = default)
     {
-        format ??= (v => v.ToString());
-        int start = from ?? (int.TryParse(text.text, out int parsed) ? parsed : 0);
+        format ??= NumberFormatter.Format;
+        double start = from ?? (double.TryParse(text.text, out double parsed) ? parsed : 0);
 
-        if (duration <= 0f || start == target) { text.text = format(target); return; }
+        if (duration <= 0f || System.Math.Abs(start - target) < 0.5) { text.text = format(target); return; }
 
         float elapsed = 0f;
-        int lastShown = int.MinValue;
+        string lastShown = null;
 
         try
         {
             while (elapsed < duration && !token.IsCancellationRequested)
             {
                 elapsed += Time.unscaledDeltaTime;
-                int current = (int)Mathf.Lerp(start, target, elapsed / duration);
-                if (current != lastShown)
+                double current = start + (target - start) * (elapsed / duration);
+                string shown = format(current);
+                if (shown != lastShown)
                 {
-                    lastShown = current;
-                    text.text = format(current);
+                    lastShown = shown;
+                    text.text = shown;
                 }
                 await UniTask.Yield();
             }
@@ -136,7 +137,44 @@ public static partial class UIUtils
 
         if (!token.IsCancellationRequested) text.text = format(target);
     }
+    // CountTo có kèm sprite icon (sprite asset). prefix/suffix là chuỗi ghép trước/sau số.
+    // vd prefix = "<sprite=0> " -> "<sprite=0> 1.2K"
+    public static async UniTask CountToWithIcon(
+        this TMP_Text text, double target, string prefix = "", string suffix = "",
+        float duration = 0.5f, double? from = null, Func<double, string> format = null,
+        CancellationToken token = default)
+    {
+        format ??= NumberFormatter.Format;
+        double start = from ?? 0;   // không parse text vì text giờ có sprite tag, parse sẽ sai
 
+        if (duration <= 0f || System.Math.Abs(start - target) < 0.5)
+        {
+            text.text = prefix + format(target) + suffix;
+            return;
+        }
+
+        float elapsed = 0f;
+        string lastShown = null;
+
+        try
+        {
+            while (elapsed < duration && !token.IsCancellationRequested)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                double current = start + (target - start) * (elapsed / duration);
+                string shown = prefix + format(current) + suffix;
+                if (shown != lastShown)
+                {
+                    lastShown = shown;
+                    text.text = shown;
+                }
+                await UniTask.Yield();
+            }
+        }
+        catch (OperationCanceledException) { return; }
+
+        if (!token.IsCancellationRequested) text.text = prefix + format(target) + suffix;
+    }
     // ============= CANVAS =============
     public static void SetCanvasState(this CanvasGroup cg, bool isInteractable, float alpha = -1f)
     {

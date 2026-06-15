@@ -8,12 +8,14 @@ public enum CurrencyType
 }
 public static class NumberFormatter
 {
-    public static string Format(int value)
+    public static string Format(double value)
     {
-        if (value < 10000) return value.ToString();
-        if (value < 1000000) return $"{value / 1000f:0.#}K";
-        if (value < 1000000000) return $"{value / 1000000f:0.#}M";
-        return $"{value / 1000000000f:0.#}B";
+        double abs = System.Math.Abs(value);
+        if (abs < 10000) return ((long)value).ToString();
+        if (abs < 1_000_000) return $"{value / 1_000.0:0.0}K";
+        if (abs < 1_000_000_000) return $"{value / 1_000_000.0:0.0}M";
+        if (abs < 1_000_000_000_000) return $"{value / 1_000_000_000.0:0.0}B";
+        return $"{value / 1_000_000_000_000.0:0.0}T";
     }
 }
 
