@@ -13,7 +13,7 @@ public enum GameState
     Tutorial = 5
 }
 
-public partial class GameFlow : StaffSingleton<GameFlow>
+public partial class GameFlow : InitSingleton<GameFlow>
 {
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnStateEntered;

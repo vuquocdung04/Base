@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -28,7 +27,7 @@ public partial class FXManager
         IrisWipeAsync(sceneName, skipOutPhase).Forget();
     }
 
-    private async UniTaskVoid IrisWipeAsync(string sceneName, bool skipOutPhase)
+    private async Awaitable IrisWipeAsync(string sceneName, bool skipOutPhase)
     {
         isNextSceneReady = false;
 
@@ -41,22 +40,22 @@ public partial class FXManager
         else
         {
             SetWipeState(0f, 0f);
-            await WipeMat.DOFloat(1.2f, "_Radius", transitionDurationOut).ToUniTask();
+            await WipeMat.DOFloat(1.2f, "_Radius", transitionDurationOut).ToAwaitable();
         }
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
         while (!asyncLoad.isDone)
         {
-            await UniTask.Yield();
+            await Awaitable.NextFrameAsync();
         }
 
         // Scene mới đã load xong -> Cập nhật lại camera mới cho Canvas
         SetupCanvasCamera();
         SetWipeState(1f, 0f);
 
-        await UniTask.WaitUntil(() => isNextSceneReady);
+        await AwaitableEx.WaitUntil(() => isNextSceneReady);
         // Chạy hiệu ứng mở ra
-        await WipeMat.DOFloat(1.2f, "_Radius", transitionDurationIn).ToUniTask();
+        await WipeMat.DOFloat(1.2f, "_Radius", transitionDurationIn).ToAwaitable();
 
         Debug.Log("Completed Transition");
         wipeCanvas.gameObject.SetActive(false);

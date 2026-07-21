@@ -1,6 +1,5 @@
 using UnityEngine;
-using Cysharp.Threading.Tasks;
-public class LobbyController : LeaderSingleton<LobbyController>
+public class LobbyController : Singleton<LobbyController>
 {
     public LobbyScene lobbyScene;
     [Header("UI Layers")]

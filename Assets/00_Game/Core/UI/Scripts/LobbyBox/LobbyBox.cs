@@ -24,9 +24,9 @@ public class LobbyBox : BaseBox<LobbyBox>
     protected override void Init()
     {
         var holder = LobbyController.Instance.topCanvas;
-        btnSetting.OnClicked(delegate { _ = SettingLobbyBox.Setup(holder, box => box.Show()); });
-        btnAvatar.OnClicked(delegate { _ = AvatarBox.Setup(holder, box => box.Show()); });
-        btnNoAds.OnClicked(delegate { _ = NoAdsBox.Setup(holder, box => box.Show()); });
+        btnSetting.OnClicked(delegate { SettingLobbyBox.Setup(holder, box => box.Show()).Forget(); });
+        btnAvatar.OnClicked(delegate { AvatarBox.Setup(holder, box => box.Show()).Forget(); });
+        btnNoAds.OnClicked(delegate { NoAdsBox.Setup(holder, box => box.Show()).Forget(); });
         btnPlay.OnClicked(delegate { FXManager.Instance.LoadSceneWithIrisWipe(SceneName.GAME_PLAY); });
 
         this.RegisterListener(EventID.CHANGE_AVATAR, OnAvatarChanged);

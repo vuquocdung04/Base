@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputController : StaffSingleton<InputController>
+public class InputController : InitSingleton<InputController>
 {
     private Camera cam;
     private InputMode _currentMode;

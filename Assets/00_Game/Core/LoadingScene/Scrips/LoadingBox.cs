@@ -1,5 +1,3 @@
-using System;
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,14 +13,14 @@ public class LoadingBox : MonoBehaviour
         canvasGroup.blocksRaycasts = false;
         canvasGroup.interactable = false;
     }
-    public async UniTask LoadingAsync(float target, float duration)
+    public async Awaitable LoadingAsync(float target, float duration)
     {
-        await fill.DOFillAmount(target, duration).SetEase(Ease.Linear).ToUniTask();
+        await fill.DOFillAmount(target, duration).SetEase(Ease.Linear).ToAwaitable();
     }
 
-    public async UniTask CloseAsync(float fadeOutDuration)
+    public async Awaitable CloseAsync(float fadeOutDuration)
     {
-        await canvasGroup.DOFade(0f, fadeOutDuration).ToUniTask();
+        await canvasGroup.DOFade(0f, fadeOutDuration).ToAwaitable();
         gameObject.SetActive(false);
     }
 }

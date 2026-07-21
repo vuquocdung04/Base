@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +7,7 @@ public class LobbyScene : MonoBehaviour
     public Button btnHeart;
 
     public Button btnCoin;
-    public async UniTask InitAsync()
+    public async Awaitable InitAsync()
     {
         navController.Init();
 
@@ -24,23 +23,23 @@ public class LobbyScene : MonoBehaviour
         });
     }
 
-    private static async UniTask PreLoad()
+    private static async Awaitable PreLoad()
     {
-        var lobbyTcs = new UniTaskCompletionSource();
-        var shopTcs = new UniTaskCompletionSource();
-        var rankTcs = new UniTaskCompletionSource();
+        var lobbyTcs = new AwaitableCompletionSource();
+        var shopTcs = new AwaitableCompletionSource();
+        var rankTcs = new AwaitableCompletionSource();
         var holder = LobbyController.Instance.botCanvas;
-        _ = LobbyBox.Setup(holder, box =>
+        LobbyBox.Setup(holder, box =>
         {
             box.Show();
             lobbyTcs.TrySetResult();
-        });
+        }).Forget();
 
-        _ = ShopBox.Setup(holder, _ => shopTcs.TrySetResult());
+        ShopBox.Setup(holder, _ => shopTcs.TrySetResult()).Forget();
 
-        _ = RankBox.Setup(holder, _ => rankTcs.TrySetResult());
+        RankBox.Setup(holder, _ => rankTcs.TrySetResult()).Forget();
 
-        await UniTask.WhenAll(lobbyTcs.Task, shopTcs.Task, rankTcs.Task);
+        await AwaitableEx.WhenAll(lobbyTcs.Awaitable, shopTcs.Awaitable, rankTcs.Awaitable);
 
         FXManager.Instance.isNextSceneReady = true;
     }

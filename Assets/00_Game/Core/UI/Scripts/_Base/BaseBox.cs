@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using EventDispatcher;
 using UnityEngine;
@@ -16,20 +15,20 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
     private static bool isInstantiating;
     private bool _postedOpen;
 
-    public static async UniTaskVoid Setup(Transform parent, System.Action<T> callback)
+    public static async Awaitable Setup(Transform parent, System.Action<T> callback)
     {
         string addressableKey = typeof(T).Name;
         var instance = await GetInstanceAsync(addressableKey, parent);
         callback?.Invoke(instance);
     }
 
-    private static async UniTask<T> GetInstanceAsync(string addressableKey, Transform parent)
+    private static async Awaitable<T> GetInstanceAsync(string addressableKey, Transform parent)
     {
         if (Instance != null) return Instance;
 
         if (isInstantiating)
         {
-            await UniTask.WaitUntil(() => Instance != null || !isInstantiating);
+            await AwaitableEx.WaitUntil(() => Instance != null || !isInstantiating);
             return Instance;
         }
 

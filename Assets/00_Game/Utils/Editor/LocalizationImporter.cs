@@ -1,7 +1,6 @@
 #if UNITY_EDITOR // Bọc toàn bộ lớp này lại
 using UnityEngine;
-using UnityEditor; 
-using Cysharp.Threading.Tasks;
+using UnityEditor;
 using UnityEngine.Networking;
 using System.IO;
 using System.Text.RegularExpressions; // THÊM 1: Cần dùng cho Regex
@@ -27,7 +26,10 @@ public class LocalizationImporter
         }
         Debug.Log("Đang tải từ Google Sheets...");
         UnityWebRequest www = UnityWebRequest.Get(googleSheetUrl);
-        await www.SendWebRequest();
+        var op = www.SendWebRequest();
+        var tcs = new System.Threading.Tasks.TaskCompletionSource<bool>();
+        op.completed += _ => tcs.TrySetResult(true);
+        await tcs.Task;
         if (www.result != UnityWebRequest.Result.Success)
         {
             Debug.LogError($"Lỗi: {www.error}");

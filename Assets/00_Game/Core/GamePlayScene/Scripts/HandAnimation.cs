@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HandAnimation : StaffSingleton<HandAnimation>
+public class HandAnimation : InitSingleton<HandAnimation>
 {
     public Camera mainCam;
     public Transform handObj;

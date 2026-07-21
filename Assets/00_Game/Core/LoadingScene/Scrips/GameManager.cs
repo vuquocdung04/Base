@@ -1,7 +1,6 @@
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-public class GameManager : ManagerSingleton<GameManager>
+public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private DataRepo dataRepo;
     [SerializeField] private FXManager fxManager;
@@ -20,7 +19,7 @@ public class GameManager : ManagerSingleton<GameManager>
     {
         Init().Forget();
     }
-    private async UniTaskVoid Init()
+    private async Awaitable Init()
     {
         Application.targetFrameRate = 60;
         loadingBox.Init();
@@ -28,7 +27,7 @@ public class GameManager : ManagerSingleton<GameManager>
         await GamePrefs.Init();
         Test();
         //firebaseSetup.Init();
-        //await UniTask.WaitUntil(() => firebaseSetup.IsActiveRemote);
+        //await AwaitableEx.WaitUntil(() => firebaseSetup.IsActiveRemote);
         dataRepo.Init();
         fxManager.Init();
         audioManager.Init();

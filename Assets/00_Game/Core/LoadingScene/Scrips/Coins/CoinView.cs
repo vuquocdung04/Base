@@ -1,5 +1,4 @@
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using EventDispatcher;
 using TMPro;
 using UnityEngine;
@@ -31,7 +30,7 @@ public class CoinView : MonoBehaviour
         if (target == _displayed) return;
 
         CancelCurrent();
-        _cts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        _cts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
 
         int from = _displayed;
         _displayed = target;         

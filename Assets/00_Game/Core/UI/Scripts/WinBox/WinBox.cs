@@ -28,7 +28,7 @@ public class WinBox : BaseBox<WinBox>
             bool isMaxLevel = true;
             string targetScene = isMaxLevel ? SceneName.LOBBY_SCENE : SceneName.GAME_PLAY;
 
-            _ = FXManager.Instance.SpawnCoinFly(
+            FXManager.Instance.SpawnCoinFly(
                 btnReward.transform.position,
                 coinTarget,
                 onEachArrived: PopCoinTarget,
@@ -36,7 +36,7 @@ public class WinBox : BaseBox<WinBox>
                 {
                     FXManager.Instance.LoadSceneWithIrisWipe(targetScene);
                 }
-            );
+            ).Forget();
         });
     }
 

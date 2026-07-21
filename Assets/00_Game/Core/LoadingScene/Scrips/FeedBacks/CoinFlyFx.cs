@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
@@ -21,28 +20,28 @@ public class CoinFlyFx : MonoBehaviour
         AnimateSprites().Forget();
     }
 
-    async UniTaskVoid AnimateSprites()
+    async Awaitable AnimateSprites()
     {
         if (sprites == null || sprites.Count == 0) return;
 
-        var token = this.GetCancellationTokenOnDestroy();
+        var token = destroyCancellationToken;
         int index = 0;
         while (!token.IsCancellationRequested)
         {
             spriteRenderer.sprite = sprites[index];
             index = (index + 1) % sprites.Count;
-            await UniTask.Delay(TimeSpan.FromSeconds(frameDuration), cancellationToken: token);
+            await Awaitable.WaitForSecondsAsync(frameDuration, token);
         }
     }
 
-    public async UniTask MoveTo(Transform target, Action onArrived = null)
+    public async Awaitable MoveTo(Transform target, Action onArrived = null)
     {
-        var token = this.GetCancellationTokenOnDestroy();
+        var token = destroyCancellationToken;
 
         transform.localScale = Vector3.zero;
-        await transform.DOScale(originalScale, scaleUpDuration).SetEase(Ease.OutBack).ToUniTask(cancellationToken: token);
+        await transform.DOScale(originalScale, scaleUpDuration).SetEase(Ease.OutBack).ToAwaitable(token);
 
-        await UniTask.Delay(TimeSpan.FromSeconds(flyDelay), cancellationToken: token);
+        await Awaitable.WaitForSecondsAsync(flyDelay, token);
 
         if (target == null)
         {
@@ -50,7 +49,7 @@ public class CoinFlyFx : MonoBehaviour
             return;
         }
 
-        await transform.DOMove(target.position, moveDuration).SetEase(Ease.InQuad).ToUniTask(cancellationToken: token);
+        await transform.DOMove(target.position, moveDuration).SetEase(Ease.InQuad).ToAwaitable(token);
 
         onArrived?.Invoke();
         Destroy(gameObject);

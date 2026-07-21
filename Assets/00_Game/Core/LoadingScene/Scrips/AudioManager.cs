@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -48,21 +47,42 @@ public class AudioManager : MonoBehaviour
             }
         }
     }
-    public void PlaySfx(string key)
+    public void PlaySfx(string key) => PlaySfxInternal(key, null);
+
+    public void PlaySfx(string key, float pitch) => PlaySfxInternal(key, pitch);
+
+    public void PlaySfxProgress(string key, float t)
     {
-        if (string.IsNullOrEmpty(key)) return;
-        string lowerKey = key.ToLower();
+        if (!TryGetConfig(key, out string lowerKey, out var config)) return;
+        float pitch = Mathf.Lerp(config.minPitch, config.maxPitch, Mathf.Clamp01(t));
+        PlayResolved(lowerKey, config, pitch);
+    }
 
-        if (!audioLookup.TryGetValue(lowerKey, out var config))
-        {
-#if UNITY_EDITOR
-            Debug.LogWarning($"Không tìm thấy AudioKey SFX: {key}");
-#endif
-            return;
-        }
+    private void PlaySfxInternal(string key, float? pitch)
+    {
+        if (!TryGetConfig(key, out string lowerKey, out var config)) return;
+        PlayResolved(lowerKey, config, pitch ?? config.GetRandomPitch());
+    }
 
+    private void PlayResolved(string lowerKey, AudioConfig config, float pitch)
+    {
         float volume = lowerKey == "coins" ? 1f : currentSfxVolume;
-        PlayClipInternal(lowerKey, config.GetRandomClip(), config.GetRandomPitch(), volume);
+        PlayClipInternal(lowerKey, config.GetRandomClip(), pitch, volume);
+    }
+
+    private bool TryGetConfig(string key, out string lowerKey, out AudioConfig config)
+    {
+        config = null;
+        lowerKey = null;
+        if (string.IsNullOrEmpty(key)) return false;
+
+        lowerKey = key.ToLower();
+        if (audioLookup.TryGetValue(lowerKey, out config)) return true;
+
+#if UNITY_EDITOR
+        Debug.LogWarning($"Không tìm thấy AudioKey SFX: {key}");
+#endif
+        return false;
     }
 
     public void PlaySfx(AudioClip clip, float pitch = 1f)
@@ -91,9 +111,9 @@ public class AudioManager : MonoBehaviour
         DespawnAfterPlayAsync(sfxObj, clip.length).Forget();
     }
 
-    private async UniTaskVoid DespawnAfterPlayAsync(GameObject obj, float delay)
+    private async Awaitable DespawnAfterPlayAsync(GameObject obj, float delay)
     {
-        await UniTask.Delay(System.TimeSpan.FromSeconds(delay));
+        await Awaitable.WaitForSecondsAsync(delay);
         if (obj != null && obj.activeInHierarchy) SimplePool2.Despawn(obj);
     }
 
@@ -115,15 +135,18 @@ public class AudioManager : MonoBehaviour
         asBg.pitch = 1f;
         asBg.Play();
     }
-    public void ToggleSound()
+    public void ToggleSound() => SetSound(!UseProfile.OnSound);
+    public void ToggleMusic() => SetMusic(!UseProfile.OnMusic);
+
+    public void SetSound(bool on)
     {
-        UseProfile.OnSound.Value = !UseProfile.OnSound;
+        UseProfile.OnSound.Value = on;
         ApplySoundVolume();
     }
 
-    public void ToggleMusic()
+    public void SetMusic(bool on)
     {
-        UseProfile.OnMusic.Value = !UseProfile.OnMusic;
+        UseProfile.OnMusic.Value = on;
         ApplyMusicVolume();
     }
 

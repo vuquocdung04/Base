@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using EventDispatcher;
 using TMPro;
 using UnityEngine;
@@ -37,10 +36,10 @@ public static partial class UIUtils
     {
         format ??= DefaultFormat;
         CooldownLoop(text, owner, source, doneText, format, onReady, refreshOn,
-            owner.GetCancellationTokenOnDestroy()).Forget();
+            owner.destroyCancellationToken).Forget();
     }
 
-    private static async UniTaskVoid CooldownLoop(
+    private static async Awaitable CooldownLoop(
         TMP_Text text, MonoBehaviour owner, Func<Cooldown> source, string doneText,
         Func<TimeSpan, string> format, Action onReady, EventID? refreshOn, CancellationToken token)
     {
@@ -75,7 +74,7 @@ public static partial class UIUtils
 
                 try
                 {
-                    await UniTask.Delay(TimeSpan.FromSeconds(wait), ignoreTimeScale: true, cancellationToken: wakeCts.Token);
+                    await AwaitableEx.WaitRealtimeAsync((float)wait, wakeCts.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -105,7 +104,7 @@ public static partial class UIUtils
     }
 
     // ============= COUNT UP/DOWN NUMBER =============
-    public static async UniTask CountTo(
+    public static async Awaitable CountTo(
       this TMP_Text text, double target, float duration = 0.5f,
       double? from = null, Func<double, string> format = null,
       CancellationToken token = default)
@@ -130,7 +129,7 @@ public static partial class UIUtils
                     lastShown = shown;
                     text.text = shown;
                 }
-                await UniTask.Yield();
+                await Awaitable.NextFrameAsync(token);
             }
         }
         catch (OperationCanceledException) { return; }
@@ -139,7 +138,7 @@ public static partial class UIUtils
     }
     // CountTo có kèm sprite icon (sprite asset). prefix/suffix là chuỗi ghép trước/sau số.
     // vd prefix = "<sprite=0> " -> "<sprite=0> 1.2K"
-    public static async UniTask CountToWithIcon(
+    public static async Awaitable CountToWithIcon(
         this TMP_Text text, double target, string prefix = "", string suffix = "",
         float duration = 0.5f, double? from = null, Func<double, string> format = null,
         CancellationToken token = default)
@@ -168,7 +167,7 @@ public static partial class UIUtils
                     lastShown = shown;
                     text.text = shown;
                 }
-                await UniTask.Yield();
+                await Awaitable.NextFrameAsync(token);
             }
         }
         catch (OperationCanceledException) { return; }

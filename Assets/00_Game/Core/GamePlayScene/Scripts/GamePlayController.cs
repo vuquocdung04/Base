@@ -1,9 +1,8 @@
 
-using Cysharp.Threading.Tasks;
 using EventDispatcher;
 using UnityEngine;
 
-public class GamePlayController : LeaderSingleton<GamePlayController>
+public class GamePlayController : Singleton<GamePlayController>
 {
     public Camera cameraUI;
     public Camera cameraGameplay;
@@ -16,10 +15,21 @@ public class GamePlayController : LeaderSingleton<GamePlayController>
     protected override void OnAwake()
     {
         base.OnAwake();
+        InitInstances();
         Init().Forget();
     }
 
-    private async UniTaskVoid Init()
+    // Bind toàn bộ Instance trước, để các Init() bên dưới truy cập chéo lẫn nhau được.
+    private void InitInstances()
+    {
+        gameScene.InitInstance();
+        handAnimation.InitInstance();
+        boosterController.InitInstance();
+        inputController.InitInstance();
+        gameFlow.InitInstance();
+    }
+
+    private async Awaitable Init()
     {
         gameScene.Init();
         handAnimation.Init();
@@ -30,10 +40,10 @@ public class GamePlayController : LeaderSingleton<GamePlayController>
 
         AudioManager.Instance.PlayMusic("Normal Level Music (Cover) 1");
 
-        await UniTask.WaitForEndOfFrame(this);
-        await UniTask.Delay(500);
+        await Awaitable.EndOfFrameAsync(destroyCancellationToken);
+        await Awaitable.WaitForSecondsAsync(0.5f, destroyCancellationToken);
         FXManager.Instance.isNextSceneReady = true;
-        await UniTask.Delay(500);
+        await Awaitable.WaitForSecondsAsync(0.5f, destroyCancellationToken);
         gameFlow.RequestResume();
     }
 }

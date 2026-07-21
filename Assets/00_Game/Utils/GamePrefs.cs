@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ public static class GamePrefs
     private static bool isDirty = false;
     public static string SavePath => Application.persistentDataPath + "/game_data.json";
 
-    public static UniTask Init()
+    public static Awaitable Init()
     {
         if (File.Exists(SavePath))
         {
@@ -36,7 +35,7 @@ public static class GamePrefs
         Debug.Log($"[GamePrefs] Init done. Loaded {cache.Count} keys from {SavePath}");
 
         StartAutoSaveLoop();
-        return UniTask.CompletedTask;
+        return AwaitableEx.CompletedAwaitable();
     }
 
     public static void Set<T>(string key, T value)

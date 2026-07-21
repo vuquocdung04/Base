@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
 public partial class FXManager : MonoBehaviour
 {
@@ -16,9 +15,9 @@ public partial class FXManager : MonoBehaviour
         if (wipeCanvas.gameObject.activeInHierarchy) wipeCanvas.gameObject.SetActive(false);
     }
 
-    public async UniTaskVoid SpawnCoinFly(Vector3 spawnPos, Transform target, Action onEachArrived = null, Action onComplete = null)
+    public async Awaitable SpawnCoinFly(Vector3 spawnPos, Transform target, Action onEachArrived = null, Action onComplete = null)
     {
-        var tasks = new List<UniTask>(coinCount);
+        var tasks = new List<Awaitable>(coinCount);
 
         for (int i = 0; i < coinCount; i++)
         {
@@ -29,10 +28,10 @@ public partial class FXManager : MonoBehaviour
             tasks.Add(coin.MoveTo(target, onEachArrived));
 
             if (spawnInterval > 0f && i < coinCount - 1)
-                await UniTask.Delay(TimeSpan.FromSeconds(spawnInterval));
+                await Awaitable.WaitForSecondsAsync(spawnInterval);
         }
 
-        await UniTask.WhenAll(tasks);
+        await AwaitableEx.WhenAll(tasks);
         onComplete?.Invoke();
     }
 

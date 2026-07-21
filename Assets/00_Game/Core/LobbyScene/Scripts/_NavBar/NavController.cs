@@ -1,15 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 
 public class NavController : MonoBehaviour
 {
     public static NavController Instance { get; private set; }
-    [SerializeField] private Sprite sprSelected;
+    [SerializeField] private RectTransform selector;
+    [SerializeField] private float scaleSelected = 1.3f;
+    [SerializeField] private float raiseY = 100f;
     public List<NavButton> navButtons;
-    private Vector2 sizeSelected;
-    private Vector2 sizeUnselected;
+    private Vector2 sizeButton;
     private NavButton currentNavSelected;
 
     public void Init()
@@ -29,24 +30,24 @@ public class NavController : MonoBehaviour
         }
         InitAfterLayoutAsync().Forget();
     }
-    private async UniTaskVoid InitAfterLayoutAsync()
+    private async Awaitable InitAfterLayoutAsync()
     {
-        await UniTask.WaitForEndOfFrame(this);
+        await Awaitable.EndOfFrameAsync(destroyCancellationToken);
         InitNavButtonStateWith(ENavType.Lobby);
     }
     private void InitSize()
     {
         int countNavBar = navButtons.Count;
-        float totalWidth = GetComponent<RectTransform>().rect.width;
-        float widthSelected = totalWidth * 0.45f;
+        if (countNavBar == 0) return;
 
+        float totalWidth = GetComponent<RectTransform>().rect.width;
         float height = 250;
-        sizeSelected = new Vector2(widthSelected, height);
-        if (countNavBar > 1)
+        float width = totalWidth / countNavBar;
+        sizeButton = new Vector2(width, height);
+
+        foreach (var nav in navButtons)
         {
-            float remainingPercent = 1.0f - 0.45f;
-            float widthUnselected = totalWidth * remainingPercent / (countNavBar - 1);
-            sizeUnselected = new Vector2(widthUnselected, height);
+            nav.SetSize(sizeButton);
         }
     }
     public void NavigateTo(ENavType type)
@@ -60,27 +61,49 @@ public class NavController : MonoBehaviour
         InitSize();
         foreach (var t in navButtons)
         {
-            if (t.navType == type)
+            bool isSelected = t.navType == type;
+            if (isSelected)
             {
                 currentNavSelected = t;
-                t.HandleSelected(true, sprSelected, sizeSelected, sizeUnselected);
+                MoveSelector(t, false);
             }
-            else
-            {
-                t.HandleSelected(false, sprSelected, sizeSelected, sizeUnselected);
-            }
-
+            t.HandleSelected(isSelected, scaleSelected, raiseY);
         }
     }
     private void UpdateNavButtonState(NavButton navButton)
     {
         foreach (var t in navButtons)
         {
-            t.HandleSelected(false, sprSelected, sizeSelected, sizeUnselected);
+            t.HandleSelected(false, scaleSelected, raiseY);
         }
         HandleScreenSliding(navButton);
         currentNavSelected = navButton;
-        navButton.HandleSelected(true, sprSelected, sizeSelected, sizeUnselected);
+        MoveSelector(navButton, true);
+        navButton.HandleSelected(true, scaleSelected, raiseY);
+    }
+    private void MoveSelector(NavButton target, bool animate)
+    {
+        if (selector == null) return;
+
+        float targetX = ToSelectorAnchoredX(target.RectMain);
+        selector.DOKill();
+        if (animate)
+        {
+            selector.DOAnchorPosX(targetX, 0.25f).SetEase(Ease.OutCubic);
+        }
+        else
+        {
+            selector.anchoredPosition = new Vector2(targetX, selector.anchoredPosition.y);
+        }
+    }
+    private float ToSelectorAnchoredX(RectTransform target)
+    {
+        var parent = selector.parent as RectTransform;
+        if (parent == null) return selector.anchoredPosition.x;
+
+        float anchorOffset = selector.anchoredPosition.x - selector.localPosition.x;
+        float localX = parent.InverseTransformPoint(target.position).x;
+        return localX + anchorOffset;
     }
     private void HandleScreenSliding(NavButton clicked)
     {

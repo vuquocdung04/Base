@@ -797,17 +797,30 @@ MonoBehaviour:
   durationAppeared: 0.3
   animationType: 0
   btnClose: {fileID: 4214896659231608515}
+  sound:
+    mode: 0
+    btn: {fileID: 8139625346654879271}
+    img: {fileID: 4801900776547719673}
+    sprOn: {fileID: 408407138, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
+    sprOff: {fileID: -721163460, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
+    slider: {fileID: 0}
+  music:
+    mode: 0
+    btn: {fileID: 2080618894893974601}
+    img: {fileID: 2049423644351470785}
+    sprOn: {fileID: 408407138, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
+    sprOff: {fileID: -721163460, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
+    slider: {fileID: 0}
+  vib:
+    mode: 0
+    btn: {fileID: 8143278733755675553}
+    img: {fileID: 1895329309360729667}
+    sprOn: {fileID: 408407138, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
+    sprOff: {fileID: -721163460, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
+    slider: {fileID: 0}
   btnReturnHome: {fileID: 4974112576923362601}
   btnRestart: {fileID: 8129996964958743844}
   btnCheat: {fileID: 7743861001206555826}
-  btnSound: {fileID: 8139625346654879271}
-  btnMusic: {fileID: 2080618894893974601}
-  btnVib: {fileID: 8143278733755675553}
-  imgSound: {fileID: 4801900776547719673}
-  imgMusic: {fileID: 2049423644351470785}
-  imgVib: {fileID: 1895329309360729667}
-  sprOn: {fileID: 408407138, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
-  sprOff: {fileID: -721163460, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
 --- !u!1 &2688093267052837013
 GameObject:
   m_ObjectHideFlags: 0
@@ -2085,7 +2098,7 @@ GameObject:
   - component: {fileID: 2651787545470678832}
   - component: {fileID: 1796150274778889879}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Btn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

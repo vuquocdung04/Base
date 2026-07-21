@@ -3,7 +3,7 @@ using DG.Tweening;
 using EventDispatcher;
 using UnityEngine;
 
-public partial class BoosterController : StaffSingleton<BoosterController>
+public partial class BoosterController : InitSingleton<BoosterController>
 {
 
     [Header("Refs")]
@@ -82,7 +82,7 @@ public partial class BoosterController : StaffSingleton<BoosterController>
     private void OnBuyRequest(object param)
     {
         var type = (BoosterType)param;
-        _ = BuyBoosterBox.Setup(GameScene.GetPopupHolder(), box => box.SetupAndShow(type));
+        BuyBoosterBox.Setup(GameScene.GetPopupHolder(), box => box.SetupAndShow(type)).Forget();
     }
     // ============= USE / DEACTIVATE =============
     private void OnUseRequest(object param)

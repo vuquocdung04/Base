@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameScene : StaffSingleton<GameScene>
+public class GameScene : InitSingleton<GameScene>
 {
     public Transform popupHolder;
     public Image darkPanel;
@@ -18,12 +18,12 @@ public class GameScene : StaffSingleton<GameScene>
     {
         btnSetting.OnClicked(delegate
         {
-            _ = SettingGameBox.Setup(popupHolder, box => box.Show());
+            SettingGameBox.Setup(popupHolder, box => box.Show()).Forget();
         });
 
         btnCoin.OnClicked(delegate
         {
-            _ = ShopBox.Setup(popupHolder, box => box.Show());
+            ShopBox.Setup(popupHolder, box => box.Show()).Forget();
         });
         txtLevelDisplay.text = $"Level {UseProfile.Level.Value}";
     }

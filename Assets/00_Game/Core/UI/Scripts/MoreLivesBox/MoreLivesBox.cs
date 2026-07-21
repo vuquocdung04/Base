@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using EventDispatcher;
 using TMPro;
 using UnityEngine;
@@ -84,7 +83,7 @@ public class MoreLivesBox : BaseBox<MoreLivesBox>
 
         SceneUtils.ExecuteInScene(SceneName.GAME_PLAY, () =>
         {
-            _ = ShopBox.Setup(GameScene.GetPopupHolder(), box => box.Show(BoxAnimationFactory.NoAnim));
+            ShopBox.Setup(GameScene.GetPopupHolder(), box => box.Show(BoxAnimationFactory.NoAnim)).Forget();
         });
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using EventDispatcher;
 using UnityEngine;
 
@@ -33,7 +32,7 @@ public class HeartManager : MonoBehaviour
         RefillSeconds = RefillMinutes * 60;
 
         cts?.Dispose();
-        cts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
+        cts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
 
         var startState = UseProfile.IsUnlimitedHeart ? (HeartState)_unlimitedState : _normalState;
         ChangeState(startState);
@@ -41,13 +40,13 @@ public class HeartManager : MonoBehaviour
         TickLoop(cts.Token).Forget();
     }
 
-    private async UniTaskVoid TickLoop(CancellationToken token)
+    private async Awaitable TickLoop(CancellationToken token)
     {
         while (!token.IsCancellationRequested)
         {
             try
             {
-                await UniTask.Delay(TimeSpan.FromSeconds(1), ignoreTimeScale: true, cancellationToken: token);
+                await AwaitableEx.WaitRealtimeAsync(1f, token);
                 _current.Tick();
             }
             catch (OperationCanceledException) { break; }
@@ -115,7 +114,7 @@ public class HeartManager : MonoBehaviour
             return;
         }
 
-        _ = MoreLivesBox.Setup(parent, box => box.Show());
+        MoreLivesBox.Setup(parent, box => box.Show()).Forget();
     }
     // ========== INTERNAL ==========
 

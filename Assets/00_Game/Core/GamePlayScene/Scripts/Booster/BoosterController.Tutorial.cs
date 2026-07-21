@@ -30,7 +30,7 @@ public partial class BoosterController
 
         if (target != null)
         {
-            _ = BoosterUnlockBox.Setup(GameScene.GetPopupHolder(), box => box.Show());
+            BoosterUnlockBox.Setup(GameScene.GetPopupHolder(), box => box.Show()).Forget();
         }
     }
 
