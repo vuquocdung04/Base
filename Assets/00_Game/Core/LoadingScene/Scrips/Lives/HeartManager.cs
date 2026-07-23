@@ -22,10 +22,12 @@ public class HeartManager : MonoBehaviour
     private HeartState _current;
 
     private CancellationTokenSource cts;
+    private ToastManager toastManager;
 
-    public void Init()
+    public void Init(ToastManager toastManager)
     {
         Instance = this;
+        this.toastManager = toastManager;
 
         MaxHearts = 5;
         RefillMinutes = 30;
@@ -80,13 +82,13 @@ public class HeartManager : MonoBehaviour
     {
         if (IsUnlimited)
         {
-            ToastManager.Instance.ShowToast("You have unlimited hearts");
+            toastManager.ShowToast("You have unlimited hearts");
             return false;
         }
 
         if (IsFull)
         {
-            ToastManager.Instance.ShowToast("Heart is full");
+            toastManager.ShowToast("Heart is full");
             return false;
         }
 
@@ -104,13 +106,13 @@ public class HeartManager : MonoBehaviour
     {
         if (IsUnlimited)
         {
-            ToastManager.Instance.ShowToast("You have unlimited hearts");
+            toastManager.ShowToast("You have unlimited hearts");
             return;
         }
 
         if (IsFull)
         {
-            ToastManager.Instance.ShowToast("Heart is full");
+            toastManager.ShowToast("Heart is full");
             return;
         }
 

@@ -30,10 +30,10 @@ public class GameManager : Singleton<GameManager>
         
         dataRepo.Init();
         fxManager.Init();
-        audioManager.Init();
-        heartManager.Init();
-        currencyManager.Init();
-        toastManager.Init();
+        audioManager.Init(dataRepo);
+        toastManager.Init(audioManager);
+        heartManager.Init(toastManager);
+        currencyManager.Init(toastManager);
         await load50Task;
         await loadingBox.LoadingAsync(1f, loadingStepDuration);
         if (isSkipOutPhase) fxManager.PrepareWipeClosed();

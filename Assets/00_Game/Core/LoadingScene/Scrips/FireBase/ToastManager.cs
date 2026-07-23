@@ -19,10 +19,12 @@ public class ToastManager : MonoBehaviour
 
     private Dictionary<TextMeshProUGUI, (CanvasGroup cg, Tween tween)> _activeTweens = new();
     private List<CanvasGroup> _canvasGroups = new();
+    private AudioManager audioManager;
 
-    public void Init()
+    public void Init(AudioManager audioManager)
     {
         Instance = this;
+        this.audioManager = audioManager;
         foreach (var txt in toastTexts)
         {
             var cg = txt.GetComponent<CanvasGroup>();
@@ -45,7 +47,7 @@ public class ToastManager : MonoBehaviour
             old.tween?.Kill();
 
         txt.text = toastName;
-        AudioManager.Instance.PlaySfx("Toast");
+        audioManager.PlaySfx("Toast");
 
         var rect = txt.rectTransform;
         rect.anchoredPosition = Vector2.zero;       

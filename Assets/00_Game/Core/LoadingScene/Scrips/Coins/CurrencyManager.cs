@@ -23,9 +23,12 @@ public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager Instance { get; private set; }
 
-    public void Init()
+    private ToastManager toastManager;
+
+    public void Init(ToastManager toastManager)
     {
         Instance = this;
+        this.toastManager = toastManager;
     }
 
     public int Get(CurrencyType type) => GetPref(type).Value;
@@ -37,7 +40,7 @@ public class CurrencyManager : MonoBehaviour
         var pref = GetPref(type);
         if (pref.Value < amount)
         {
-            ToastManager.Instance.ShowToast($"Not enough {type}");
+            toastManager.ShowToast($"Not enough {type}");
             return false;
         }
 
