@@ -51,22 +51,9 @@ public class BuyBoosterBox : BaseBox<BuyBoosterBox>
         }
         AudioManager.Instance.PlaySfx("sfx-RewardGiftbox");
         UseProfile.Coin.Value = coin - pricePerBooster;
-        AddBoosterQuantity(_currentType, amountPerPurchase);
-
-        var item = BoosterController.Instance.FindItem(_currentType);
-        if (item != null) item.RefreshFromQuantity();
+        BoosterController.Instance.AddQuantity(_currentType, amountPerPurchase);
 
         Close();
-    }
-
-    private void AddBoosterQuantity(BoosterType type, int amount)
-    {
-        switch (type)
-        {
-            case BoosterType.Booster0: UseProfile.Booster0.Value += amount; break;
-            case BoosterType.Booster1: UseProfile.Booster1.Value += amount; break;
-            case BoosterType.Booster2: UseProfile.Booster2.Value += amount; break;
-        }
     }
 
     private string GetTitle(BoosterType type) => type switch

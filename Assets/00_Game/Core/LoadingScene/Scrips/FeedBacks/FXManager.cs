@@ -11,8 +11,7 @@ public partial class FXManager : MonoBehaviour
     public void Init()
     {
         Instance = this;
-
-        if (wipeCanvas.gameObject.activeInHierarchy) wipeCanvas.gameObject.SetActive(false);
+        HideAllTransitions();
     }
 
     public async Awaitable SpawnCoinFly(Vector3 spawnPos, Transform target, Action onEachArrived = null, Action onComplete = null)

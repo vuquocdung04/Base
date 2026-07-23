@@ -1,88 +1,66 @@
-using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public partial class FXManager
 {
-    public Canvas wipeCanvas;
+    [SerializeField] private List<SceneTransition> transitions;
+    [SerializeField] private SceneTransitionType defaultTransition = SceneTransitionType.Iris;
     public float transitionDurationOut = 1f;
     public float transitionDurationIn = 1f;
     [HideInInspector] public bool isNextSceneReady;
 
-    private Material cachedWipeMat;
-
-    private Material WipeMat
-    {
-        get
-        {
-            if (cachedWipeMat == null)
-                cachedWipeMat = wipeCanvas.GetComponentInChildren<RawImage>().material;
-            return cachedWipeMat;
-        }
-    }
+    private SceneTransition current;
 
     public void LoadSceneWithIrisWipe(string sceneName, bool skipOutPhase = false)
+        => LoadScene(sceneName, defaultTransition, skipOutPhase);
+
+    public void LoadScene(string sceneName, SceneTransitionType type, bool skipOutPhase = false)
     {
-        IrisWipeAsync(sceneName, skipOutPhase).Forget();
+        current = Resolve(type);
+        TransitionAsync(sceneName, skipOutPhase).Forget();
     }
 
-    private async Awaitable IrisWipeAsync(string sceneName, bool skipOutPhase)
+    private async Awaitable TransitionAsync(string sceneName, bool skipOutPhase)
     {
         isNextSceneReady = false;
 
-        SetupCanvasCamera();
+        current.Prepare();
 
         if (skipOutPhase)
-        {
-            SetWipeState(1f, 0f);
-        }
+            current.SetCovered();
         else
-        {
-            SetWipeState(0f, 0f);
-            await WipeMat.DOFloat(1.2f, "_Radius", transitionDurationOut).ToAwaitable();
-        }
+            await current.Cover(transitionDurationOut);
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
         while (!asyncLoad.isDone)
-        {
             await Awaitable.NextFrameAsync();
-        }
 
-        // Scene mới đã load xong -> Cập nhật lại camera mới cho Canvas
-        SetupCanvasCamera();
-        SetWipeState(1f, 0f);
+        current.SetCovered();
 
         await AwaitableEx.WaitUntil(() => isNextSceneReady);
-        // Chạy hiệu ứng mở ra
-        await WipeMat.DOFloat(1.2f, "_Radius", transitionDurationIn).ToAwaitable();
 
-        Debug.Log("Completed Transition");
-        wipeCanvas.gameObject.SetActive(false);
+        await current.Reveal(transitionDurationIn);
+
+        current.Hide();
     }
 
     public void PrepareWipeClosed()
     {
-        SetupCanvasCamera();
-        SetWipeState(1f, 0f);
+        current = Resolve(defaultTransition);
+        current.Prepare();
+        current.SetCovered();
     }
 
-    private void SetupCanvasCamera()
+    private void HideAllTransitions()
     {
-        if (!wipeCanvas.gameObject.activeSelf)
-        {
-            wipeCanvas.gameObject.SetActive(true);
-        }
-        GameObject camObj = GameObject.FindGameObjectWithTag("MainCamera");
-        if (camObj != null)
-        {
-            wipeCanvas.worldCamera = camObj.GetComponent<Camera>();
-        }
+        foreach (SceneTransition t in transitions) t.Hide();
     }
 
-    private void SetWipeState(float isInvert, float radius)
+    private SceneTransition Resolve(SceneTransitionType type)
     {
-        WipeMat.SetFloat("_IsInvert", isInvert);
-        WipeMat.SetFloat("_Radius", radius);
+        foreach (SceneTransition t in transitions)
+            if (t.Type == type) return t;
+        return transitions[0];
     }
 }

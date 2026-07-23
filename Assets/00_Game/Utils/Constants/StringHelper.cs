@@ -7,8 +7,27 @@ public class StringHelper
     public const string ONOFF_SOUND = "ONOFF_SOUND";
     public const string ONOFF_VIB = "ONOFF_VIB";
     public const string COIN = "CoinsAmount";
-
+    public const string GEM = "Gem";
     public const string LEVEL = "Level";
+
+    public const string SHOW_CIV_ORDER = "show_civ_order";
+    public const string UNLOCK_CIV_ORDER = "unlock_civ_order";
+    
+    public const string CURRENT_CIV = "CURRENT_CIV";
+    public const string ENEMY_CIV = "ENEMY_CIV";
+    public const string WON_FINAL_CIV = "WON_FINAL_CIV";
+    public const string UNIT2_UNLOCK = "UNIT2_UNLOCK";
+    public const string UNIT3_UNLOCK = "UNIT3_UNLOCK";
+    public const string FOOD_RATE = "FOOD_RATE";
+
+    // Equipment
+    public const string EQUIPPED_MELEE = "EQUIPPED_MELEE";
+    public const string EQUIPPED_RANGE = "EQUIPPED_RANGE";
+    public const string EQUIPPED_SHIELD = "EQUIPPED_SHIELD";
+    public const string GACHA_LEVEL = "GACHA_LEVEL";
+    public const string GACHA_SPIN = "GACHA_SPIN";
+
+    // Skill
 
     public const string AVATAR_ID = "AVATAR_ID";
 

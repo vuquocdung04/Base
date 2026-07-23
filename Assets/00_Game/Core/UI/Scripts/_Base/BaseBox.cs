@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(GraphicRaycaster))]
-public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
+public abstract class BaseBox<T> : MonoBehaviour, IPopupBox where T : BaseBox<T>
 {
     // ========== SINGLETON & ADDRESSABLES ==========
     public static T Instance { get; private set; }
@@ -62,6 +62,8 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
 
     protected virtual void OnDestroy()
     {
+        PopupStack.Remove(this);
+
         if (Instance == this)
         {
             Instance = null;
@@ -77,16 +79,29 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
     [SerializeField] protected CanvasGroup canvasGroup;
     [SerializeField] protected float durationAppeared = 0.3f;
     [SerializeField] protected BoxAnimationType animationType = BoxAnimationType.Scale;
+    [SerializeField, Range(0f, 1f)] protected float backdropAlpha = 0.95f;
 
     private Tween currentTween;
     private IShowAnimation _activeAnim;
 
+    float IPopupBox.BackdropAlpha => backdropAlpha;
+
     public System.Action OnClosed;
 
     // ========== SHOW / CLOSE ==========
-    public void Show() => Show(BoxAnimationFactory.Get(animationType));
+    public void Show() => Show(BoxAnimationFactory.Get(animationType), false);
+    public void Show(bool cover) => Show(BoxAnimationFactory.Get(animationType), cover);
 
-    public void Show(IShowAnimation anim)
+    public void Show(IShowAnimation anim, bool cover)
+    {
+        ShowInternal(anim);
+        PopupStack.Push(this, cover);
+    }
+
+    public void ShowRaw() => ShowInternal(BoxAnimationFactory.Get(animationType));
+    public void ShowRaw(IShowAnimation anim) => ShowInternal(anim);
+
+    private void ShowInternal(IShowAnimation anim)
     {
         _activeAnim = anim;
         InitState();
@@ -104,25 +119,47 @@ public abstract class BaseBox<T> : MonoBehaviour where T : BaseBox<T>
         currentTween = anim.PlayShow(mainPanel, canvasGroup, durationAppeared);
     }
 
-    public void Close() => Close(_activeAnim ?? BoxAnimationFactory.Get(animationType));
+    public void Close() => CloseInternal(_activeAnim ?? BoxAnimationFactory.Get(animationType), true);
+    public void CloseRaw(IShowAnimation anim) => CloseInternal(anim, false);
 
-    public void Close(IShowAnimation anim)
+    private void CloseInternal(IShowAnimation anim, bool notifyStack)
     {
         KillCurrentTween();
         if (_postedOpen) { _postedOpen = false; this.PostEvent(EventID.POPUP_CLOSED); }
 
         currentTween = anim.PlayClose(mainPanel, canvasGroup, durationAppeared);
         if (currentTween != null)
-            currentTween.OnComplete(() =>
-            {
-                canvasGroup.SetCanvasState(false, 0f);
-                InvokeOnClosed();
-            });
+            currentTween.OnComplete(() => FinishClose(notifyStack));
         else
+            FinishClose(notifyStack);
+    }
+
+    private void FinishClose(bool notifyStack)
+    {
+        canvasGroup.SetCanvasState(false, 0f);
+
+        if (notifyStack)
         {
-            canvasGroup.SetCanvasState(false, 0f);
-            InvokeOnClosed();
+            var toResume = PopupStack.Pop(this);
+            if (toResume is UnityEngine.Object o && o != null) toResume.Resume();
+            PopupStack.RefreshBackdrop(PopupStack.IsEmpty);
         }
+
+        InvokeOnClosed();
+    }
+
+    void IPopupBox.Suspend()
+    {
+        KillCurrentTween();
+        ForceHide();
+    }
+
+    void IPopupBox.Resume()
+    {
+        KillCurrentTween();
+        transform.SetAsLastSibling();
+        var anim = _activeAnim ?? BoxAnimationFactory.Get(animationType);
+        currentTween = anim.PlayShow(mainPanel, canvasGroup, durationAppeared);
     }
     private void InvokeOnClosed()
     {

@@ -83,7 +83,7 @@ public class MoreLivesBox : BaseBox<MoreLivesBox>
 
         SceneUtils.ExecuteInScene(SceneName.GAME_PLAY, () =>
         {
-            ShopBox.Setup(GameScene.GetPopupHolder(), box => box.Show(BoxAnimationFactory.NoAnim)).Forget();
+            ShopBox.Setup(GameScene.GetPopupHolder(), box => box.Show(BoxAnimationFactory.NoAnim, true)).Forget();
         });
     }
 }

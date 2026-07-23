@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
+    [SerializeField] private SaveBootstrap saveBootstrap;
     [SerializeField] private DataRepo dataRepo;
     [SerializeField] private FXManager fxManager;
     [SerializeField] private AudioManager audioManager;
@@ -24,10 +25,9 @@ public class GameManager : Singleton<GameManager>
         Application.targetFrameRate = 60;
         loadingBox.Init();
         var load50Task = loadingBox.LoadingAsync(0.5f, loadingStepDuration);
-        await GamePrefs.Init();
+        await saveBootstrap.Init();
         Test();
-        //firebaseSetup.Init();
-        //await AwaitableEx.WaitUntil(() => firebaseSetup.IsActiveRemote);
+        
         dataRepo.Init();
         fxManager.Init();
         audioManager.Init();
@@ -36,7 +36,7 @@ public class GameManager : Singleton<GameManager>
         toastManager.Init();
         await load50Task;
         await loadingBox.LoadingAsync(1f, loadingStepDuration);
-        fxManager.PrepareWipeClosed();
+        if (isSkipOutPhase) fxManager.PrepareWipeClosed();
         await loadingBox.CloseAsync(loadingFadeOutDuration);
 
         //Init final

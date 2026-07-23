@@ -12,6 +12,7 @@ public class BoosterItem : MonoBehaviour
     public BoosterType Type => type;
     public Sprite IconSprite => iconBooster.sprite;
     public BoosterState CurrentState { get; private set; } = BoosterState.Locked;
+    public int Quantity { get; private set; }
 
     public Button btnMain;
     public Image iconBooster;
@@ -68,41 +69,26 @@ public class BoosterItem : MonoBehaviour
                 this.PostEvent(EventID.BOOSTER_USE_REQUEST, type);
                 break;
             case BoosterState.InUse:
-            
+                this.PostEvent(EventID.BOOSTER_DEACTIVATE_REQUEST, type);
                 break;
             case BoosterState.Empty:
                 this.PostEvent(EventID.BOOSTER_BUY_REQUEST, type);
                 break;
         }
     }
-    public int GetQuantity()
+    public void SetData(int qty)
     {
-        return type switch
-        {
-            BoosterType.Booster0 => UseProfile.Booster0.Value,
-            BoosterType.Booster1 => UseProfile.Booster1.Value,
-            BoosterType.Booster2 => UseProfile.Booster2.Value,
-            _ => 0
-        };
-    }
-    public void SubQuantity()
-    {
-        switch (type)
-        {
-            case BoosterType.Booster0: UseProfile.Booster0.Value = Mathf.Max(0, UseProfile.Booster0.Value - 1); break;
-            case BoosterType.Booster1: UseProfile.Booster1.Value = Mathf.Max(0, UseProfile.Booster1.Value - 1); break;
-            case BoosterType.Booster2: UseProfile.Booster2.Value = Mathf.Max(0, UseProfile.Booster2.Value - 1); break;
-        }
-        RefreshFromQuantity();
-    }
-    public void RefreshFromQuantity()
-    {
-        int qty = GetQuantity();
+        Quantity = qty;
         if (quantityText != null) quantityText.text = qty.ToString();
 
         if (CurrentState == BoosterState.Available && qty <= 0)
             ChangeState(BoosterState.Empty);
         else if (CurrentState == BoosterState.Empty && qty > 0)
             ChangeState(BoosterState.Available);
+    }
+
+    public void SetUnlockLevel(int level)
+    {
+        if (unlockLevelText != null) unlockLevelText.text = level.ToString();
     }
 }

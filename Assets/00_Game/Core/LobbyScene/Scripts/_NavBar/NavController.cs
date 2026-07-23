@@ -120,13 +120,13 @@ public class NavController : MonoBehaviour
         switch (type)
         {
             case ENavType.Shop:
-                ShopBox.Instance.Show(anim);
+                ShopBox.Instance.ShowRaw(anim);
                 break;
             case ENavType.Lobby:
-                LobbyBox.Instance.Show(anim);
+                LobbyBox.Instance.ShowRaw(anim);
                 break;
             case ENavType.Rank:
-                RankBox.Instance.Show(anim);
+                RankBox.Instance.ShowRaw(anim);
                 break;
         }
     }
@@ -135,13 +135,13 @@ public class NavController : MonoBehaviour
         switch (type)
         {
             case ENavType.Shop:
-                if (ShopBox.Instance != null) ShopBox.Instance.Close(anim);
+                if (ShopBox.Instance != null) ShopBox.Instance.CloseRaw(anim);
                 break;
             case ENavType.Lobby:
-                if (LobbyBox.Instance != null) LobbyBox.Instance.Close(anim);
+                if (LobbyBox.Instance != null) LobbyBox.Instance.CloseRaw(anim);
                 break;
             case ENavType.Rank:
-                if (RankBox.Instance != null) RankBox.Instance.Close(anim);
+                if (RankBox.Instance != null) RankBox.Instance.CloseRaw(anim);
                 break;
         }
     }

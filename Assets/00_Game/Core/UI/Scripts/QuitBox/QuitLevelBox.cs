@@ -33,10 +33,10 @@ public class QuitLevelBox : BaseBox<QuitLevelBox>
         Refresh();
     }
 
-    public void SetupAndShow(Mode mode)
+    public void SetupAndShow(Mode mode, bool cover = false)
     {
         _mode = mode;
-        Show();
+        Show(cover);
     }
 
     private void Refresh()

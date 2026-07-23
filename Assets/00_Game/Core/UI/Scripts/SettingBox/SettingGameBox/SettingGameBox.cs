@@ -9,10 +9,10 @@ public class SettingGameBox : SettingBaseBox<SettingGameBox>
     protected override void OnInit()
     {
         btnReturnHome.OnClicked(() =>
-            QuitLevelBox.Setup(transform.parent, box => box.SetupAndShow(QuitLevelBox.Mode.Leave)).Forget());
+            QuitLevelBox.Setup(transform.parent, box => box.SetupAndShow(QuitLevelBox.Mode.Leave, true)).Forget());
 
         btnRestart.OnClicked(() =>
-            QuitLevelBox.Setup(transform.parent, box => box.SetupAndShow(QuitLevelBox.Mode.Restart)).Forget());
+            QuitLevelBox.Setup(transform.parent, box => box.SetupAndShow(QuitLevelBox.Mode.Restart, true)).Forget());
 
         btnCheat.OnClicked(() =>
             CheatBox.Setup(transform.parent, box => box.Show()).Forget());

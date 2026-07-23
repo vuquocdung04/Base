@@ -31,7 +31,7 @@ public class LobbyScene : MonoBehaviour
         var holder = LobbyController.Instance.botCanvas;
         LobbyBox.Setup(holder, box =>
         {
-            box.Show();
+            box.ShowRaw();
             lobbyTcs.TrySetResult();
         }).Forget();
 
