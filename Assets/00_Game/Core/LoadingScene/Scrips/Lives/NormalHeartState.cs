@@ -25,7 +25,7 @@ public class NormalHeartState : HeartState
         }
 
         bool wasAtMax = UseProfile.Heart == Owner.MaxHearts;
-        UseProfile.Heart.Value -= 1;
+        UseProfile.Heart -= 1;
 
         if (wasAtMax)
             UseProfile.TimeLastOverHeart = TimeManager.GetCurrentTime();
@@ -36,7 +36,7 @@ public class NormalHeartState : HeartState
     public override void AddUnlimited(int minutes)
     {
         DateTime endTime = TimeManager.GetCurrentTime().AddMinutes(minutes);
-        UseProfile.IsUnlimitedHeart.Value = true;
+        UseProfile.IsUnlimitedHeart = true;
         UseProfile.TimeUnlimitedHeart = endTime;
 
         Owner.SwitchToUnlimited();

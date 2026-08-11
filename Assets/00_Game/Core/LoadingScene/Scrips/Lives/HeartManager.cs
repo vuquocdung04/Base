@@ -93,7 +93,7 @@ public class HeartManager : MonoBehaviour
         }
 
         int newCount = Mathf.Min(CurrentHeart + amount, MaxHearts);
-        UseProfile.Heart.Value = newCount;
+        UseProfile.Heart =newCount;
         return true;
     }
 
@@ -133,11 +133,11 @@ public class HeartManager : MonoBehaviour
         int newCount = UseProfile.Heart + heartsGained;
         if (newCount >= MaxHearts)
         {
-            UseProfile.Heart.Value = MaxHearts;
+            UseProfile.Heart =MaxHearts;
         }
         else
         {
-            UseProfile.Heart.Value = newCount;
+            UseProfile.Heart =newCount;
             UseProfile.TimeLastOverHeart = UseProfile.TimeLastOverHeart
                 .Add(TimeSpan.FromSeconds(heartsGained * RefillSeconds));
         }

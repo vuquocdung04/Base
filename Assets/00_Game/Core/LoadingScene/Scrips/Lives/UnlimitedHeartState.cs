@@ -7,7 +7,7 @@ public class UnlimitedHeartState : HeartState
     {
         if (GetUnlimitedTimeRemaining().TotalSeconds <= 0)
         {
-            UseProfile.IsUnlimitedHeart.Value = false;
+            UseProfile.IsUnlimitedHeart = false;
             Owner.SwitchToNormal();
         }
     }

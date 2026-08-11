@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private SaveBootstrap saveBootstrap;
     [SerializeField] private DataRepo dataRepo;
     [SerializeField] private FXManager fxManager;
     [SerializeField] private AudioManager audioManager;
@@ -25,7 +24,6 @@ public class GameManager : Singleton<GameManager>
         Application.targetFrameRate = 60;
         loadingBox.Init();
         var load50Task = loadingBox.LoadingAsync(0.5f, loadingStepDuration);
-        await saveBootstrap.Init();
         Test();
         
         dataRepo.Init();
@@ -45,7 +43,7 @@ public class GameManager : Singleton<GameManager>
 
     private void Test()
     {
-        UseProfile.Heart.Value = 4;
+        UseProfile.Heart = 4;
         UseProfile.TimeLastOverHeart = TimeManager.GetCurrentTime();
     }
 }

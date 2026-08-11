@@ -2,23 +2,19 @@ using System;
 
 public static class UseProfile
 {
-    public static int DefaultStartingCoins = 0;
-    public static int DefaultStartingGems = 0;
+    public static int Level { get => GamePrefs.Get(StringHelper.LEVEL, 1); set => GamePrefs.Set(StringHelper.LEVEL, value); }
+    public static int Coin { get => GamePrefs.Get(StringHelper.COIN, 0); set => GamePrefs.Set(StringHelper.COIN, value); }
+    public static int AvatarId { get => GamePrefs.Get(StringHelper.AVATAR_ID, 0); set => GamePrefs.Set(StringHelper.AVATAR_ID, value); }
 
-    public static readonly PrefVar<int> Level = new(StringHelper.LEVEL, 1);
-    public static readonly PrefVar<int> Coin = new(StringHelper.COIN, DefaultStartingCoins);
-    public static readonly PrefVar<int> Gem = new(StringHelper.GEM, DefaultStartingGems);
-
-    public static readonly PrefVar<int> AvatarId = new(StringHelper.AVATAR_ID, 0);
     // --- SETTINGS ---
-    public static readonly PrefVar<bool> OnMusic = new(StringHelper.ONOFF_MUSIC, true);
-    public static readonly PrefVar<bool> OnSound = new(StringHelper.ONOFF_SOUND, true);
-    public static readonly PrefVar<bool> OnVib = new(StringHelper.ONOFF_VIB, true);
+    public static bool OnMusic { get => GamePrefs.Get(StringHelper.ONOFF_MUSIC, true); set => GamePrefs.Set(StringHelper.ONOFF_MUSIC, value); }
+    public static bool OnSound { get => GamePrefs.Get(StringHelper.ONOFF_SOUND, true); set => GamePrefs.Set(StringHelper.ONOFF_SOUND, value); }
+    public static bool OnVib { get => GamePrefs.Get(StringHelper.ONOFF_VIB, true); set => GamePrefs.Set(StringHelper.ONOFF_VIB, value); }
 
     // --- TIM & QUẢNG CÁO ---
-    public static readonly PrefVar<int> Heart = new(StringHelper.HEART, 5);
-    public static readonly PrefVar<bool> IsUnlimitedHeart = new(StringHelper.IS_UNLIMITER_HEART, false);
-    public static readonly PrefVar<bool> IsRemoveAds = new(StringHelper.REMOVE_ADS, false);
+    public static int Heart { get => GamePrefs.Get(StringHelper.HEART, 5); set => GamePrefs.Set(StringHelper.HEART, value); }
+    public static bool IsUnlimitedHeart { get => GamePrefs.Get(StringHelper.IS_UNLIMITER_HEART, false); set => GamePrefs.Set(StringHelper.IS_UNLIMITER_HEART, value); }
+    public static bool IsRemoveAds { get => GamePrefs.Get(StringHelper.REMOVE_ADS, false); set => GamePrefs.Set(StringHelper.REMOVE_ADS, value); }
 
     public static DateTime TimeUnlimitedHeart
     {

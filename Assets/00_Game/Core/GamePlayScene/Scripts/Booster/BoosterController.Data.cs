@@ -1,85 +1,80 @@
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 public partial class BoosterController
 {
-    [System.Serializable]
+    [Serializable]
     public class BoosterConfig
     {
-        [TableColumnWidth(90, resizable: false)]
-        public BoosterType type;
+        [TableColumnWidth(170, resizable: false)]
+        public BoosterItem item;
         public int levelUnlock;
         public int quantity;
     }
 
-    [Title("Items")]
-    [SerializeField] private List<BoosterItem> items;
-
     [TableList(AlwaysExpanded = true, DrawScrollView = false)]
-    [SerializeField] private List<BoosterConfig> configs;
+    [SerializeField] private List<BoosterConfig> boosters = new();
 
-    private int CurrentLevel => UseProfile.Level.Value;
+    private int CurrentLevel => UseProfile.Level;
 
-    private BoosterConfig GetConfig(BoosterType type) => configs.Find(c => c.type == type);
+    public int Count => boosters.Count;
+
+    public BoosterItem GetItem(int index)
+        => index >= 0 && index < boosters.Count ? boosters[index].item : null;
+
+    private int IndexOf(BoosterItem item)
+    {
+        for (int i = 0; i < boosters.Count; i++)
+        {
+            if (boosters[i].item == item) return i;
+        }
+        return -1;
+    }
 
     private void SeedData()
     {
-        foreach (var cfg in configs)
+        for (int i = 0; i < boosters.Count; i++)
         {
-            if (BoosterData.Has(cfg.type)) continue;
-            BoosterData.Get(cfg.type).Amount = cfg.quantity;
-            BoosterData.MarkDirty();
+            if (BoosterData.Has(i)) continue;
+            BoosterData.Get(i).Amount = boosters[i].quantity;
         }
+        BoosterData.Save();
     }
 
     private void ApplyConfigToItems()
     {
-        foreach (var item in items)
+        for (int i = 0; i < boosters.Count; i++)
         {
-            var cfg = GetConfig(item.Type);
-            item.SetUnlockLevel(cfg.levelUnlock);
+            BoosterConfig config = boosters[i];
+            if (config.item == null) continue;
 
-            bool unlocked = CurrentLevel >= cfg.levelUnlock;
-
-            if (unlocked)
-            {
-                item.ChangeState(BoosterState.Available, force: true);
-                item.SetData(GetQuantity(item.Type));
-            }
-            else
-            {
-                item.ChangeState(BoosterState.Locked, force: true);
-            }
+            config.item.Setup(GetQuantity(i), config.levelUnlock, CurrentLevel);
         }
     }
 
-    private int GetQuantity(BoosterType type) => BoosterData.Get(type).Amount;
+    public int GetQuantity(int index) => BoosterData.Get(index).Amount;
 
-    private void SetQuantity(BoosterType type, int amount)
+    public void AddQuantity(int index, int amount) => SetQuantity(index, GetQuantity(index) + amount);
+
+    private void Consume(int index) => SetQuantity(index, GetQuantity(index) - 1);
+
+    private void SetQuantity(int index, int amount)
     {
-        BoosterData.Get(type).Amount = Mathf.Max(0, amount);
-        BoosterData.MarkDirty();
+        BoosterData.Get(index).Amount = Mathf.Max(0, amount);
+        BoosterData.Save();
+
+        GetItem(index)?.SetQuantity(GetQuantity(index));
     }
 
-    private void Consume(BoosterType type) => SetQuantity(type, GetQuantity(type) - 1);
+    private bool IsTutorialDone(int index) => BoosterData.Get(index).TutorialDone;
 
-    public void AddQuantity(BoosterType type, int amount)
+    private void SetTutorialDone(int index)
     {
-        SetQuantity(type, GetQuantity(type) + amount);
-        FindItem(type)?.SetData(GetQuantity(type));
+        if (IsTutorialDone(index)) return;
+
+        BoosterData.Get(index).TutorialDone = true;
+        BoosterData.Save();
     }
-
-    private bool IsTutorialDone(BoosterType type) => BoosterData.Get(type).TutorialDone;
-
-    private void SetTutorialDone(BoosterType type, bool done)
-    {
-        BoosterData.Get(type).TutorialDone = done;
-        BoosterData.MarkDirty();
-    }
-
-    public BoosterItem FindItem(BoosterType type) => items.Find(i => i.Type == type);
-
-    public BoosterItem GetItemByIndex(int index) =>
-        (items != null && index >= 0 && index < items.Count) ? items[index] : null;
 }

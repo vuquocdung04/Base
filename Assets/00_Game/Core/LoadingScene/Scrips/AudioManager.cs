@@ -140,13 +140,13 @@ public class AudioManager : MonoBehaviour
 
     public void SetSound(bool on)
     {
-        UseProfile.OnSound.Value = on;
+        UseProfile.OnSound = on;
         ApplySoundVolume();
     }
 
     public void SetMusic(bool on)
     {
-        UseProfile.OnMusic.Value = on;
+        UseProfile.OnMusic = on;
         ApplyMusicVolume();
     }
 

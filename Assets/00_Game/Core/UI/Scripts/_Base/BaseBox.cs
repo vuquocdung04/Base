@@ -20,8 +20,6 @@ public abstract class BaseBox : MonoBehaviour
     private float _peekFactor = 1f;
     private bool _postedOpen;
 
-    public System.Action OnClosed;
-
     private PopupSetting Setting => _setting ??= PopupManager.SettingFor(GetType().Name);
 
     internal float BackdropAlpha => Setting.backdropAlpha * _peekFactor;
@@ -39,14 +37,6 @@ public abstract class BaseBox : MonoBehaviour
         }
 
         Init();
-    }
-
-    public void SetCloseButtonsActive(bool active)
-    {
-        for (int i = 0; i < closeButtons.Count; i++)
-        {
-            if (closeButtons[i] != null) closeButtons[i].SetActive(active);
-        }
     }
 
     protected virtual void OnDestroy()
@@ -158,8 +148,6 @@ public abstract class BaseBox : MonoBehaviour
             if (toResume != null) toResume.Resume();
             PopupManager.RefreshBackdrop(PopupManager.IsEmpty);
         }
-
-        InvokeOnClosed();
     }
 
     // ========== STACK ==========
@@ -243,10 +231,4 @@ public abstract class BaseBox : MonoBehaviour
         this.PostEvent(id);
     }
 
-    private void InvokeOnClosed()
-    {
-        var cb = OnClosed;
-        OnClosed = null;
-        cb?.Invoke();
-    }
 }

@@ -24,7 +24,7 @@ public class GameScene : InitSingleton<GameScene>
         {
             PopupManager.Show<ShopBox>().Forget();
         });
-        txtLevelDisplay.text = $"Level {UseProfile.Level.Value}";
+        txtLevelDisplay.text = $"Level {UseProfile.Level}";
     }
     public static void EnableDarkPanel(bool state)
     {

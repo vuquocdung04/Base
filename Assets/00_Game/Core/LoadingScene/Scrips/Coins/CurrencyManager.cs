@@ -31,20 +31,36 @@ public class CurrencyManager : MonoBehaviour
         this.toastManager = toastManager;
     }
 
-    public int Get(CurrencyType type) => GetPref(type).Value;
+    public int Get(CurrencyType type) => type switch
+    {
+        CurrencyType.Coin => UseProfile.Coin,
+        _ => throw new ArgumentException($"Unknown currency: {type}")
+    };
+
+    private void Set(CurrencyType type, int value)
+    {
+        switch (type)
+        {
+            case CurrencyType.Coin:
+                UseProfile.Coin = value;
+                break;
+            default:
+                throw new ArgumentException($"Unknown currency: {type}");
+        }
+    }
 
     public bool TrySpend(CurrencyType type, int amount)
     {
         if (amount <= 0) return true;
 
-        var pref = GetPref(type);
-        if (pref.Value < amount)
+        int current = Get(type);
+        if (current < amount)
         {
             toastManager.ShowToast($"Not enough {type}");
             return false;
         }
 
-        pref.Value -= amount;
+        Set(type, current - amount);
         PostChangeEvent(type);
         return true;
     }
@@ -53,29 +69,17 @@ public class CurrencyManager : MonoBehaviour
     {
         if (amount <= 0) return;
 
-        var pref = GetPref(type);
-        pref.Value += amount;
+        Set(type, Get(type) + amount);
         PostChangeEvent(type);
     }
 
-    public bool CanAfford(CurrencyType type, int amount)
-    {
-        return GetPref(type).Value >= amount;
-    }
-
-    private PrefVar<int> GetPref(CurrencyType type) => type switch
-    {
-        CurrencyType.Coin => UseProfile.Coin,
-        //CurrencyType.Gem => UseProfile.Gem,  // thêm vào UseProfile khi cần
-        _ => throw new ArgumentException($"Unknown currency: {type}")
-    };
+    public bool CanAfford(CurrencyType type, int amount) => Get(type) >= amount;
 
     private void PostChangeEvent(CurrencyType type)
     {
         EventID eventId = type switch
         {
             CurrencyType.Coin => EventID.CHANGE_COIN,
-            //CurrencyType.Gem => EventID.CHANGE_GEM,  // thêm vào EventID khi cần
             _ => EventID.CHANGE_COIN
         };
         this.PostEvent(eventId);

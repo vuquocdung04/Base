@@ -1,116 +1,65 @@
 using EventDispatcher;
-using UnityEngine;
 
 public partial class BoosterController : InitSingleton<BoosterController>
 {
-    private BoosterItem _active;
-
-    public bool HasActive => _active != null;
-    public BoosterType? ActiveType => _active?.Type;
-
     public override void Init()
     {
         SeedData();
         ApplyConfigToItems();
+        BindItems(true);
 
-        this.RegisterListener(EventID.BOOSTER_USE_REQUEST, OnUseRequest);
-        this.RegisterListener(EventID.BOOSTER_DEACTIVATE_REQUEST, OnDeactivateRequest);
-        this.RegisterListener(EventID.BOOSTER_BUY_REQUEST, OnBuyRequest);
-        GameFlow.Instance.OnStateEntered += OnGameStateChanged;
-
-        //CheckTutorialHighlight();
+        ShowTutorialIfAny();
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        this.RemoveListener(EventID.BOOSTER_USE_REQUEST, OnUseRequest);
-        this.RemoveListener(EventID.BOOSTER_DEACTIVATE_REQUEST, OnDeactivateRequest);
-        this.RemoveListener(EventID.BOOSTER_BUY_REQUEST, OnBuyRequest);
-        if (GameFlow.Instance != null)
-            GameFlow.Instance.OnStateEntered -= OnGameStateChanged;
+        BindItems(false);
     }
 
-    private void OnGameStateChanged(GameState newState)
+    private void BindItems(bool bind)
     {
-        if (newState != GameState.Win && newState != GameState.Lose) return;
-        if (_active == null) return;
-        ForceCancelActiveBooster();
-    }
-
-    private void ForceCancelActiveBooster()
-    {
-        _active.ChangeState(BoosterState.Available);
-        _active.SetData(GetQuantity(_active.Type));
-        _active = null;
-
-        InputController.Instance.RestoreNormalMode();
-    }
-
-    private void OnBuyRequest(object param)
-    {
-        var type = (BoosterType)param;
-        PopupManager.Show<BuyBoosterBox>().Forget();
-    }
-
-    private void OnUseRequest(object param)
-    {
-        var type = (BoosterType)param;
-        var item = FindItem(type);
-        if (item == null) return;
-
-        CheckAndClearTutorialPhase1(type, item);
-
-        if (_active != null)
+        for (int i = 0; i < boosters.Count; i++)
         {
-            ToastManager.Instance.ShowToast("Another Booster is in use!");
-            return;
+            BoosterItem item = boosters[i].item;
+            if (item == null) continue;
+
+            item.OnClickBuy -= HandleBuy;
+            item.OnClickUse -= HandleUse;
+
+            if (!bind) continue;
+
+            item.OnClickBuy += HandleBuy;
+            item.OnClickUse += HandleUse;
         }
-
-        if (!CanUseBooster(type)) return;
-
-        _active = item;
-        item.ChangeState(BoosterState.InUse);
     }
 
-    private bool CanUseBooster(BoosterType type)
+    private void HandleBuy(BoosterItem item) => PopupManager.Show<BuyBoosterBox>().Forget();
+
+    private void HandleUse(BoosterItem item)
     {
-        switch (type)
+        int index = IndexOf(item);
+        if (index < 0) return;
+
+        SetTutorialDone(index);
+        Consume(index);
+
+        this.PostEvent(EventID.BOOSTER_USED, index);
+    }
+
+    private void ShowTutorialIfAny()
+    {
+        if (FindTutorialIndex() < 0) return;
+
+        PopupManager.Show<BoosterUnlockBox>().Forget();
+    }
+
+    private int FindTutorialIndex()
+    {
+        for (int i = 0; i < boosters.Count; i++)
         {
-            case BoosterType.Booster0:
-                return true;
-
-            case BoosterType.Booster1:
-                return true;
-
-            case BoosterType.Booster2:
-                return true;
+            if (CurrentLevel == boosters[i].levelUnlock && !IsTutorialDone(i)) return i;
         }
-        return true;
-    }
-
-    private void OnDeactivateRequest(object param)
-    {
-        if (_active == null || _active.Type != (BoosterType)param) return;
-        Deactivate();
-    }
-
-    public void Deactivate()
-    {
-        if (_active == null) return;
-        HandleTutorialCancel(_active.Type);
-        _active.ChangeState(BoosterState.Available);
-        _active.SetData(GetQuantity(_active.Type));
-        _active = null;
-        InputController.Instance.RestoreNormalMode();
-    }
-
-    public void OnBoosterActionSuccess()
-    {
-        if (_active == null) return;
-        CompletePhase2Tutorial(_active.Type);
-
-        Consume(_active.Type);
-        Deactivate();
+        return -1;
     }
 }
