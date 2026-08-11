@@ -15,7 +15,7 @@ public class LobbyScene : MonoBehaviour
 
         btnHeart.OnClicked(delegate
         {
-            HeartManager.Instance.TryShowHeartOffer(LobbyController.Instance.topCanvas);
+            HeartManager.Instance.TryShowHeartOffer();
         });
         btnCoin.OnClicked(delegate
         {
@@ -25,21 +25,12 @@ public class LobbyScene : MonoBehaviour
 
     private static async Awaitable PreLoad()
     {
-        var lobbyTcs = new AwaitableCompletionSource();
-        var shopTcs = new AwaitableCompletionSource();
-        var rankTcs = new AwaitableCompletionSource();
-        var holder = LobbyController.Instance.botCanvas;
-        LobbyBox.Setup(holder, box =>
-        {
-            box.ShowRaw();
-            lobbyTcs.TrySetResult();
-        }).Forget();
+        await AwaitableEx.WhenAll(
+            PopupManager.Preload<LobbyBox>(),
+            PopupManager.Preload<ShopBox>(),
+            PopupManager.Preload<RankBox>());
 
-        ShopBox.Setup(holder, _ => shopTcs.TrySetResult()).Forget();
-
-        RankBox.Setup(holder, _ => rankTcs.TrySetResult()).Forget();
-
-        await AwaitableEx.WhenAll(lobbyTcs.Awaitable, shopTcs.Awaitable, rankTcs.Awaitable);
+        PopupManager.Peek<LobbyBox>()?.ShowDetached();
 
         FXManager.Instance.isNextSceneReady = true;
     }

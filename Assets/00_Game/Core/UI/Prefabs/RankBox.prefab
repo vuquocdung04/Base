@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 8761356524465649262}
   - component: {fileID: 6114228145504577257}
   - component: {fileID: 4768220447557236170}
+  - component: {fileID: 4523939582283254901}
   m_Layer: 5
   m_Name: RankBox
   m_TagString: Untagged
@@ -165,7 +166,12 @@ MonoBehaviour:
   mainPanel: {fileID: 9025405575941039383}
   canvasGroup: {fileID: 3276145824427042102}
   durationAppeared: 0.3
-  animationType: 1
+  defaultAnim: {fileID: 0}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
 --- !u!114 &4768220447557236170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +189,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 119
+--- !u!114 &4523939582283254901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5962912545494080649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5af260790eddff42b97433af1eeae4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlidePopupAnimation
+  defaultShowFrom: 1
+  defaultHideTo: 1
+  ease: 9
 --- !u!1 &7062129701317857190
 GameObject:
   m_ObjectHideFlags: 0

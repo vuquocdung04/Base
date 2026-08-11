@@ -48,28 +48,18 @@ public class SettingControl
     }
 }
 
-public abstract class SettingBaseBox<T> : BaseBox<T> where T : SettingBaseBox<T>
+public abstract class SettingBaseBox : BaseBox, IPopupScale
 {
-    public Button btnClose;
-
     [Header("Setting Controls")]
     [SerializeField] protected SettingControl sound;
     [SerializeField] protected SettingControl music;
     [SerializeField] protected SettingControl vib;
 
-    protected sealed override void Init()
-    {
-        btnClose.OnClicked(Close);
+    public SettingControl Sound => sound;
+    public SettingControl Music => music;
+    public SettingControl Vib => vib;
 
-        sound.Setup(() => UseProfile.OnSound ? 1f : 0f,
-            v => AudioManager.Instance.SetSound(v > 0));
-        music.Setup(() => UseProfile.OnMusic ? 1f : 0f,
-            v => AudioManager.Instance.SetMusic(v > 0));
-        vib.Setup(() => UseProfile.OnVib ? 1f : 0f,
-            v => UseProfile.OnVib.Value = v > 0);
-
-        OnInit();
-    }
+    protected sealed override void Init() => OnInit();
 
     protected override void InitState() { }
 

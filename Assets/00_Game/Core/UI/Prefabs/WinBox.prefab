@@ -259,6 +259,7 @@ GameObject:
   - component: {fileID: 9216209575428701132}
   - component: {fileID: 6016262569739675391}
   - component: {fileID: 5443949890060074098}
+  - component: {fileID: 5722058865077301772}
   m_Layer: 5
   m_Name: WinBox
   m_TagString: Untagged
@@ -354,7 +355,12 @@ MonoBehaviour:
   mainPanel: {fileID: 1404481205891805048}
   canvasGroup: {fileID: 6232817985524949102}
   durationAppeared: 0.3
-  animationType: 0
+  defaultAnim: {fileID: 5722058865077301772}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   btnReward: {fileID: 2159546109208294479}
   coinTarget: {fileID: 2373180812480292509}
   imageIconFill: {fileID: 5622906093040045720}
@@ -366,6 +372,21 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 2129211021135814fb7fb96a333e21b4, type: 3}
   - {fileID: 21300000, guid: b6452498403a4fa4b8f201e71cd01dab, type: 3}
   - {fileID: 21300000, guid: ab46d2e4e5e850e4e8ab0c7baf929f9f, type: 3}
+--- !u!114 &5722058865077301772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2881229528952627422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bb9e892316e4648a9fc1daff5135b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScalePopupAnimation
+  showEase: 27
+  hideEase: 26
+  hideDurationScale: 0.8
 --- !u!1 &2965782709677615888
 GameObject:
   m_ObjectHideFlags: 0

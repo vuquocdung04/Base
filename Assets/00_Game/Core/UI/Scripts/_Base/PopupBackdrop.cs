@@ -1,20 +1,41 @@
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
-public class PopupBackdrop : MonoBehaviour, IPopupBackdrop
+public class PopupBackdrop : MonoBehaviour,
+    IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
 {
     [SerializeField] private Image image;
     [SerializeField] private float fadeDuration = 0.2f;
 
     private Tween _tween;
+    private bool _pressed;
 
     private void Reset() => image = GetComponent<Image>();
 
-    private void OnEnable() => PopupStack.RegisterBackdrop(this);
+    private void OnDisable() => ReleasePress();
 
-    private void OnDisable() => PopupStack.UnregisterBackdrop(this);
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        BaseBox top = PopupManager.Top;
+        if (top == null) return;
+
+        _pressed = true;
+        top.OnBackdropPress();
+    }
+
+    public void OnPointerUp(PointerEventData eventData) => ReleasePress();
+
+    public void OnPointerClick(PointerEventData eventData) => PopupManager.Top?.OnBackdropClick();
+
+    private void ReleasePress()
+    {
+        if (!_pressed) return;
+        _pressed = false;
+        PopupManager.Top?.OnBackdropRelease();
+    }
 
     public void ShowBackdrop(float alpha, bool fade)
     {

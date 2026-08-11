@@ -50,7 +50,7 @@ public partial class BoosterController : InitSingleton<BoosterController>
     private void OnBuyRequest(object param)
     {
         var type = (BoosterType)param;
-        BuyBoosterBox.Setup(GameScene.GetPopupHolder(), box => box.SetupAndShow(type)).Forget();
+        PopupManager.Show<BuyBoosterBox>().Forget();
     }
 
     private void OnUseRequest(object param)

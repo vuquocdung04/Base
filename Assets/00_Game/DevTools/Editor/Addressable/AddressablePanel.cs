@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Sirenix.OdinInspector;
 using UnityEditor;
@@ -17,6 +18,7 @@ namespace DevTools.Addressable
 		public SdfIconType Icon => SdfIconType.Box;
 
 		const string PrefKey = "AutoTool_PrefabPath";
+		const string PopupCatalogFolder = "Assets/00_Game/Resources";
 
 		[Title("Cấu hình", bold: true)]
 		[FolderPath(RequireExistingPath = true)]
@@ -27,6 +29,8 @@ namespace DevTools.Addressable
 		public AddressablePanel()
 		{
 			prefabFolderPath = EditorPrefs.GetString(PrefKey, "");
+			popupCatalog = LocatePopupCatalog();
+			SyncPopup();
 		}
 
 		void SavePrefs()
@@ -132,6 +136,80 @@ namespace DevTools.Addressable
 		[ShowInInspector, HideLabel, Searchable]
 		[TableList(IsReadOnly = true, ShowPaging = true, ShowIndexLabels = true, NumberOfItemsPerPage = 20)]
 		public List<PrefabEntry> entries = new List<PrefabEntry>();
+
+		// ===================== POPUP =====================
+
+		[Title("Popup Catalog", bold: true), PropertyOrder(10)]
+		[LabelText("Catalog"), LabelWidth(80)]
+		[OnValueChanged("SyncPopup")]
+		public PopupCatalog popupCatalog;
+
+		[PropertyOrder(11)]
+		[InfoBox("Chưa có PopupCatalog. Bấm 'Tạo Catalog' để tạo trong Resources.", InfoMessageType.Warning,
+			VisibleIf = "@popupCatalog == null")]
+		[Button("Tạo Catalog", ButtonSizes.Large), GUIColor(0.4f, 0.9f, 0.5f)]
+		[ShowIf("@popupCatalog == null")]
+		void CreatePopupCatalog()
+		{
+			Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), PopupCatalogFolder));
+			AssetDatabase.Refresh();
+
+			var asset = ScriptableObject.CreateInstance<PopupCatalog>();
+			string path = AssetDatabase.GenerateUniqueAssetPath($"{PopupCatalogFolder}/PopupCatalog.asset");
+			AssetDatabase.CreateAsset(asset, path);
+			AssetDatabase.SaveAssets();
+
+			popupCatalog = asset;
+			SyncPopup();
+		}
+
+		[PropertyOrder(11)]
+		[Button("Đồng bộ popup từ code", ButtonSizes.Large), GUIColor(0.4f, 0.8f, 1f)]
+		[ShowIf("@popupCatalog != null")]
+		void SyncPopup()
+		{
+			if (popupCatalog == null) return;
+
+			List<string> names = TypeCache.GetTypesDerivedFrom<BaseBox>()
+				.Where(t => !t.IsAbstract)
+				.Select(t => t.Name)
+				.ToList();
+
+			popupCatalog.popups.RemoveAll(p => p == null || !names.Contains(p.typeName));
+
+			foreach (string name in names)
+			{
+				if (popupCatalog.Find(name) == null)
+					popupCatalog.popups.Add(new PopupSetting { typeName = name });
+			}
+
+			popupCatalog.popups.Sort((a, b) => string.CompareOrdinal(a.typeName, b.typeName));
+			popupRows = popupCatalog.popups;
+
+			EditorUtility.SetDirty(popupCatalog);
+		}
+
+		[PropertyOrder(12)]
+		[ShowInInspector, HideLabel, Searchable]
+		[TableList(ShowPaging = true, NumberOfItemsPerPage = 25)]
+		[ShowIf("@popupCatalog != null")]
+		List<PopupSetting> popupRows;
+
+		[OnInspectorGUI, PropertyOrder(99)]
+		void MarkPopupDirty()
+		{
+			if (popupCatalog != null && GUI.changed) EditorUtility.SetDirty(popupCatalog);
+		}
+
+		static PopupCatalog LocatePopupCatalog()
+		{
+			string guid = AssetDatabase.FindAssets("t:PopupCatalog").FirstOrDefault();
+			return string.IsNullOrEmpty(guid)
+				? null
+				: AssetDatabase.LoadAssetAtPath<PopupCatalog>(AssetDatabase.GUIDToAssetPath(guid));
+		}
+
+		// ===================== HELPERS =====================
 
 		string AutoDetectScriptPath()
 		{

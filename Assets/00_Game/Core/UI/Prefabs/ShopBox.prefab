@@ -519,6 +519,7 @@ GameObject:
   - component: {fileID: 5001953152111795480}
   - component: {fileID: 6046524399541826238}
   - component: {fileID: 4690732971827461615}
+  - component: {fileID: 2407601337495946490}
   m_Layer: 5
   m_Name: ShopBox
   m_TagString: Untagged
@@ -614,8 +615,28 @@ MonoBehaviour:
   mainPanel: {fileID: 7167967995323038397}
   canvasGroup: {fileID: 7393627900265555739}
   durationAppeared: 0.3
-  animationType: 1
+  defaultAnim: {fileID: 0}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   btnClose: {fileID: 4325908217883217173}
+--- !u!114 &2407601337495946490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537107688901780755}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5af260790eddff42b97433af1eeae4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlidePopupAnimation
+  defaultShowFrom: 1
+  defaultHideTo: 1
+  ease: 9
 --- !u!1 &629122530180066766
 GameObject:
   m_ObjectHideFlags: 0

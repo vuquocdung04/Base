@@ -233,7 +233,12 @@ MonoBehaviour:
   mainPanel: {fileID: 2864898199277852948}
   canvasGroup: {fileID: 522228034787383283}
   durationAppeared: 0.3
-  animationType: 1
+  defaultAnim: {fileID: 0}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   imgBooster: {fileID: 1544541312390097034}
   btnClaim: {fileID: 4214587063091529831}
   txtHolder: {fileID: 8618114034324654227}

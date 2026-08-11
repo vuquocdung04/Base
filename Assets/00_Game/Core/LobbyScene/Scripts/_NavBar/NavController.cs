@@ -109,42 +109,27 @@ public class NavController : MonoBehaviour
     {
         bool clickedIsRight = clicked.transform.localPosition.x > currentNavSelected.transform.localPosition.x;
 
-        var outAnim = clickedIsRight ? BoxAnimationFactory.SlideToLeft : BoxAnimationFactory.SlideToRight;
-        var inAnim = clickedIsRight ? BoxAnimationFactory.SlideFromRight : BoxAnimationFactory.SlideFromLeft;
+        var outSide = clickedIsRight ? SlideSide.Left : SlideSide.Right;
+        var inSide = clickedIsRight ? SlideSide.Right : SlideSide.Left;
 
-        ClosePrevBox(currentNavSelected.navType, outAnim);
-        OpenCurrentBox(clicked.navType, inAnim);
+        ClosePrevBox(currentNavSelected.navType, outSide);
+        OpenCurrentBox(clicked.navType, inSide);
     }
-    private void OpenCurrentBox(ENavType type, IShowAnimation anim)
+    private void OpenCurrentBox(ENavType type, SlideSide from)
     {
-        switch (type)
-        {
-            case ENavType.Shop:
-                ShopBox.Instance.ShowRaw(anim);
-                break;
-            case ENavType.Lobby:
-                LobbyBox.Instance.ShowRaw(anim);
-                break;
-            case ENavType.Rank:
-                RankBox.Instance.ShowRaw(anim);
-                break;
-        }
+        BoxOf(type)?.ShowDetached(from);
     }
-    private void ClosePrevBox(ENavType type, IShowAnimation anim)
+    private void ClosePrevBox(ENavType type, SlideSide to)
     {
-        switch (type)
-        {
-            case ENavType.Shop:
-                if (ShopBox.Instance != null) ShopBox.Instance.CloseRaw(anim);
-                break;
-            case ENavType.Lobby:
-                if (LobbyBox.Instance != null) LobbyBox.Instance.CloseRaw(anim);
-                break;
-            case ENavType.Rank:
-                if (RankBox.Instance != null) RankBox.Instance.CloseRaw(anim);
-                break;
-        }
+        BoxOf(type)?.CloseDetached(to);
     }
+    private static BaseBox BoxOf(ENavType type) => type switch
+    {
+        ENavType.Shop => PopupManager.Peek<ShopBox>(),
+        ENavType.Lobby => PopupManager.Peek<LobbyBox>(),
+        ENavType.Rank => PopupManager.Peek<RankBox>(),
+        _ => null
+    };
 
     [ContextMenu("Setup Nav button")]
     private void Setup()

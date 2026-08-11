@@ -836,6 +836,7 @@ GameObject:
   - component: {fileID: 5338684857442545478}
   - component: {fileID: 1614237978587238879}
   - component: {fileID: 7837934837037762164}
+  - component: {fileID: 7923936323697089410}
   m_Layer: 5
   m_Name: SettingLobbyBox
   m_TagString: Untagged
@@ -932,7 +933,12 @@ MonoBehaviour:
   mainPanel: {fileID: 3168849978835483197}
   canvasGroup: {fileID: 8736448876474911964}
   durationAppeared: 0.3
-  animationType: 0
+  defaultAnim: {fileID: 7923936323697089410}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   btnClose: {fileID: 6488988384754828012}
   sound:
     mode: 0
@@ -956,6 +962,21 @@ MonoBehaviour:
     sprOff: {fileID: -721163460, guid: d2a177a80fd6542458db876e7d98a3fc, type: 3}
     slider: {fileID: 0}
   btnCloseByPanel: {fileID: 2301108069713318580}
+--- !u!114 &7923936323697089410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4069685007005704332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bb9e892316e4648a9fc1daff5135b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScalePopupAnimation
+  showEase: 27
+  hideEase: 26
+  hideDurationScale: 0.8
 --- !u!1 &4278242979331529587
 GameObject:
   m_ObjectHideFlags: 0

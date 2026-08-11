@@ -93,6 +93,11 @@ namespace EventDispatcher
             }
         }
 
+        public bool HasListener(EventID eventID)
+        {
+            return _listeners.TryGetValue(eventID, out var callbacks) && callbacks != null;
+        }
+
         /// <summary>
         /// Posts the event. This will notify all listener that register for this event
         /// </summary>

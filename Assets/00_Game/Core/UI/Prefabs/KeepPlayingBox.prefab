@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5691056987462631191}
   - component: {fileID: 4120698802068812845}
   - component: {fileID: 8665147424593895412}
+  - component: {fileID: 890449657056009734}
   m_Layer: 5
   m_Name: KeepPlayingBox
   m_TagString: Untagged
@@ -107,13 +108,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::KeepPlayingBox
   mainPanel: {fileID: 1661143819629857506}
   canvasGroup: {fileID: 4819316579705317181}
-  isAnim: 1
   durationAppeared: 0.3
-  durationSlide: 0.2
+  defaultAnim: {fileID: 890449657056009734}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   btnClose: {fileID: 3239126307242838030}
   btnCloseByPanel: {fileID: 8180058744384079222}
   btnBuyTime: {fileID: 7679852150476479823}
   txtCoinDisplay: {fileID: 7112796470349379813}
+--- !u!114 &890449657056009734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146668821017487163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bb9e892316e4648a9fc1daff5135b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScalePopupAnimation
+  showEase: 27
+  hideEase: 26
+  hideDurationScale: 0.8
 --- !u!1 &994143781866840790
 GameObject:
   m_ObjectHideFlags: 0

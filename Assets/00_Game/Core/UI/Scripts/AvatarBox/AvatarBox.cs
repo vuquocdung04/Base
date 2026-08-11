@@ -1,12 +1,11 @@
+using System;
 using System.Collections.Generic;
-using EventDispatcher;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AvatarBox : BaseBox<AvatarBox>
+public class AvatarBox : BaseBox, IPopupScale
 {
     [Header("Buttons")]
-    public Button btnClose;
     public Button btnSave;
 
     [Header("Main")]
@@ -17,61 +16,39 @@ public class AvatarBox : BaseBox<AvatarBox>
     public Transform avatarItemParent;
 
     private readonly List<AvatarItem> _items = new();
-    private int _previewId;
-    private int _savedId;
 
-    private AvatarDataBase Data => DataRepo.Instance.avatarData;
+    public event Action<int> OnPreviewChanged;
+
+    public int PreviewId { get; private set; }
 
     protected override void Init()
     {
-        btnClose.OnClicked(OnCloseClicked);
-        btnSave.OnClicked(OnSaveClicked);
-
-        SpawnItems();
     }
 
     protected override void InitState()
     {
-        _savedId = UseProfile.AvatarId.Value;
-        _previewId = _savedId;
-        ApplyPreview(_previewId);
     }
 
-    private void SpawnItems()
+    public void Populate(IReadOnlyList<Sprite> sprites)
     {
-        for (int i = 0; i < Data.Count; i++)
+        foreach (AvatarItem item in _items) Destroy(item.gameObject);
+        _items.Clear();
+
+        for (int i = 0; i < sprites.Count; i++)
         {
-            var item = Instantiate(avatarItemPrefab, avatarItemParent);
-            item.Setup(i, Data.GetSpriteById(i), OnAvatarItemClicked);
+            AvatarItem item = Instantiate(avatarItemPrefab, avatarItemParent);
+            item.Setup(i, sprites[i], OnAvatarItemClicked);
             _items.Add(item);
         }
     }
 
-    private void OnAvatarItemClicked(AvatarItem item)
+    public void SetPreview(int id, Sprite sprite)
     {
-        _previewId = item.IdAvatar;
-        ApplyPreview(_previewId);
+        PreviewId = id;
+        mainAvatar.sprite = sprite;
+
+        foreach (AvatarItem item in _items) item.SetChoosing(item.IdAvatar == id);
     }
 
-    private void ApplyPreview(int id)
-    {
-        mainAvatar.sprite = Data.GetSpriteById(id);
-
-        foreach (var item in _items)
-            item.SetChoosing(item.IdAvatar == id);
-    }
-
-    private void OnSaveClicked()
-    {
-        UseProfile.AvatarId.Value = _previewId;
-        _savedId = _previewId;
-        this.PostEvent(EventID.CHANGE_AVATAR);
-        Close();
-    }
-
-    private void OnCloseClicked()
-    {
-        _previewId = _savedId;
-        Close();
-    }
+    private void OnAvatarItemClicked(AvatarItem item) => OnPreviewChanged?.Invoke(item.IdAvatar);
 }

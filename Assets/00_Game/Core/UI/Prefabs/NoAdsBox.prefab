@@ -274,6 +274,7 @@ GameObject:
   - component: {fileID: 4371985208947917275}
   - component: {fileID: 6532427936870053549}
   - component: {fileID: 8557593046327934483}
+  - component: {fileID: 7289052723325903086}
   m_Layer: 5
   m_Name: NoAdsBox
   m_TagString: Untagged
@@ -369,10 +370,30 @@ MonoBehaviour:
   mainPanel: {fileID: 5816170127061866488}
   canvasGroup: {fileID: 6586505479885128507}
   durationAppeared: 0.3
-  animationType: 0
+  defaultAnim: {fileID: 7289052723325903086}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   btnClose: {fileID: 9062018444610958037}
   btnCloseByPanel: {fileID: 8959145684009047819}
   btnPurchase: {fileID: 5538321668349639271}
+--- !u!114 &7289052723325903086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2352743310660565930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bb9e892316e4648a9fc1daff5135b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScalePopupAnimation
+  showEase: 27
+  hideEase: 26
+  hideDurationScale: 0.8
 --- !u!1 &4869278434849735789
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WinBox : BaseBox<WinBox>
+public class WinBox : BaseBox, IPopupScale
 {
     public Button btnReward;
 
@@ -18,88 +18,23 @@ public class WinBox : BaseBox<WinBox>
     [Header("Sprites (theo thứ tự unlock)")]
     public Sprite[] propSprites;
 
-    Tween _coinTargetPopTween;
-
     protected override void Init()
     {
-        btnReward.OnClicked(delegate
-        {
-            btnReward.interactable = false;
-            bool isMaxLevel = true;
-            string targetScene = isMaxLevel ? SceneName.LOBBY_SCENE : SceneName.GAME_PLAY;
-
-            FXManager.Instance.SpawnCoinFly(
-                btnReward.transform.position,
-                coinTarget,
-                onEachArrived: PopCoinTarget,
-                onComplete: () =>
-                {
-                    FXManager.Instance.LoadSceneWithIrisWipe(targetScene);
-                }
-            ).Forget();
-        });
-    }
-
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        _coinTargetPopTween?.Kill();
     }
 
     protected override void InitState()
     {
-        RefreshProgress();
     }
 
-    void PopCoinTarget()
+    public void SetPropSprite(int index)
     {
-        if (_coinTargetPopTween != null) return;
-        AudioManager.Instance.PlaySfx("Coins");
-        _coinTargetPopTween = coinTarget
-            .DOPunchScale(coinTarget.localScale * 0.25f, 0.1f, 1, 0f)
-            .SetLink(coinTarget.gameObject)
-            .OnComplete(() => _coinTargetPopTween = null);
-    }
-    private void RefreshProgress()
-    {
-        int[] unlockLevels = new[] { 10, 20, 30, 40 };
-        int currentLevel = UseProfile.Level.Value;
+        if (index < 0 || index >= propSprites.Length) return;
 
-        int targetIdx = -1;
-        for (int i = 0; i < unlockLevels.Length; i++)
-        {
-            if (currentLevel <= unlockLevels[i])
-            {
-                targetIdx = i;
-                break;
-            }
-        }
-
-        if (targetIdx < 0)
-        {
-            int lastIdx = unlockLevels.Length - 1;
-            ApplySprite(lastIdx);
-            AnimateFill(1f);
-            return;
-        }
-
-        ApplySprite(targetIdx);
-
-        int prevMilestone = targetIdx == 0 ? 0 : unlockLevels[targetIdx - 1];
-        int target = unlockLevels[targetIdx];
-        float percent = (float)(currentLevel - prevMilestone) / (target - prevMilestone);
-
-        AnimateFill(percent);
+        imageIconBg.sprite = propSprites[index];
+        imageIconFill.sprite = propSprites[index];
     }
 
-    private void ApplySprite(int idx)
-    {
-        if (idx < 0 || idx >= propSprites.Length) return;
-        imageIconBg.sprite = propSprites[idx];
-        imageIconFill.sprite = propSprites[idx];
-    }
-
-    private void AnimateFill(float targetPercent)
+    public void AnimateFill(float targetPercent)
     {
         btnReward.interactable = false;
 
@@ -113,9 +48,7 @@ public class WinBox : BaseBox<WinBox>
             txtPercent.text = $"{(int)(x * 100)}%";
         }, targetPercent, 0.6f)
         .SetEase(Ease.OutCubic)
-        .OnComplete(() =>
-        {
-            btnReward.interactable = true;
-        });
+        .SetLink(gameObject)
+        .OnComplete(() => btnReward.interactable = true);
     }
 }

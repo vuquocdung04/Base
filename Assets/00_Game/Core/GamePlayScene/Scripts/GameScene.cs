@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class GameScene : InitSingleton<GameScene>
 {
-    public Transform popupHolder;
     public Image darkPanel;
 
     public TextMeshProUGUI txtLevelDisplay;
@@ -18,12 +17,12 @@ public class GameScene : InitSingleton<GameScene>
     {
         btnSetting.OnClicked(delegate
         {
-            SettingGameBox.Setup(popupHolder, box => box.Show()).Forget();
+            PopupManager.Show<SettingGameBox>().Forget();
         });
 
         btnCoin.OnClicked(delegate
         {
-            ShopBox.Setup(popupHolder, box => box.Show()).Forget();
+            PopupManager.Show<ShopBox>().Forget();
         });
         txtLevelDisplay.text = $"Level {UseProfile.Level.Value}";
     }
@@ -49,5 +48,4 @@ public class GameScene : InitSingleton<GameScene>
         }
     }
     public static Transform GetCoinBar() => Instance.btnCoin.transform;
-    public static Transform GetPopupHolder() => Instance.popupHolder;
 }

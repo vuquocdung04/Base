@@ -21,10 +21,8 @@ public partial class GameFlow : InitSingleton<GameFlow>
 
     private int pauseRequest;
 
-    private Transform popupHolder;
     public override void Init()
     {
-        popupHolder = GameScene.GetPopupHolder();
         OnStateEntered += HandleStateEntered;
         OnStateExited += HandleStateExited;
 

@@ -102,7 +102,7 @@ public class HeartManager : MonoBehaviour
         _current.AddUnlimited(minutes);
     }
 
-    public void TryShowHeartOffer(Transform parent)
+    public void TryShowHeartOffer()
     {
         if (IsUnlimited)
         {
@@ -116,7 +116,7 @@ public class HeartManager : MonoBehaviour
             return;
         }
 
-        MoreLivesBox.Setup(parent, box => box.Show()).Forget();
+        PopupManager.Show<MoreLivesBox>().Forget();
     }
     // ========== INTERNAL ==========
 

@@ -1,137 +1,151 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using DG.Tweening;
 using EventDispatcher;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(GraphicRaycaster))]
-public abstract class BaseBox<T> : MonoBehaviour, IPopupBox where T : BaseBox<T>
+public abstract class BaseBox : MonoBehaviour
 {
-    // ========== SINGLETON & ADDRESSABLES ==========
-    public static T Instance { get; private set; }
-    private static AsyncOperationHandle<GameObject> handle;
-    private static bool isInstantiating;
+    [SerializeField] protected RectTransform mainPanel;
+    [SerializeField] protected CanvasGroup canvasGroup;
+    [SerializeField] protected List<Button> closeButtons = new();
+
+    private PopupSetting _setting;
+    private CancellationTokenSource _animCts;
+    private Tween _peekTween;
+    private float _peekFactor = 1f;
     private bool _postedOpen;
 
-    public static async Awaitable Setup(Transform parent, System.Action<T> callback)
-    {
-        string addressableKey = typeof(T).Name;
-        var instance = await GetInstanceAsync(addressableKey, parent);
-        callback?.Invoke(instance);
-    }
+    public System.Action OnClosed;
 
-    private static async Awaitable<T> GetInstanceAsync(string addressableKey, Transform parent)
-    {
-        if (Instance != null) return Instance;
+    private PopupSetting Setting => _setting ??= PopupManager.SettingFor(GetType().Name);
 
-        if (isInstantiating)
-        {
-            await AwaitableEx.WaitUntil(() => Instance != null || !isInstantiating);
-            return Instance;
-        }
-
-        isInstantiating = true;
-        handle = Addressables.InstantiateAsync(addressableKey, parent);
-        GameObject obj = await handle.Task;
-
-        if (obj == null)
-        {
-            Debug.LogError($"[BaseBox] Không tìm thấy key: {addressableKey}");
-            isInstantiating = false;
-            return null;
-        }
-
-        Instance = obj.GetComponent<T>();
-        if (Instance == null)
-        {
-            Addressables.ReleaseInstance(obj);
-            isInstantiating = false;
-            return null;
-        }
-
-        Instance.ForceHide();
-        Instance.Init();
-        isInstantiating = false;
-        return Instance;
-    }
+    internal float BackdropAlpha => Setting.backdropAlpha * _peekFactor;
 
     protected abstract void Init();
     protected abstract void InitState();
 
-    protected virtual void OnDestroy()
+    internal void Bootstrap()
     {
-        PopupStack.Remove(this);
+        canvasGroup.SetCanvasState(false, 0f);
 
-        if (Instance == this)
+        for (int i = 0; i < closeButtons.Count; i++)
         {
-            Instance = null;
-            isInstantiating = false;
+            if (closeButtons[i] != null) closeButtons[i].OnClicked(Close);
         }
 
-        if (handle.IsValid()) Addressables.ReleaseInstance(gameObject);
+        Init();
     }
 
-    // ========== FIELDS ==========
-    [Header("UI Animation Settings")]
-    [SerializeField] protected RectTransform mainPanel;
-    [SerializeField] protected CanvasGroup canvasGroup;
-    [SerializeField] protected float durationAppeared = 0.3f;
-    [SerializeField] protected BoxAnimationType animationType = BoxAnimationType.Scale;
-    [SerializeField, Range(0f, 1f)] protected float backdropAlpha = 0.95f;
+    public void SetCloseButtonsActive(bool active)
+    {
+        for (int i = 0; i < closeButtons.Count; i++)
+        {
+            if (closeButtons[i] != null) closeButtons[i].SetActive(active);
+        }
+    }
 
-    private Tween currentTween;
-    private IShowAnimation _activeAnim;
-
-    float IPopupBox.BackdropAlpha => backdropAlpha;
-
-    public System.Action OnClosed;
+    protected virtual void OnDestroy()
+    {
+        PopupManager.Unregister(this);
+        CancelAnim();
+        KillPeekTween();
+    }
 
     // ========== SHOW / CLOSE ==========
-    public void Show() => Show(BoxAnimationFactory.Get(animationType), false);
-    public void Show(bool cover) => Show(BoxAnimationFactory.Get(animationType), cover);
-
-    public void Show(IShowAnimation anim, bool cover)
+    public void Show(bool cover = false)
     {
-        ShowInternal(anim);
-        PopupStack.Push(this, cover);
+        ShowInternal(null, false);
+        PopupManager.Push(this, cover);
     }
 
-    public void ShowRaw() => ShowInternal(BoxAnimationFactory.Get(animationType));
-    public void ShowRaw(IShowAnimation anim) => ShowInternal(anim);
+    public void ShowDetached() => ShowInternal(null, true);
 
-    private void ShowInternal(IShowAnimation anim)
+    public void ShowDetached(SlideSide from) => ShowInternal(from, true);
+
+    public void Close() => CloseInternal(null, true);
+
+    public void CloseDetached(SlideSide to) => CloseInternal(to, false);
+
+    private void ShowInternal(SlideSide? side, bool detached)
     {
-        _activeAnim = anim;
         InitState();
-        KillCurrentTween();
+        CancelPeek();
+
+        PopupManager.Attach(transform, detached);
         transform.SetAsLastSibling();
 
-        SceneUtils.ExecuteInScene(SceneName.GAME_PLAY, () =>
-       {
-           if (!_postedOpen)
-           {
-               _postedOpen = true;
-               this.PostEvent(EventID.POPUP_OPENED);
-           }
-       });
-        currentTween = anim.PlayShow(mainPanel, canvasGroup, durationAppeared);
+        if (!_postedOpen)
+        {
+            _postedOpen = true;
+            PostPopupEvent(EventID.POPUP_OPENED);
+        }
+
+        RunShow(side).Forget();
     }
 
-    public void Close() => CloseInternal(_activeAnim ?? BoxAnimationFactory.Get(animationType), true);
-    public void CloseRaw(IShowAnimation anim) => CloseInternal(anim, false);
-
-    private void CloseInternal(IShowAnimation anim, bool notifyStack)
+    private void CloseInternal(SlideSide? side, bool notifyStack)
     {
-        KillCurrentTween();
-        if (_postedOpen) { _postedOpen = false; this.PostEvent(EventID.POPUP_CLOSED); }
+        if (_postedOpen)
+        {
+            _postedOpen = false;
+            PostPopupEvent(EventID.POPUP_CLOSED);
+        }
 
-        currentTween = anim.PlayClose(mainPanel, canvasGroup, durationAppeared);
-        if (currentTween != null)
-            currentTween.OnComplete(() => FinishClose(notifyStack));
-        else
-            FinishClose(notifyStack);
+        CancelPeek();
+        RunClose(side, notifyStack).Forget();
+    }
+
+    private async Awaitable RunShow(SlideSide? side)
+    {
+        await PlayShow(side, RestartAnim());
+    }
+
+    private async Awaitable RunClose(SlideSide? side, bool notifyStack)
+    {
+        CancellationToken token = RestartAnim();
+
+        try { await PlayHide(side, token); }
+        catch (OperationCanceledException) { return; }
+
+        if (token.IsCancellationRequested) return;
+        FinishClose(notifyStack);
+    }
+
+    private Awaitable PlayShow(SlideSide? side, CancellationToken token)
+    {
+        float duration = Setting.animDuration;
+
+        if (side.HasValue)
+            return PopupAnims.SlideShow(mainPanel, canvasGroup, side.Value, duration, token);
+
+        if (this is IPopupSlide)
+            return PopupAnims.SlideShow(mainPanel, canvasGroup, SlideSide.Right, duration, token);
+
+        if (this is IPopupScale)
+            return PopupAnims.ScaleShow(mainPanel, canvasGroup, duration, token);
+
+        return PopupAnims.Instant(mainPanel, canvasGroup, true);
+    }
+
+    private Awaitable PlayHide(SlideSide? side, CancellationToken token)
+    {
+        float duration = Setting.animDuration;
+
+        if (side.HasValue)
+            return PopupAnims.SlideHide(mainPanel, canvasGroup, side.Value, duration, token);
+
+        if (this is IPopupSlide)
+            return PopupAnims.SlideHide(mainPanel, canvasGroup, SlideSide.Right, duration, token);
+
+        if (this is IPopupScale)
+            return PopupAnims.ScaleHide(mainPanel, canvasGroup, duration, token);
+
+        return PopupAnims.Instant(mainPanel, canvasGroup, false);
     }
 
     private void FinishClose(bool notifyStack)
@@ -140,40 +154,99 @@ public abstract class BaseBox<T> : MonoBehaviour, IPopupBox where T : BaseBox<T>
 
         if (notifyStack)
         {
-            var toResume = PopupStack.Pop(this);
-            if (toResume is UnityEngine.Object o && o != null) toResume.Resume();
-            PopupStack.RefreshBackdrop(PopupStack.IsEmpty);
+            BaseBox toResume = PopupManager.Pop(this);
+            if (toResume != null) toResume.Resume();
+            PopupManager.RefreshBackdrop(PopupManager.IsEmpty);
         }
 
         InvokeOnClosed();
     }
 
-    void IPopupBox.Suspend()
+    // ========== STACK ==========
+    internal void Suspend()
     {
-        KillCurrentTween();
-        ForceHide();
+        CancelAnim();
+        CancelPeek();
+        canvasGroup.SetCanvasState(false, 0f);
     }
 
-    void IPopupBox.Resume()
+    internal void Resume()
     {
-        KillCurrentTween();
         transform.SetAsLastSibling();
-        var anim = _activeAnim ?? BoxAnimationFactory.Get(animationType);
-        currentTween = anim.PlayShow(mainPanel, canvasGroup, durationAppeared);
+        RunShow(null).Forget();
     }
+
+    // ========== BACKDROP INPUT ==========
+    internal void OnBackdropPress()
+    {
+        if (Setting.peekOnBackdropHold) SetPeek(true);
+    }
+
+    internal void OnBackdropRelease()
+    {
+        if (Setting.peekOnBackdropHold) SetPeek(false);
+    }
+
+    internal void OnBackdropClick()
+    {
+        if (Setting.peekOnBackdropHold || !Setting.closeOnBackdropClick) return;
+        Close();
+    }
+
+    // ========== PEEK ==========
+    private void SetPeek(bool on)
+    {
+        KillPeekTween();
+        _peekFactor = on ? 0f : 1f;
+        _peekTween = canvasGroup.DOFade(_peekFactor, Setting.peekFadeDuration).SetUpdate(true);
+
+        PopupManager.RefreshBackdrop(true);
+    }
+
+    private void CancelPeek()
+    {
+        KillPeekTween();
+        if (_peekFactor >= 1f) return;
+
+        _peekFactor = 1f;
+        canvasGroup.alpha = 1f;
+    }
+
+    private void KillPeekTween()
+    {
+        _peekTween?.Kill();
+        _peekTween = null;
+    }
+
+    // ========== HELPERS ==========
+    private CancellationToken RestartAnim()
+    {
+        CancelAnim();
+        _animCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+        return _animCts.Token;
+    }
+
+    private void CancelAnim()
+    {
+        if (_animCts == null) return;
+
+        _animCts.Cancel();
+        _animCts.Dispose();
+        _animCts = null;
+    }
+
+    private void PostPopupEvent(EventID id)
+    {
+        if (!EventDispatcher.EventDispatcher.HasInstance()) return;
+        if (!EventDispatcher.EventDispatcher.Instance.HasListener(id)) return;
+
+        this.PostEvent(id);
+    }
+
     private void InvokeOnClosed()
     {
         var cb = OnClosed;
         OnClosed = null;
         cb?.Invoke();
-    }
-
-    // ========== HELPERS ==========
-    private void ForceHide() => canvasGroup.SetCanvasState(false, 0f);
-
-    private void KillCurrentTween()
-    {
-        currentTween?.Kill();
-        currentTween = null;
     }
 }

@@ -1,9 +1,8 @@
 using System.Collections.Generic;
-using EventDispatcher;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyBox : BaseBox<LobbyBox>
+public class LobbyBox : BaseBox, IPopupSlide
 {
     [Header("Level Nodes")]
     [SerializeField] private List<LevelNode> levelNodes;
@@ -23,33 +22,19 @@ public class LobbyBox : BaseBox<LobbyBox>
 
     protected override void Init()
     {
-        var holder = LobbyController.Instance.topCanvas;
-        btnSetting.OnClicked(delegate { SettingLobbyBox.Setup(holder, box => box.Show()).Forget(); });
-        btnAvatar.OnClicked(delegate { AvatarBox.Setup(holder, box => box.Show()).Forget(); });
-        btnNoAds.OnClicked(delegate { NoAdsBox.Setup(holder, box => box.Show()).Forget(); });
-        btnPlay.OnClicked(delegate { FXManager.Instance.LoadSceneWithIrisWipe(SceneName.GAME_PLAY); });
-
-        this.RegisterListener(EventID.CHANGE_AVATAR, OnAvatarChanged);
-
-        RefreshLevels();
-        RefreshAvatar();
+        btnSetting.OnClicked(delegate { PopupManager.Show<SettingLobbyBox>().Forget(); });
+        btnAvatar.OnClicked(delegate { PopupManager.Show<AvatarBox>().Forget(); });
+        btnNoAds.OnClicked(delegate { PopupManager.Show<NoAdsBox>().Forget(); });
     }
 
     protected override void InitState()
     {
     }
 
-    private void OnAvatarChanged(object param) => RefreshAvatar();
+    public void SetAvatar(Sprite sprite) => iconAvatar.sprite = sprite;
 
-    private void RefreshAvatar()
+    public void RefreshLevels(int currentLevel)
     {
-        iconAvatar.sprite = DataRepo.Instance.avatarData.GetSpriteById(UseProfile.AvatarId.Value);
-    }
-
-    private void RefreshLevels()
-    {
-        int currentLevel = UseProfile.Level.Value;
-
         for (int i = 0; i < levelNodes.Count; i++)
         {
             int level = currentLevel + i;
@@ -57,11 +42,5 @@ public class LobbyBox : BaseBox<LobbyBox>
 
             levelNodes[i].Setup(level, isHard, mainHardSprite, lightHardSprite);
         }
-    }
-
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-        this.RemoveListener(EventID.CHANGE_AVATAR, OnAvatarChanged);
     }
 }

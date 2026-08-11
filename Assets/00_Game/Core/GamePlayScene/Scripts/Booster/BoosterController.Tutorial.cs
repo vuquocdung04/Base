@@ -24,7 +24,7 @@ public partial class BoosterController
 
         if (target != null)
         {
-            BoosterUnlockBox.Setup(GameScene.GetPopupHolder(), box => box.Show()).Forget();
+            PopupManager.Show<BoosterUnlockBox>().Forget();
         }
     }
 

@@ -1578,6 +1578,7 @@ GameObject:
   - component: {fileID: 6881634437561930951}
   - component: {fileID: 2180378118011838064}
   - component: {fileID: 8983863743037580359}
+  - component: {fileID: 1549272947809995014}
   m_Layer: 5
   m_Name: LoseBox
   m_TagString: Untagged
@@ -1673,10 +1674,30 @@ MonoBehaviour:
   mainPanel: {fileID: 7619692336919603347}
   canvasGroup: {fileID: 2080593487363625506}
   durationAppeared: 0.3
-  animationType: 0
+  defaultAnim: {fileID: 1549272947809995014}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   btnClose: {fileID: 6866787214894946638}
   btnCloseByPanel: {fileID: 7715428641427821496}
   btnRetry: {fileID: 8017786689903238524}
+--- !u!114 &1549272947809995014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7651317912290111151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bb9e892316e4648a9fc1daff5135b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScalePopupAnimation
+  showEase: 27
+  hideEase: 26
+  hideDurationScale: 0.8
 --- !u!1 &8914897908858909984
 GameObject:
   m_ObjectHideFlags: 0

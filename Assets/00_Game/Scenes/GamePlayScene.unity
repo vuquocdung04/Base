@@ -2729,7 +2729,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1130834625
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3132,11 +3132,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ecd460d98cfdad4ba5626a97209b7b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popupHolder: {fileID: 2124169858}
   darkPanel: {fileID: 482042480}
   txtLevelDisplay: {fileID: 823680857}
   btnSetting: {fileID: 2076153895}
   btnCoin: {fileID: 963171531}
+--- !u!1 &1315474113
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1315474114}
+  - component: {fileID: 1315474115}
+  m_Layer: 0
+  m_Name: PopupManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1315474114
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315474113}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.91516, y: 0, z: 41.22823}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1315474115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315474113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 883f557e88128ab4fb835e76ff11ace3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PopupManager
+  dontDestroyOnLoad: 0
+  popupRoot: {fileID: 2124169858}
+  screenRoot: {fileID: 0}
+  backdrop: {fileID: 1130834628}
+  catalog: {fileID: 11400000, guid: c2e2ed02b4cc47a41834f76f86de60b8, type: 2}
 --- !u!1 &1316276017
 GameObject:
   m_ObjectHideFlags: 0
@@ -5911,3 +5959,4 @@ SceneRoots:
   - {fileID: 1440776041}
   - {fileID: 1316276018}
   - {fileID: 468020606}
+  - {fileID: 1315474114}

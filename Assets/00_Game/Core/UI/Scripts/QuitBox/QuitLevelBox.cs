@@ -1,12 +1,10 @@
 using TMPro;
-using UnityEngine;
 using UnityEngine.UI;
 
-public class QuitLevelBox : BaseBox<QuitLevelBox>
+public class QuitLevelBox : BaseBox, IPopupScale
 {
     public enum Mode { Leave, Restart }
 
-    public Button btnClose;
     public Button btnLeave;
     public Button btnRestart;
     public TextMeshProUGUI txtTitle;
@@ -15,17 +13,6 @@ public class QuitLevelBox : BaseBox<QuitLevelBox>
 
     protected override void Init()
     {
-        btnClose.OnClicked(Close);
-
-        btnRestart.OnClicked(delegate
-        {
-            FXManager.Instance.LoadSceneWithIrisWipe(SceneName.GAME_PLAY);
-        });
-
-        btnLeave.OnClicked(delegate
-        {
-            FXManager.Instance.LoadSceneWithIrisWipe(SceneName.LOBBY_SCENE);
-        });
     }
 
     protected override void InitState()
@@ -33,11 +20,7 @@ public class QuitLevelBox : BaseBox<QuitLevelBox>
         Refresh();
     }
 
-    public void SetupAndShow(Mode mode, bool cover = false)
-    {
-        _mode = mode;
-        Show(cover);
-    }
+    public void SetMode(Mode mode) => _mode = mode;
 
     private void Refresh()
     {

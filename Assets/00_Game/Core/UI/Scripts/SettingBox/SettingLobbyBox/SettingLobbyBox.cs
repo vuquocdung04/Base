@@ -1,11 +1,3 @@
-using UnityEngine.UI;
-
-public class SettingLobbyBox : SettingBaseBox<SettingLobbyBox>
+public class SettingLobbyBox : SettingBaseBox
 {
-    public Button btnCloseByPanel;
-
-    protected override void OnInit()
-    {
-        btnCloseByPanel.OnClicked(Close);
-    }
 }

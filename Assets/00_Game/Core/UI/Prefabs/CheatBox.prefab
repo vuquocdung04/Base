@@ -151,6 +151,7 @@ GameObject:
   - component: {fileID: 2216578210201357631}
   - component: {fileID: 3619407270845339118}
   - component: {fileID: 903025107655197078}
+  - component: {fileID: 3311677495273421964}
   m_Layer: 5
   m_Name: CheatBox
   m_TagString: Untagged
@@ -246,7 +247,12 @@ MonoBehaviour:
   mainPanel: {fileID: 3194477308490396298}
   canvasGroup: {fileID: 3264978952852454238}
   durationAppeared: 0.3
-  animationType: 0
+  defaultAnim: {fileID: 3311677495273421964}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   btnClose: {fileID: 2542530796686290052}
   btnNextLevel: {fileID: 8390354990516858728}
   inputNextLevel: {fileID: 6908088679344854232}
@@ -254,6 +260,21 @@ MonoBehaviour:
   btnLose: {fileID: 8303012625586926019}
   btnBuffCoin: {fileID: 2935973492678230824}
   inputBuffCoin: {fileID: 6373785875995250033}
+--- !u!114 &3311677495273421964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 433820372899603395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bb9e892316e4648a9fc1daff5135b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScalePopupAnimation
+  showEase: 27
+  hideEase: 26
+  hideDurationScale: 0.8
 --- !u!1 &665677256628469463
 GameObject:
   m_ObjectHideFlags: 0

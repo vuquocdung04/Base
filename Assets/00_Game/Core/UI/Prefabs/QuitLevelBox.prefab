@@ -108,10 +108,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::QuitLevelBox
   mainPanel: {fileID: 4402634090481958847}
   canvasGroup: {fileID: 6045282736641985721}
-  durationAppeared: 0.3
-  animationType: 0
-  backdropAlpha: 0.95
-  btnClose: {fileID: 4768376623293621173}
+  closeButtons:
+  - {fileID: 4768376623293621173}
   btnLeave: {fileID: 8443481527710370553}
   btnRestart: {fileID: 2908108077704257087}
   txtTitle: {fileID: 2372772386916346395}

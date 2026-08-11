@@ -13,18 +13,11 @@ public partial class GameFlow
                 
                 break;
             case GameState.Win:
-
-                WinBox.Setup(popupHolder, box =>
-                    {
-                        box.Show();
-                    }).Forget();
+                PopupManager.Show<WinBox>().Forget();
                 AudioManager.Instance.PlaySfx("sfx-Win");
                 break;
             case GameState.Lose:
-                LoseBox.Setup(popupHolder, box =>
-                    {
-                        box.Show();
-                    }).Forget();
+                PopupManager.Show<LoseBox>().Forget();
                 AudioManager.Instance.PlaySfx("sfx-Lose");
                 break;
             case GameState.BoosterActive:

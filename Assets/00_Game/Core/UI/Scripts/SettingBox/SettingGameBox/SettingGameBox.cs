@@ -1,6 +1,6 @@
 using UnityEngine.UI;
 
-public class SettingGameBox : SettingBaseBox<SettingGameBox>
+public class SettingGameBox : SettingBaseBox
 {
     public Button btnReturnHome;
     public Button btnRestart;
@@ -9,12 +9,12 @@ public class SettingGameBox : SettingBaseBox<SettingGameBox>
     protected override void OnInit()
     {
         btnReturnHome.OnClicked(() =>
-            QuitLevelBox.Setup(transform.parent, box => box.SetupAndShow(QuitLevelBox.Mode.Leave, true)).Forget());
+            PopupManager.Show<QuitLevelBox>(box => box.SetMode(QuitLevelBox.Mode.Leave), cover: true).Forget());
 
         btnRestart.OnClicked(() =>
-            QuitLevelBox.Setup(transform.parent, box => box.SetupAndShow(QuitLevelBox.Mode.Restart, true)).Forget());
+            PopupManager.Show<QuitLevelBox>(box => box.SetMode(QuitLevelBox.Mode.Restart), cover: true).Forget());
 
         btnCheat.OnClicked(() =>
-            CheatBox.Setup(transform.parent, box => box.Show()).Forget());
+            PopupManager.Show<CheatBox>().Forget());
     }
 }

@@ -4180,6 +4180,7 @@ GameObject:
   - component: {fileID: 3949134293873837890}
   - component: {fileID: 4253637944294287318}
   - component: {fileID: 9009709743269236082}
+  - component: {fileID: 3944279032366136556}
   m_Layer: 5
   m_Name: LobbyBox
   m_TagString: Untagged
@@ -4257,7 +4258,12 @@ MonoBehaviour:
   mainPanel: {fileID: 653043003057881228}
   canvasGroup: {fileID: 4940294620149877067}
   durationAppeared: 0.3
-  animationType: 1
+  defaultAnim: {fileID: 0}
+  backdropAlpha: 0.95
+  closeOnBackdropClick: 0
+  peekOnBackdropHold: 0
+  peekFadeDuration: 0.15
+  legacyAnimationType: -2
   levelNodes:
   - {fileID: 9122037055096906304}
   - {fileID: 1254447596175291767}
@@ -4287,6 +4293,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 55
+--- !u!114 &3944279032366136556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8912732291885172810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5af260790eddff42b97433af1eeae4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlidePopupAnimation
+  defaultShowFrom: 1
+  defaultHideTo: 1
+  ease: 9
 --- !u!1 &9097167733516049789
 GameObject:
   m_ObjectHideFlags: 0

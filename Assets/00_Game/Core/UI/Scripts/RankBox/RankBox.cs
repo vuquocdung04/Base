@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RankBox : BaseBox<RankBox>
+public class RankBox : BaseBox, IPopupSlide
 {
     protected override void Init()
     {
