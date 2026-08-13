@@ -6,11 +6,14 @@ public partial class GameFlow
     {
         switch (state)
         {
+            case GameState.Intro:
+
+                break;
             case GameState.Playing:
-                
+
                 break;
             case GameState.Paused:
-                
+
                 break;
             case GameState.Win:
                 PopupManager.Show<WinBox>().Forget();
@@ -33,6 +36,8 @@ public partial class GameFlow
     {
         switch (state)
         {
+            case GameState.Intro:
+                break;
             case GameState.Playing:
                 break;
             case GameState.Paused:

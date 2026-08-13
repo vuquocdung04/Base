@@ -5,7 +5,6 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private DataRepo dataRepo;
     [SerializeField] private FXManager fxManager;
     [SerializeField] private AudioManager audioManager;
-    public LocalizationManager localizationManager;
     public HeartManager heartManager;
     public CurrencyManager currencyManager;
     [SerializeField] private LoadingBox loadingBox;

@@ -4,12 +4,19 @@ using UnityEngine;
 
 public class GamePlayController : Singleton<GamePlayController>
 {
+    [Header("Testing")]
+    [SerializeField] private bool testing;
+    [SerializeField] private int currentLevel = 1;
+
+    [Header("Refs")]
     public Camera cameraUI;
     public Camera cameraGameplay;
     public GameScene gameScene;
-    public BoosterController boosterController;
-    public HandAnimation handAnimation;
     public GameFlow gameFlow;
+    public GameIntro gameIntro;
+
+    public bool Testing => testing;
+    public int CurrentLevel => testing ? currentLevel : UseProfile.Level;
 
     protected override void OnAwake()
     {
@@ -22,25 +29,18 @@ public class GamePlayController : Singleton<GamePlayController>
     private void InitInstances()
     {
         gameScene.InitInstance();
-        handAnimation.InitInstance();
-        boosterController.InitInstance();
         gameFlow.InitInstance();
+        gameIntro.InitInstance();
     }
 
     private async Awaitable Init()
     {
-        gameScene.Init();
-        handAnimation.Init();
-        boosterController.Init();
         gameFlow.Init();
-        gameFlow.RequestPause();
+        gameScene.Init();
+        gameIntro.Init();
 
-        AudioManager.Instance.PlayMusic("Normal Level Music (Cover) 1");
+        //AudioManager.Instance.PlayMusic("Normal Level Music (Cover) 1");
 
-        await Awaitable.EndOfFrameAsync(destroyCancellationToken);
-        await Awaitable.WaitForSecondsAsync(0.5f, destroyCancellationToken);
-        FXManager.Instance.isNextSceneReady = true;
-        await Awaitable.WaitForSecondsAsync(0.5f, destroyCancellationToken);
-        gameFlow.RequestResume();
+        await gameFlow.RunBootAsync();
     }
 }

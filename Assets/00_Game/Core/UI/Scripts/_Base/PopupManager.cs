@@ -196,6 +196,14 @@ public class PopupManager : Singleton<PopupManager>
         return covered != null ? covered : null;
     }
 
+    internal static void HideBackdrop()
+    {
+        PopupManager m = Instance;
+        if (m == null || m.backdrop == null) return;
+
+        m.backdrop.HideBackdrop(true);
+    }
+
     internal static void RefreshBackdrop(bool fade)
     {
         PopupManager m = Instance;

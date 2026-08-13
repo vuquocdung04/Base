@@ -5,12 +5,13 @@ using UnityEngine;
 
 public enum GameState
 {
-    Playing = 0,
-    Paused = 1,
-    Win = 2,
-    Lose = 3,
+    Intro = 0,
+    Tutorial = 1,
+    Playing = 2,
+    Paused = 3,
     BoosterActive = 4,
-    Tutorial = 5
+    Win = 5,
+    Lose = 6
 }
 
 public partial class GameFlow : InitSingleton<GameFlow>
@@ -41,6 +42,44 @@ public partial class GameFlow : InitSingleton<GameFlow>
         this.RemoveListener(EventID.POPUP_CLOSED, OnPopupClosed);
     }
 
+    public async Awaitable RunBootAsync()
+    {
+        EnterInitial(GameState.Intro);
+
+        await Awaitable.EndOfFrameAsync(destroyCancellationToken);
+
+        FXManager fxManager = FXManager.Instance;
+        if (fxManager != null)
+        {
+            fxManager.isNextSceneReady = true;
+            await Awaitable.WaitForSecondsAsync(fxManager.transitionDurationIn, destroyCancellationToken);
+        }
+
+        await GameIntro.Instance.PlayPrev();
+        await GameIntro.Instance.PlayPlaying();
+
+        await CheckTutorial();
+
+        ChangeState(GameState.Playing);
+    }
+
+    private async Awaitable CheckTutorial()
+    {
+        //Note: hien moi co tutorial booster. Sau nay gom them tutorial level/obstacle/feature vao day,
+        //Note: chay lan luot va cho xong het roi moi ChangeState(Playing).
+        if (!BoosterController.Instance.HasTutorial) return;
+
+        ChangeState(GameState.Tutorial);
+
+        await BoosterController.Instance.ShowTutorialAsync();
+    }
+
+    private void EnterInitial(GameState state)
+    {
+        CurrentState = state;
+        OnStateEntered?.Invoke(state);
+    }
+
     public bool ChangeState(GameState next)
     {
         if (CurrentState == next) return false;
@@ -56,6 +95,9 @@ public partial class GameFlow : InitSingleton<GameFlow>
     {
         switch (from)
         {
+            case GameState.Intro:
+                return to == GameState.Tutorial || to == GameState.Playing;
+
             case GameState.Playing: return true;
 
             case GameState.Paused:
@@ -81,7 +123,7 @@ public partial class GameFlow : InitSingleton<GameFlow>
     public void RequestPause()
     {
         pauseRequest++;
-        if (pauseRequest == 1) ChangeState(GameState.Paused);
+        if (pauseRequest == 1 && CurrentState == GameState.Playing) ChangeState(GameState.Paused);
     }
 
     public void RequestResume()

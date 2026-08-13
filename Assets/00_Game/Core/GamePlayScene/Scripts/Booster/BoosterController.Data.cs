@@ -12,17 +12,25 @@ public partial class BoosterController
         public BoosterItem item;
         public int levelUnlock;
         public int quantity;
+        public bool doneTutorial;
     }
 
     [TableList(AlwaysExpanded = true, DrawScrollView = false)]
     [SerializeField] private List<BoosterConfig> boosters = new();
 
-    private int CurrentLevel => UseProfile.Level;
+    [Header("Tutorial")]
+    [SerializeField] private string tutorialSortingLayer = "UI";
+    [SerializeField] private int tutorialSortingOrder = 100;
+
+    private int CurrentLevel => GamePlayController.Instance.CurrentLevel;
+    private bool Testing => GamePlayController.Instance.Testing;
 
     public int Count => boosters.Count;
 
-    public BoosterItem GetItem(int index)
-        => index >= 0 && index < boosters.Count ? boosters[index].item : null;
+    public BoosterItem GetItem(int index) => ConfigOf(index)?.item;
+
+    private BoosterConfig ConfigOf(int index)
+        => index >= 0 && index < boosters.Count ? boosters[index] : null;
 
     private int IndexOf(BoosterItem item)
     {
@@ -35,6 +43,8 @@ public partial class BoosterController
 
     private void SeedData()
     {
+        if (Testing) return;
+
         for (int i = 0; i < boosters.Count; i++)
         {
             if (BoosterData.Has(i)) continue;
@@ -54,7 +64,13 @@ public partial class BoosterController
         }
     }
 
-    public int GetQuantity(int index) => BoosterData.Get(index).Amount;
+    public int GetQuantity(int index)
+    {
+        BoosterConfig config = ConfigOf(index);
+        if (config == null) return 0;
+
+        return Testing ? config.quantity : BoosterData.Get(index).Amount;
+    }
 
     public void AddQuantity(int index, int amount) => SetQuantity(index, GetQuantity(index) + amount);
 
@@ -62,17 +78,42 @@ public partial class BoosterController
 
     private void SetQuantity(int index, int amount)
     {
-        BoosterData.Get(index).Amount = Mathf.Max(0, amount);
-        BoosterData.Save();
+        BoosterConfig config = ConfigOf(index);
+        if (config == null) return;
 
-        GetItem(index)?.SetQuantity(GetQuantity(index));
+        amount = Mathf.Max(0, amount);
+
+        if (Testing)
+        {
+            config.quantity = amount;
+        }
+        else
+        {
+            BoosterData.Get(index).Amount = amount;
+            BoosterData.Save();
+        }
+
+        config.item?.SetQuantity(amount);
     }
 
-    private bool IsTutorialDone(int index) => BoosterData.Get(index).TutorialDone;
+    private bool IsTutorialDone(int index)
+    {
+        BoosterConfig config = ConfigOf(index);
+        if (config == null) return true;
+
+        return Testing ? config.doneTutorial : BoosterData.Get(index).TutorialDone;
+    }
 
     private void SetTutorialDone(int index)
     {
-        if (IsTutorialDone(index)) return;
+        BoosterConfig config = ConfigOf(index);
+        if (config == null || IsTutorialDone(index)) return;
+
+        if (Testing)
+        {
+            config.doneTutorial = true;
+            return;
+        }
 
         BoosterData.Get(index).TutorialDone = true;
         BoosterData.Save();

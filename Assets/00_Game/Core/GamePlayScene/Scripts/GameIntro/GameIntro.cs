@@ -2,17 +2,13 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public class GameIntro : MonoBehaviour
+public class GameIntro : InitSingleton<GameIntro>
 {
-    public static GameIntro Instance { get; private set; }
-
-    public void InitInstance() => Instance = this;
-
     [SerializeField] private GameIntroConfig config;
     [SerializeField] private List<MonoBehaviour> introSteps;
     [SerializeField] private bool playIntro = true;
 
-    public void Init()
+    public override void Init()
     {
         if (!playIntro) return;
 
@@ -20,7 +16,7 @@ public class GameIntro : MonoBehaviour
             ((IIntroStep)step).Prepare(config);
     }
 
-    public async Awaitable PlayIntro()
+    public async Awaitable PlayPrev()
     {
         if (!playIntro) return;
 
@@ -28,11 +24,18 @@ public class GameIntro : MonoBehaviour
             await ((IIntroStep)step).Play(config);
     }
 
+    public Awaitable PlayPlaying()
+    {
+        //Note: doan intro chuyen vao trang thai choi (camera ve vi tri gameplay, UI bay vao...).
+        //Note: chua xu ly, tra ve Awaitable da hoan tat de GameFlow chay tiep.
+        return AwaitableEx.CompletedAwaitable();
+    }
+
     [Button("Test All Intro")]
     private void TestAllIntro()
     {
         Init();
-        PlayIntro().Forget();
+        PlayPrev().Forget();
     }
 
     [Button("Auto Collect Intro Steps")]

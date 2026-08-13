@@ -1,4 +1,5 @@
 using EventDispatcher;
+using UnityEngine;
 
 public partial class BoosterController : InitSingleton<BoosterController>
 {
@@ -7,8 +8,6 @@ public partial class BoosterController : InitSingleton<BoosterController>
         SeedData();
         ApplyConfigToItems();
         BindItems(true);
-
-        ShowTutorialIfAny();
     }
 
     protected override void OnDestroy()
@@ -41,17 +40,44 @@ public partial class BoosterController : InitSingleton<BoosterController>
         int index = IndexOf(item);
         if (index < 0) return;
 
+        if (item.IsTutorial)
+        {
+            item.SetTutorial(false);
+            GameScene.EnableDarkPanel(false);
+        }
+
         SetTutorialDone(index);
         Consume(index);
 
         this.PostEvent(EventID.BOOSTER_USED, index);
     }
 
-    private void ShowTutorialIfAny()
-    {
-        if (FindTutorialIndex() < 0) return;
+    public bool HasTutorial => FindTutorialIndex() >= 0;
 
-        PopupManager.Show<BoosterUnlockBox>().Forget();
+    public async Awaitable ShowTutorialAsync()
+    {
+        int index = FindTutorialIndex();
+        if (index < 0) return;
+
+        BoosterItem item = GetItem(index);
+        if (item == null) return;
+
+        bool jumped = false;
+
+        await PopupManager.Show<BoosterUnlockBox>(box => box.Setup(
+            item.IconSprite,
+            item.IconRect,
+            () => GameScene.EnableWhitePanel(true),
+            () =>
+            {
+                GameScene.EnableDarkPanel(true);
+                GameScene.EnableWhitePanel(false);
+
+                item.SetTutorial(true, tutorialSortingLayer, tutorialSortingOrder);
+                jumped = true;
+            }));
+
+        await AwaitableEx.WaitUntil(() => jumped, destroyCancellationToken);
     }
 
     private int FindTutorialIndex()
