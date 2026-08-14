@@ -34,7 +34,7 @@ public class AudioConfig
     }
 }
 
-[CreateAssetMenu(fileName = "AudioDataBase", menuName = "DATA/AudioDataBase")]
+[CreateAssetMenu(fileName = "AudioDataBase", menuName = "Base/Audio/Audio Database")]
 public class AudioDataBase : ScriptableObject
 {
 #if UNITY_EDITOR

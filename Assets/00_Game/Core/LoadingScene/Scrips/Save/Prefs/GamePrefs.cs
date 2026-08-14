@@ -34,6 +34,8 @@ public static class GamePrefs
         if (keys.Add(key)) SaveIndex();
     }
 
+    public static bool Has(string key) => keys.Contains(key);
+
     public static void Delete(string key)
     {
         cache.Remove(key);

@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public class NormalHeartState : HeartState
 {
@@ -18,29 +17,19 @@ public class NormalHeartState : HeartState
     {
         Owner.RefillOfflineHearts();
 
-        if (UseProfile.Heart <= 0)
-        {
-            Debug.Log("Không còn tim");
-            return false;
-        }
+        if (UseProfile.Heart <= 0) return false;
 
-        bool wasAtMax = UseProfile.Heart == Owner.MaxHearts;
-        UseProfile.Heart -= 1;
-
-        if (wasAtMax)
-            UseProfile.TimeLastOverHeart = TimeManager.GetCurrentTime();
-
+        Owner.SetHearts(UseProfile.Heart - 1);
         return true;
     }
 
-    public override void AddUnlimited(int minutes)
+    public override void AddUnlimited(double minutes)
     {
-        DateTime endTime = TimeManager.GetCurrentTime().AddMinutes(minutes);
         UseProfile.IsUnlimitedHeart = true;
-        UseProfile.TimeUnlimitedHeart = endTime;
+        UseProfile.TimeUnlimitedHeart = TimeManager.GetCurrentTime().AddMinutes(minutes);
 
         Owner.SwitchToUnlimited();
-        Debug.Log($"Kích hoạt {minutes} phút unlimited. Hết hạn: {endTime}");
+        Owner.NotifyChanged();
     }
 
     public override double GetTimeToNextHeart()

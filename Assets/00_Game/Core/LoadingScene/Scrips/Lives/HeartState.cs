@@ -9,7 +9,7 @@ public abstract class HeartState
 
     public abstract void Tick();
     public abstract bool TryUseHeart();
-    public abstract void AddUnlimited(int minutes);
+    public abstract void AddUnlimited(double minutes);
     public abstract double GetTimeToNextHeart();
     public abstract TimeSpan GetUnlimitedTimeRemaining();
 }

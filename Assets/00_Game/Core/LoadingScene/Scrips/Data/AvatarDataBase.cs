@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AvatarDataBase", menuName = "DATA/AvatarDataBase")]
+[CreateAssetMenu(fileName = "AvatarDataBase", menuName = "Base/Avatar/Avatar Database")]
 public class AvatarDataBase : ScriptableObject
 {
     public List<Sprite> avatars;

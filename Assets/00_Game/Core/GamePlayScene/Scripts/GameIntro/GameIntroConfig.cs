@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "GameIntroConfig", menuName = "Data/Game Intro Config")]
+[CreateAssetMenu(fileName = "GameIntroConfig", menuName = "Base/Gameplay/Game Intro Config")]
 public class GameIntroConfig : ScriptableObject
 {
 }

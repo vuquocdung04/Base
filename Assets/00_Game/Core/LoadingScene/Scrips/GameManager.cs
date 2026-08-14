@@ -23,8 +23,7 @@ public class GameManager : Singleton<GameManager>
         Application.targetFrameRate = 60;
         loadingBox.Init();
         var load50Task = loadingBox.LoadingAsync(0.5f, loadingStepDuration);
-        Test();
-        
+
         dataRepo.Init();
         fxManager.Init();
         audioManager.Init(dataRepo);
@@ -37,12 +36,6 @@ public class GameManager : Singleton<GameManager>
         await loadingBox.CloseAsync(loadingFadeOutDuration);
 
         //Init final
-        fxManager.LoadSceneWithIrisWipe(SceneName.GAME_PLAY, isSkipOutPhase);
-    }
-
-    private void Test()
-    {
-        UseProfile.Heart = 4;
-        UseProfile.TimeLastOverHeart = TimeManager.GetCurrentTime();
+        fxManager.LoadSceneWithIrisWipe(DevBoot.ResolveStartScene(SceneName.GAME_PLAY), isSkipOutPhase);
     }
 }

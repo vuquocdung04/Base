@@ -3958,7 +3958,7 @@ MonoBehaviour:
   darkPanel: {fileID: 482042480}
   whitePanel: {fileID: 756360873}
   txtLevelDisplay: {fileID: 823680857}
-  btnSetting: {fileID: 0}
+  btnSetting: {fileID: 2076153895}
   btnCoin: {fileID: 0}
   boosterController: {fileID: 1860653575}
 --- !u!1 &1513039820

@@ -968,7 +968,6 @@ GameObject:
   - component: {fileID: 851819989478665213}
   - component: {fileID: 3296599434781137992}
   - component: {fileID: 6739510901828335931}
-  - component: {fileID: 4066643505536203167}
   m_Layer: 5
   m_Name: MoreLivesBox
   m_TagString: Untagged
@@ -1063,34 +1062,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MoreLivesBox
   mainPanel: {fileID: 434861975337488304}
   canvasGroup: {fileID: 6206740797029960229}
-  durationAppeared: 0.3
-  defaultAnim: {fileID: 4066643505536203167}
-  backdropAlpha: 0.95
-  closeOnBackdropClick: 0
-  peekOnBackdropHold: 0
-  peekFadeDuration: 0.15
-  legacyAnimationType: -2
-  btnClose: {fileID: 8811283943309724249}
+  closeButtons: []
   txtDisplayLives: {fileID: 1223374923339164199}
   txtDisplayCooldownLives: {fileID: 385638600492765945}
   btnRefill: {fileID: 1806704892744670888}
   btnRefillByAds: {fileID: 1553824223634891291}
   txtDisplayCoin: {fileID: 540926923570483508}
---- !u!114 &4066643505536203167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2951302545779820408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58bb9e892316e4648a9fc1daff5135b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ScalePopupAnimation
-  showEase: 27
-  hideEase: 26
-  hideDurationScale: 0.8
 --- !u!1 &3003862799766961218
 GameObject:
   m_ObjectHideFlags: 0

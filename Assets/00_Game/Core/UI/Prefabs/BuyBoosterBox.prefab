@@ -574,7 +574,6 @@ GameObject:
   - component: {fileID: 7965928466078293227}
   - component: {fileID: 8979234699178680897}
   - component: {fileID: 874466169684827314}
-  - component: {fileID: 3170675988914082359}
   m_Layer: 5
   m_Name: BuyBoosterBox
   m_TagString: Untagged
@@ -669,36 +668,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuyBoosterBox
   mainPanel: {fileID: 5770776630486670910}
   canvasGroup: {fileID: 6963217036628337716}
-  durationAppeared: 0.3
-  defaultAnim: {fileID: 3170675988914082359}
-  backdropAlpha: 0.95
-  closeOnBackdropClick: 0
-  peekOnBackdropHold: 0
-  peekFadeDuration: 0.15
-  legacyAnimationType: -2
-  btnClose: {fileID: 4374946237752897237}
+  closeButtons:
+  - {fileID: 4374946237752897237}
   btnBuyByCoin: {fileID: 3192683083648490368}
   txtTitle: {fileID: 7999189482301059390}
   textDes: {fileID: 7222619719908570100}
   txtPrice: {fileID: 556196998417828337}
   icon: {fileID: 6550323466201539808}
-  pricePerBooster: 0
-  amountPerPurchase: 3
---- !u!114 &3170675988914082359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4241740260580517695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58bb9e892316e4648a9fc1daff5135b0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ScalePopupAnimation
-  showEase: 27
-  hideEase: 26
-  hideDurationScale: 0.8
 --- !u!1 &4404241037135136299
 GameObject:
   m_ObjectHideFlags: 0

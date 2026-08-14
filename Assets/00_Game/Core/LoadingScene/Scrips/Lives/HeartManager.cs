@@ -9,13 +9,22 @@ public class HeartManager : MonoBehaviour
 
     public const string FULL_LABEL = "FULL";
 
-    public int MaxHearts { get; private set; }
-    public int RefillMinutes { get; private set; }
-    public double RefillSeconds { get; private set; }
+    public static bool BypassHeartCost { get; set; }
+
+    [SerializeField] private HeartConfig config;
+
+    public HeartConfig Config => config;
+
+    public int MaxHearts => config != null ? config.maxHearts : 5;
+    public double RefillSeconds => config != null ? config.RefillSeconds : 1800d;
 
     public int CurrentHeart => UseProfile.Heart;
     public bool IsUnlimited => UseProfile.IsUnlimitedHeart;
     public bool IsFull => CurrentHeart >= MaxHearts;
+
+    public bool WasFirstPlay { get; private set; }
+    public bool WasComebackReward { get; private set; }
+    public double HoursSinceLastLogin { get; private set; }
 
     private readonly NormalHeartState _normalState = new();
     private readonly UnlimitedHeartState _unlimitedState = new();
@@ -29,17 +38,58 @@ public class HeartManager : MonoBehaviour
         Instance = this;
         this.toastManager = toastManager;
 
-        MaxHearts = 5;
-        RefillMinutes = 30;
-        RefillSeconds = RefillMinutes * 60;
+        EnsureConfig();
+
+        DateTime now = TimeManager.GetCurrentTime();
+
+        WasFirstPlay = !GamePrefs.Has(StringHelper.HEART);
+        WasComebackReward = false;
+        HoursSinceLastLogin = WasFirstPlay ? 0d : (now - UseProfile.LastTimeLogin).TotalHours;
+
+        if (WasFirstPlay)
+        {
+            UseProfile.Heart = config.startHearts;
+            UseProfile.TimeLastOverHeart = now;
+        }
 
         cts?.Dispose();
         cts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
 
-        var startState = UseProfile.IsUnlimitedHeart ? (HeartState)_unlimitedState : _normalState;
-        ChangeState(startState);
+        ChangeState(UseProfile.IsUnlimitedHeart ? (HeartState)_unlimitedState : _normalState);
+
+        GrantSessionBonus();
+        UseProfile.LastTimeLogin = now;
 
         TickLoop(cts.Token).Forget();
+    }
+
+    private void EnsureConfig()
+    {
+        if (config != null) return;
+
+        config = Resources.Load<HeartConfig>(HeartConfig.RESOURCE_PATH);
+        if (config != null) return;
+
+        config = ScriptableObject.CreateInstance<HeartConfig>();
+        Debug.LogWarning($"[HeartManager] Không tìm thấy Resources/{HeartConfig.RESOURCE_PATH}, dùng cấu hình mặc định.");
+    }
+
+    private void GrantSessionBonus()
+    {
+        if (WasFirstPlay)
+        {
+            if (config.grantUnlimitedOnFirstPlay && config.firstPlayUnlimitedMinutes > 0f)
+                TryAddUnlimited(config.firstPlayUnlimitedMinutes);
+
+            return;
+        }
+
+        if (!config.grantUnlimitedOnComeback) return;
+        if (config.comebackThresholdHours <= 0f || config.comebackUnlimitedMinutes <= 0f) return;
+        if (HoursSinceLastLogin < config.comebackThresholdHours) return;
+
+        WasComebackReward = true;
+        TryAddUnlimited(config.comebackUnlimitedMinutes);
     }
 
     private async Awaitable TickLoop(CancellationToken token)
@@ -67,14 +117,32 @@ public class HeartManager : MonoBehaviour
     public void SwitchToNormal() => ChangeState(_normalState);
     public void SwitchToUnlimited() => ChangeState(_unlimitedState);
 
-    public double GetTimeToNextHeart() => _current.GetTimeToNextHeart();
-    public TimeSpan GetUnlimitedTimeRemaining() => _current.GetUnlimitedTimeRemaining();
+    public double GetTimeToNextHeart() => _current != null ? _current.GetTimeToNextHeart() : 0d;
+
+    public double GetTimeToFull()
+    {
+        if (IsUnlimited || IsFull) return 0d;
+
+        int missing = MaxHearts - CurrentHeart;
+        return (missing - 1) * RefillSeconds + GetTimeToNextHeart();
+    }
+
+    public TimeSpan GetUnlimitedTimeRemaining() => _current != null ? _current.GetUnlimitedTimeRemaining() : TimeSpan.Zero;
+
+    public void NotifyChanged()
+    {
+        if (!EventDispatcher.EventDispatcher.HasInstance()) return;
+        if (!EventDispatcher.EventDispatcher.Instance.HasListener(EventID.CHANGE_HEART)) return;
+
+        this.PostEvent(EventID.CHANGE_HEART);
+    }
 
     // ========== PUBLIC API ==========
 
     public bool TryUseHeart()
     {
-        // return true; // ← uncomment để tester không bị trừ heart
+        if (BypassHeartCost) return true;
+
         return _current.TryUseHeart();
     }
 
@@ -92,15 +160,11 @@ public class HeartManager : MonoBehaviour
             return false;
         }
 
-        int newCount = Mathf.Min(CurrentHeart + amount, MaxHearts);
-        UseProfile.Heart =newCount;
+        SetHearts(CurrentHeart + amount);
         return true;
     }
 
-    public void TryAddUnlimited(int minutes)
-    {
-        _current.AddUnlimited(minutes);
-    }
+    public void TryAddUnlimited(double minutes) => _current.AddUnlimited(minutes);
 
     public void TryShowHeartOffer()
     {
@@ -118,10 +182,58 @@ public class HeartManager : MonoBehaviour
 
         PopupManager.Show<MoreLivesBox>().Forget();
     }
+
+    // ========== MUTATION ==========
+
+    public void SetHearts(int value)
+    {
+        int clamped = Mathf.Clamp(value, 0, MaxHearts);
+        if (clamped == UseProfile.Heart) return;
+
+        bool wasFull = IsFull;
+        UseProfile.Heart = clamped;
+
+        if (wasFull && clamped < MaxHearts)
+            UseProfile.TimeLastOverHeart = TimeManager.GetCurrentTime();
+
+        NotifyChanged();
+    }
+
+    public void Refill()
+    {
+        UseProfile.Heart = MaxHearts;
+        UseProfile.TimeLastOverHeart = TimeManager.GetCurrentTime();
+
+        NotifyChanged();
+    }
+
+    public void ClearUnlimited()
+    {
+        DateTime now = TimeManager.GetCurrentTime();
+
+        UseProfile.IsUnlimitedHeart = false;
+        UseProfile.TimeUnlimitedHeart = now.AddDays(-1);
+        UseProfile.TimeLastOverHeart = now;
+
+        SwitchToNormal();
+        NotifyChanged();
+    }
+
+    public static void ClearSave()
+    {
+        GamePrefs.Delete(StringHelper.HEART);
+        GamePrefs.Delete(StringHelper.IS_UNLIMITER_HEART);
+        GamePrefs.Delete(StringHelper.TIME_UNLIMITER_HEART);
+        GamePrefs.Delete(StringHelper.TIME_LAST_OVER_HEART);
+        GamePrefs.Delete(StringHelper.LAST_TIME_LOGIN);
+        GamePrefs.Flush();
+    }
+
     // ========== INTERNAL ==========
 
     public void RefillOfflineHearts()
     {
+        if (IsUnlimited) return;
         if (UseProfile.Heart >= MaxHearts) return;
 
         DateTime now = TimeManager.GetCurrentTime();
@@ -133,15 +245,17 @@ public class HeartManager : MonoBehaviour
         int newCount = UseProfile.Heart + heartsGained;
         if (newCount >= MaxHearts)
         {
-            UseProfile.Heart =MaxHearts;
+            UseProfile.Heart = MaxHearts;
+            UseProfile.TimeLastOverHeart = now;
         }
         else
         {
-            UseProfile.Heart =newCount;
+            UseProfile.Heart = newCount;
             UseProfile.TimeLastOverHeart = UseProfile.TimeLastOverHeart
-                .Add(TimeSpan.FromSeconds(heartsGained * RefillSeconds));
+                .AddSeconds(heartsGained * RefillSeconds);
         }
-        this.PostEvent(EventID.CHANGE_HEART);
+
+        NotifyChanged();
     }
 
     public Cooldown HeartTimer()
