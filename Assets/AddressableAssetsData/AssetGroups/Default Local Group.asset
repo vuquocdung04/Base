@@ -15,13 +15,13 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: fa7283f1faa65574a9582a862323b3f2
   m_SerializeEntries:
-  - m_GUID: 042f1bb66c51d49ffa0c8d457b08b19f
-    m_Address: SettingGameBox
+  - m_GUID: 124ff88eb109547bbb5a78c9acf74ad3
+    m_Address: LobbyBox
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 124ff88eb109547bbb5a78c9acf74ad3
-    m_Address: LobbyBox
+  - m_GUID: 247865d52a6757b4eb3b25808c8a0d83
+    m_Address: SettingGameBox
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

@@ -2265,9 +2265,9 @@ MonoBehaviour:
   transitions:
   - {fileID: 8974919661717978589}
   - {fileID: 2134620786}
-  defaultTransition: 0
-  transitionDurationOut: 1
-  transitionDurationIn: 1
+  defaultTransition: 1
+  transitionDurationOut: 0.25
+  transitionDurationIn: 0.25
   isNextSceneReady: 0
   coinFlyPrefab: {fileID: 2139813145170573173, guid: e20ba0b3d6ece437f95b631a518e062b, type: 3}
   coinCount: 10

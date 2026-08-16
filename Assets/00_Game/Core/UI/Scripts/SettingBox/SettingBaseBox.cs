@@ -2,49 +2,39 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum ESettingMode { OnOff, Slider }
-
 [Serializable]
 public class SettingControl
 {
-    public ESettingMode mode;
-
-    [Header("OnOff")]
     public Button btn;
-    public Image img;
-    public Sprite sprOn, sprOff;
+    public GameObject objOn;
+    public GameObject objOff;
 
-    [Header("Slider")]
-    public Slider slider;
+    private Func<bool> get;
+    private Action<bool> set;
 
-    private Func<float> get;
-    private Action<float> set;
-
-    public void Setup(Func<float> get, Action<float> set)
+    public void Setup(Func<bool> get, Action<bool> set)
     {
         this.get = get;
         this.set = set;
 
-        if (mode == ESettingMode.OnOff)
-            btn.OnClicked(() => Apply(get() > 0 ? 0f : 1f));
-        else
-            slider.onValueChanged.AddListener(Apply);
+        btn.OnClicked(() => Apply(!get()));
 
         Refresh();
     }
 
-    private void Apply(float value)
+    public void Refresh()
+    {
+        if (get == null) return;
+
+        bool isOn = get();
+        objOn.SetActive(isOn);
+        objOff.SetActive(!isOn);
+    }
+
+    private void Apply(bool value)
     {
         set(value);
         Refresh();
-    }
-
-    private void Refresh()
-    {
-        if (mode == ESettingMode.OnOff)
-            img.SetSprite(get() > 0 ? sprOn : sprOff);
-        else
-            slider.SetValueWithoutNotify(get());
     }
 }
 
@@ -59,9 +49,21 @@ public abstract class SettingBaseBox : BaseBox, IPopupScale
     public SettingControl Music => music;
     public SettingControl Vib => vib;
 
-    protected sealed override void Init() => OnInit();
+    protected sealed override void Init()
+    {
+        sound.Setup(() => UseProfile.OnSound, value => AudioManager.Instance.SetSound(value));
+        music.Setup(() => UseProfile.OnMusic, value => AudioManager.Instance.SetMusic(value));
+        vib.Setup(() => UseProfile.OnVib, value => UseProfile.OnVib = value);
 
-    protected override void InitState() { }
+        OnInit();
+    }
+
+    protected override void InitState()
+    {
+        sound.Refresh();
+        music.Refresh();
+        vib.Refresh();
+    }
 
     protected virtual void OnInit() { }
 }
