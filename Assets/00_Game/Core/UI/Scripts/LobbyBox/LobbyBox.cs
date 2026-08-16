@@ -1,21 +1,19 @@
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LobbyBox : BaseBox, IPopupSlide
 {
-    [Header("Level Nodes")]
-    [SerializeField] private List<LevelNode> levelNodes;
-
-    [Header("Sprites")]
-    [SerializeField] private Sprite mainHardSprite;
-    [SerializeField] private Sprite lightHardSprite;
+    [Header("Level")]
+    [SerializeField] private TextMeshProUGUI txtLevel;
 
     [Header("Buttons")]
     public Button btnSetting;
     public Button btnAvatar;
     public Button btnNoAds;
     public Button btnPlay;
+    public Button btnHeart;
+    public Button btnCoin;
 
     [Header("Avatar")]
     public Image iconAvatar;
@@ -24,23 +22,15 @@ public class LobbyBox : BaseBox, IPopupSlide
     {
         btnSetting.OnClicked(delegate { PopupManager.Show<SettingLobbyBox>().Forget(); });
         btnAvatar.OnClicked(delegate { PopupManager.Show<AvatarBox>().Forget(); });
-        btnNoAds.OnClicked(delegate { PopupManager.Show<NoAdsBox>().Forget(); });
+        //btnNoAds.OnClicked(delegate { PopupManager.Show<NoAdsBox>().Forget(); });
+        btnHeart.OnClicked(delegate { HeartManager.Instance.TryShowHeartOffer(); });
+        btnCoin.OnClicked(delegate { NavController.Instance.NavigateTo(0); });
     }
 
     protected override void InitState()
     {
+        txtLevel.text = $"Level {UseProfile.Level}";
     }
 
     public void SetAvatar(Sprite sprite) => iconAvatar.sprite = sprite;
-
-    public void RefreshLevels(int currentLevel)
-    {
-        for (int i = 0; i < levelNodes.Count; i++)
-        {
-            int level = currentLevel + i;
-            bool isHard = level % 3 == 0;
-
-            levelNodes[i].Setup(level, isHard, mainHardSprite, lightHardSprite);
-        }
-    }
 }

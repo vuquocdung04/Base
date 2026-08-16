@@ -85,6 +85,12 @@ MonoBehaviour:
     closeOnBackdropClick: 0
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15
+  - typeName: RewardBox
+    animDuration: 0.3
+    backdropAlpha: 0.95
+    closeOnBackdropClick: 0
+    peekOnBackdropHold: 0
+    peekFadeDuration: 0.15
   - typeName: SettingGameBox
     animDuration: 0.15
     backdropAlpha: 0.95

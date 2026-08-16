@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LobbyScene : MonoBehaviour
 {
@@ -14,9 +13,6 @@ public class LobbyScene : MonoBehaviour
     };
 
     public NavController navController;
-    public Button btnHeart;
-
-    public Button btnCoin;
 
     private void OnDestroy()
     {
@@ -30,15 +26,6 @@ public class LobbyScene : MonoBehaviour
         navController.Init();
 
         await PreLoad();
-
-        btnHeart.OnClicked(delegate
-        {
-            HeartManager.Instance.TryShowHeartOffer();
-        });
-        btnCoin.OnClicked(delegate
-        {
-            navController.NavigateTo(0);
-        });
     }
 
     private static async Awaitable PreLoad()

@@ -80,6 +80,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab13843898a548f408c3264ff624b605
+    m_Address: RewardBox
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ad9fa8a04286a452d954169b3892e83d
     m_Address: MoreLivesBox
     m_ReadOnly: 0
