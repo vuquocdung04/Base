@@ -11,15 +11,16 @@ public class AudioManager : MonoBehaviour
     public GameObject sfxPrefab;
     public float sfxSpamCooldown = 0.08f;
 
-    private List<AudioDataBase> audioDataBases;
+    [Header("Data")]
+    [SerializeField] private List<AudioDataBase> audioDataList;
+
     private Dictionary<string, AudioConfig> audioLookup;
     private Dictionary<string, float> lastPlayTimes = new();
     private float currentSfxVolume = 1f;
 
-    public void Init(DataRepo dataRepo)
+    public void Init()
     {
         Instance = this;
-        audioDataBases = dataRepo.audioDataList;
         BuildAudioLookup();
         ApplyMusicVolume();
         ApplySoundVolume();
@@ -29,11 +30,11 @@ public class AudioManager : MonoBehaviour
     {
         audioLookup = new Dictionary<string, AudioConfig>();
 
-        foreach (var dataBase in audioDataBases)
+        foreach (var dataBase in audioDataList)
         {
             if (dataBase == null)
             {
-                Debug.LogWarning("AudioDataBase null trong DataRepo!");
+                Debug.LogWarning("AudioDataBase null trong AudioManager!");
                 continue;
             }
 

@@ -1100,8 +1100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7bc6706179ca2f47a111271d001ea28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioDataList:
-  - {fileID: 11400000, guid: 5f74a99ad3c90864a83b736ffb298fef, type: 2}
   avatarData: {fileID: 11400000, guid: cd11aad89e6d048fba020977c6af6966, type: 2}
 --- !u!1 &963194225
 GameObject:
@@ -1859,6 +1857,8 @@ MonoBehaviour:
   asBg: {fileID: 1637030148}
   sfxPrefab: {fileID: 2229470277836105949, guid: e546b81b9c5b44f58a8ab8e5046156e0, type: 3}
   sfxSpamCooldown: 0.08
+  audioDataList:
+  - {fileID: 11400000, guid: 5f74a99ad3c90864a83b736ffb298fef, type: 2}
 --- !u!81 &1730948400
 AudioListener:
   m_ObjectHideFlags: 0

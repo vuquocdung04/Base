@@ -37,7 +37,7 @@ public class LobbyScene : MonoBehaviour
             PopupManager.Preload<TeamBox>(),
             PopupManager.Preload<CollectBox>());
 
-        PopupManager.Peek<LobbyBox>()?.ShowDetached();
+        PopupManager.Peek<LobbyBox>()?.ShowDetached(true);
 
         FXManager.Instance.isNextSceneReady = true;
     }

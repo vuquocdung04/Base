@@ -5,6 +5,7 @@ public static class UseProfile
     public static int Level { get => GamePrefs.Get(StringHelper.LEVEL, 1); set => GamePrefs.Set(StringHelper.LEVEL, value); }
     public static int Coin { get => GamePrefs.Get(StringHelper.COIN, 0); set => GamePrefs.Set(StringHelper.COIN, value); }
     public static int AvatarId { get => GamePrefs.Get(StringHelper.AVATAR_ID, 0); set => GamePrefs.Set(StringHelper.AVATAR_ID, value); }
+    public static string PlayerName { get => GamePrefs.Get(StringHelper.PLAYER_NAME, "Player"); set => GamePrefs.Set(StringHelper.PLAYER_NAME, value); }
 
     // --- SETTINGS ---
     public static bool OnMusic { get => GamePrefs.Get(StringHelper.ONOFF_MUSIC, true); set => GamePrefs.Set(StringHelper.ONOFF_MUSIC, value); }

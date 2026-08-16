@@ -30,6 +30,13 @@ public class LobbyBox : BaseBox, IPopupSlide
     protected override void InitState()
     {
         txtLevel.text = $"Level {UseProfile.Level}";
+        RefreshProfile();
+    }
+
+    public void RefreshProfile()
+    {
+        AvatarDataBase data = DataRepo.Instance != null ? DataRepo.Instance.avatarData : null;
+        if (data != null) SetAvatar(data.GetSpriteById(UseProfile.AvatarId));
     }
 
     public void SetAvatar(Sprite sprite) => iconAvatar.sprite = sprite;

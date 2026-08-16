@@ -49,19 +49,19 @@ public abstract class BaseBox : MonoBehaviour
     // ========== SHOW / CLOSE ==========
     public void Show(bool cover = false)
     {
-        ShowInternal(null, false);
+        ShowInternal(null, false, false);
         PopupManager.Push(this, cover);
     }
 
-    public void ShowDetached() => ShowInternal(null, true);
+    public void ShowDetached(bool instant = false) => ShowInternal(null, true, instant);
 
-    public void ShowDetached(SlideSide from) => ShowInternal(from, true);
+    public void ShowDetached(SlideSide from, bool instant = false) => ShowInternal(from, true, instant);
 
     public void Close() => CloseInternal(null, true);
 
     public void CloseDetached(SlideSide to) => CloseInternal(to, false);
 
-    private void ShowInternal(SlideSide? side, bool detached)
+    private void ShowInternal(SlideSide? side, bool detached, bool instant)
     {
         InitState();
         CancelPeek();
@@ -75,7 +75,7 @@ public abstract class BaseBox : MonoBehaviour
             PostPopupEvent(EventID.POPUP_OPENED);
         }
 
-        RunShow(side).Forget();
+        RunShow(side, instant).Forget();
     }
 
     private void CloseInternal(SlideSide? side, bool notifyStack)
@@ -90,9 +90,9 @@ public abstract class BaseBox : MonoBehaviour
         RunClose(side, notifyStack).Forget();
     }
 
-    private async Awaitable RunShow(SlideSide? side)
+    private async Awaitable RunShow(SlideSide? side, bool instant)
     {
-        await PlayShow(side, RestartAnim());
+        await PlayShow(side, instant, RestartAnim());
     }
 
     private async Awaitable RunClose(SlideSide? side, bool notifyStack)
@@ -106,8 +106,10 @@ public abstract class BaseBox : MonoBehaviour
         FinishClose(notifyStack);
     }
 
-    private Awaitable PlayShow(SlideSide? side, CancellationToken token)
+    private Awaitable PlayShow(SlideSide? side, bool instant, CancellationToken token)
     {
+        if (instant) return PopupAnims.Instant(mainPanel, canvasGroup, true);
+
         float duration = Setting.animDuration;
 
         if (side.HasValue)
@@ -161,7 +163,7 @@ public abstract class BaseBox : MonoBehaviour
     internal void Resume()
     {
         transform.SetAsLastSibling();
-        RunShow(null).Forget();
+        RunShow(null, false).Forget();
     }
 
     // ========== BACKDROP INPUT ==========

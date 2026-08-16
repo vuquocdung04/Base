@@ -333,8 +333,8 @@ MonoBehaviour:
   selectedPercent: 0.25
   duration: 0.25
   moveEase: 9
-  scaleSelected: 1.3
-  raiseY: 100
+  scaleSelected: 1.5
+  raiseY: 80
   easeSelected: 27
   easeUnselected: 6
   selector: {fileID: 454943122}

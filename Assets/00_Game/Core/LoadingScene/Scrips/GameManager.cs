@@ -26,7 +26,7 @@ public class GameManager : Singleton<GameManager>
 
         dataRepo.Init();
         fxManager.Init();
-        audioManager.Init(dataRepo);
+        audioManager.Init();
         toastManager.Init(audioManager);
         heartManager.Init(toastManager);
         rewardManager.Init();

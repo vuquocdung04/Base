@@ -13,21 +13,15 @@ MonoBehaviour:
   m_Name: AvatarDataBase
   m_EditorClassIdentifier: Assembly-CSharp::AvatarDataBase
   avatars:
-  - {fileID: 645952351, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: 827030926, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: 897740630, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -895045502, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -988061542, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -445056057, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: 1127681057, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -347107860, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -713969296, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -1292394024, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: 1495287196, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: 480959683, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: 579634995, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -895403501, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: 1754758689, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -1918843383, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: 1762823373, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
-  - {fileID: -1173308854, guid: afe26828065a91348ac9cf1cc9e56bc9, type: 3}
+  - {fileID: -1779749275, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: 2018104996, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: -2081151830, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: -1468482834, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: -1655815322, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: -572269122, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: -1280354033, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: 741699976, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: 537197078, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: 1346749126, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: -1621923012, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}
+  - {fileID: 1179624463, guid: 8eb9a471ef37c5343bc9d1929f91b247, type: 3}

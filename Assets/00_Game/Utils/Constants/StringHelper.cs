@@ -7,6 +7,7 @@ public class StringHelper
     public const string COIN = "CoinsAmount";
     public const string LEVEL = "Level";
     public const string AVATAR_ID = "AVATAR_ID";
+    public const string PLAYER_NAME = "PLAYER_NAME";
 
     public const string HEART = "HEART";
     public const string IS_UNLIMITER_HEART = "IS_UNLIMITER_HEART";
