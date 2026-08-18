@@ -9,6 +9,7 @@ public class RewardManager : MonoBehaviour
     [SerializeField] private RewardCatalog catalog;
 
     private readonly Dictionary<string, Action<GameReward>> _binds = new();
+    private readonly Dictionary<string, Func<bool>> _owned = new();
 
     public RewardCatalog Catalog => catalog;
 
@@ -20,6 +21,7 @@ public class RewardManager : MonoBehaviour
     {
         Instance = this;
         _binds.Clear();
+        _owned.Clear();
         EnsureCatalog();
     }
 
@@ -44,6 +46,22 @@ public class RewardManager : MonoBehaviour
     }
 
     public bool IsBound(string id) => !string.IsNullOrEmpty(id) && _binds.ContainsKey(id);
+
+    public void BindOwned(string id, Func<bool> check)
+    {
+        if (string.IsNullOrEmpty(id) || check == null) return;
+
+        _owned[id] = check;
+    }
+
+    public bool IsOwned(string id)
+        => !string.IsNullOrEmpty(id) && _owned.TryGetValue(id, out Func<bool> check) && check();
+
+    public bool IsFlag(string id)
+    {
+        RewardEntry entry = GetEntry(id);
+        return entry != null && entry.category == RewardCategory.Flag;
+    }
 
     public void Grant(string id, int quantity) => Grant(new GameReward(id, quantity));
 

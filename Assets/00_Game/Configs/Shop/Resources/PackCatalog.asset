@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13924740f03c074ea780a883a9f9b4e, type: 3}
+  m_Name: PackCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::PackCatalog
+  packs:
+  - packId: base.pack.NoAds
+    displayName: No Ads
+    icon: {fileID: -51081237, guid: c95ab3dd4ca06d94295cc36502d7ce72, type: 3}
+    active: 1
+    showFromLevel: 1
+    purchaseMode: 1
+    hideAfterPurchased: 1
+    cost:
+      type: 3
+      amount: 1
+      productId: base.pack.NoAds
+      fakePrice: $0.99
+    rewardGroups:
+    - rewards: []
+  - packId: base.pack.bundle0
+    displayName: Bundle 0
+    icon: {fileID: -1028251552, guid: c95ab3dd4ca06d94295cc36502d7ce72, type: 3}
+    active: 1
+    showFromLevel: 1
+    purchaseMode: 0
+    hideAfterPurchased: 0
+    cost:
+      type: 1
+      amount: 1
+      productId: 
+      fakePrice: $0.99
+    rewardGroups:
+    - rewards:
+      - id: Coin
+        quantity: 100
+      - id: Coin
+        quantity: 200
+      - id: Coin
+        quantity: 500
+  - packId: base.pack.bundle1
+    displayName: Bunde 1
+    icon: {fileID: -1945547073, guid: c95ab3dd4ca06d94295cc36502d7ce72, type: 3}
+    active: 1
+    showFromLevel: 1
+    purchaseMode: 0
+    hideAfterPurchased: 0
+    cost:
+      type: 0
+      amount: 1
+      productId: 
+      fakePrice: $0.99
+    rewardGroups:
+    - rewards:
+      - id: Coin
+        quantity: 60
+      - id: Coin
+        quantity: 120
+      - id: Coin
+        quantity: 200
+      - id: Coin
+        quantity: 500
+    - rewards:
+      - id: HeartUnlimited
+        quantity: 60
+  - packId: base.pack.coin0
+    displayName: 
+    icon: {fileID: 969374799, guid: c95ab3dd4ca06d94295cc36502d7ce72, type: 3}
+    active: 1
+    showFromLevel: 1
+    purchaseMode: 0
+    hideAfterPurchased: 0
+    cost:
+      type: 0
+      amount: 0
+      productId: 
+      fakePrice: $0.99
+    rewardGroups:
+    - rewards:
+      - id: Coin
+        quantity: 1000

@@ -7,6 +7,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private AudioManager audioManager;
     public HeartManager heartManager;
     public RewardManager rewardManager;
+    public PackManager packManager;
     [SerializeField] private LoadingBox loadingBox;
     public ToastManager toastManager;
 
@@ -31,6 +32,8 @@ public class GameManager : Singleton<GameManager>
         heartManager.Init(toastManager);
         rewardManager.Init();
         RewardBindings.Bind(rewardManager);
+        packManager.Init();
+        PackPayers.Bind(packManager);
         await load50Task;
         await loadingBox.LoadingAsync(1f, loadingStepDuration);
         if (isSkipOutPhase) fxManager.PrepareWipeClosed();

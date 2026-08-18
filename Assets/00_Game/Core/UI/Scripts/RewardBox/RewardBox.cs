@@ -38,14 +38,7 @@ public class RewardBox : BaseBox, IPopupScale
     {
         KillReveal();
 
-        foreach (RewardItemView item in _items)
-        {
-            if (item == null) continue;
-
-            item.gameObject.SetActive(false);
-            Destroy(item.gameObject);
-        }
-        _items.Clear();
+        _items.ClearSpawned();
 
         SetClaimReady(false);
 
@@ -64,22 +57,7 @@ public class RewardBox : BaseBox, IPopupScale
 
     private void FitHolder()
     {
-        if (rewardItemParent is not RectTransform holder) return;
-
-        holder.localScale = Vector3.one;
-        LayoutRebuilder.ForceRebuildLayoutImmediate(holder);
-
-        float availableWidth = holder.rect.width;
-        float availableHeight = holder.rect.height;
-
-        float neededWidth = LayoutUtility.GetPreferredWidth(holder);
-        float neededHeight = LayoutUtility.GetPreferredHeight(holder);
-
-        float scaleX = neededWidth > availableWidth && neededWidth > 0f ? availableWidth / neededWidth : 1f;
-        float scaleY = neededHeight > availableHeight && neededHeight > 0f ? availableHeight / neededHeight : 1f;
-
-        float scale = Mathf.Min(scaleX, scaleY);
-        holder.localScale = new Vector3(scale, scale, 1f);
+        if (rewardItemParent is RectTransform holder) holder.FitToBounds();
     }
 
     private void PlayReveal()

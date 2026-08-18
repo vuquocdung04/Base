@@ -432,6 +432,51 @@ MonoBehaviour:
   fadeOutDuration: 0.5
   scaleEase: 27
   flyEase: 2
+--- !u!1 &316241746
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 316241747}
+  - component: {fileID: 316241748}
+  m_Layer: 0
+  m_Name: IAPManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &316241747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 316241746}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 643601519}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &316241748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 316241746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8968a6a9dd21a6e478a5e83e72c3d81c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PackManager
+  catalog: {fileID: 11400000, guid: 18cecd52bc34fc443914edcf8fa92e0e, type: 2}
 --- !u!1 &474268671
 GameObject:
   m_ObjectHideFlags: 0
@@ -766,9 +811,10 @@ Transform:
   - {fileID: 956426248}
   - {fileID: 2062787736}
   - {fileID: 1730948398}
-  - {fileID: 1828064795}
   - {fileID: 175757013}
+  - {fileID: 1828064795}
   - {fileID: 116486800}
+  - {fileID: 316241747}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &643601520
@@ -789,6 +835,7 @@ MonoBehaviour:
   audioManager: {fileID: 1730948399}
   heartManager: {fileID: 1828064796}
   rewardManager: {fileID: 116486801}
+  packManager: {fileID: 316241748}
   loadingBox: {fileID: 783918718}
   toastManager: {fileID: 175757017}
   isSkipOutPhase: 0

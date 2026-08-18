@@ -15,5 +15,8 @@ public static class RewardBindings
         reward.Bind(RewardKeys.Heart, r => HeartManager.Instance.TryAddHeart(r.quantity));
 
         reward.Bind(RewardKeys.HeartUnlimited, r => HeartManager.Instance.TryAddUnlimited(r.quantity));
+
+        reward.Bind(RewardKeys.RemoveAds, r => UseProfile.IsRemoveAds = true);
+        reward.BindOwned(RewardKeys.RemoveAds, () => UseProfile.IsRemoveAds);
     }
 }

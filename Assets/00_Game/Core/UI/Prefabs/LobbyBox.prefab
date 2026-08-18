@@ -243,6 +243,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6383580984005978431}
+  - {fileID: 1049550684819553265}
   m_Father: {fileID: 7710929485431066426}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
@@ -324,7 +325,6 @@ RectTransform:
   - {fileID: 6028505485477839359}
   - {fileID: 3410123003559388385}
   - {fileID: 5045889872462748333}
-  - {fileID: 1049550684819553265}
   m_Father: {fileID: 7409745928508390739}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.37, y: 1}
@@ -534,6 +534,7 @@ GameObject:
   - component: {fileID: 4463942843277129053}
   - component: {fileID: 1924286816099142235}
   - component: {fileID: 5925172518743712452}
+  - component: {fileID: 5688517992940973844}
   m_Layer: 5
   m_Name: btnCoin
   m_TagString: Untagged
@@ -661,6 +662,19 @@ MonoBehaviour:
   pressDuration: 0.08
   releaseDuration: 0.15
   releaseEase: 27
+--- !u!114 &5688517992940973844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4387257393925201665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be86668949ade9844bab17b359a4a27f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CoinView
+  txtCoin: {fileID: 4699069463273259375}
 --- !u!1 &4593240165026932926
 GameObject:
   m_ObjectHideFlags: 0
@@ -1151,16 +1165,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6374788917802107022}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7710929485431066426}
+  m_Father: {fileID: 6028505485477839359}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -176.1, y: -34.2}
+  m_AnchoredPosition: {x: -22.605011, y: -36.999928}
   m_SizeDelta: {x: 37.56, y: 45.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1773251391960452179

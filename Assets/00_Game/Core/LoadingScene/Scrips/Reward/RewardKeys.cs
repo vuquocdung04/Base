@@ -8,4 +8,6 @@ public static class RewardKeys
     public const string Coin = "Coin";
     public const string Heart = "Heart";
     public const string HeartUnlimited = "HeartUnlimited";
+    public const string Booster0 = "Booster0";
+    public const string RemoveAds = "RemoveAds";
 }

@@ -20,7 +20,7 @@ public enum RewardCategory
     Flag
 }
 
-[Serializable]
+[Serializable, HideReferenceObjectPicker]
 public sealed class RewardEntry
 {
     [TableColumnWidth(66, false)]
@@ -29,9 +29,6 @@ public sealed class RewardEntry
 
     [TableColumnWidth(130), HideLabel]
     public string id;
-
-    [TableColumnWidth(130), HideLabel]
-    public string displayName;
 
     [TableColumnWidth(100, false), HideLabel]
     public RewardCategory category = RewardCategory.Currency;
