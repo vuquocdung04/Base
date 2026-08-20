@@ -244,8 +244,7 @@ namespace DevTools.Shop
 			if (!Application.isPlaying || !PackPayers.UsingFakePayer) return;
 
 			SirenixEditorGUI.WarningMessageBox(
-				"Đang chạy payer GIẢ cho Iap/Ads — bấm Mua là nhận thưởng miễn phí. " +
-				"Khi nối store thật nhớ bật scripting define USE_IAP.");
+				"Pack loại Ads đang dùng payer giả — bấm Mua là nhận thưởng miễn phí.");
 		}
 
 		void SyncRows()

@@ -10,7 +10,7 @@ public class PackManager : MonoBehaviour
 
     [SerializeField] private PackCatalog catalog;
 
-    private readonly Dictionary<PackCostType, Func<PackConfig, Awaitable<bool>>> _payers = new();
+    private readonly Dictionary<PackCostType, Func<PackConfig, Awaitable<PurchaseTicket>>> _payers = new();
     private readonly Dictionary<PackCostType, Func<PackConfig, string>> _prices = new();
 
     public PackCatalog Catalog => catalog;
@@ -18,6 +18,10 @@ public class PackManager : MonoBehaviour
     public static Func<int> DisplayLevelProvider { get; set; }
 
     public event Action<PackConfig> OnPurchased;
+
+    public event Action OnPricesChanged;
+
+    public void NotifyPricesChanged() => OnPricesChanged?.Invoke();
 
     public void Init()
     {
@@ -37,7 +41,7 @@ public class PackManager : MonoBehaviour
             Debug.LogError($"[Pack] Khong tim thay PackCatalog trong Resources/{PackCatalog.RESOURCE_PATH}.");
     }
 
-    public void BindPayer(PackCostType type, Func<PackConfig, Awaitable<bool>> payer)
+    public void BindPayer(PackCostType type, Func<PackConfig, Awaitable<PurchaseTicket>> payer)
     {
         if (payer == null) return;
 
@@ -137,19 +141,22 @@ public class PackManager : MonoBehaviour
             return false;
         }
 
-        if (!_payers.TryGetValue(pack.cost.type, out Func<PackConfig, Awaitable<bool>> payer))
+        if (!_payers.TryGetValue(pack.cost.type, out Func<PackConfig, Awaitable<PurchaseTicket>> payer))
         {
             Debug.LogError($"[Pack] Chua BindPayer cho {pack.cost.type} — khong mua duoc '{pack.packId}'.");
             return false;
         }
 
-        if (!await payer(pack)) return false;
+        PurchaseTicket ticket = await payer(pack);
+        if (ticket == null || !ticket.Success) return false;
 
         if (pack.IsOneTime) MarkPurchased(pack.packId);
 
         OnPurchased?.Invoke(pack);
 
         if (RewardManager.Instance != null) await RewardManager.Instance.ClaimAsync(pack.CollectRewards());
+
+        ticket.Commit();
 
         return true;
     }

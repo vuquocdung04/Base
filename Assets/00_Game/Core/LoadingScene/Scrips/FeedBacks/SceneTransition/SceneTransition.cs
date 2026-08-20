@@ -12,7 +12,7 @@ public abstract class SceneTransition : MonoBehaviour
         canvasGroup.blocksRaycasts = true;
     }
 
-    public void Hide()
+    public virtual void Hide()
     {
         canvasGroup.alpha = 0f;
         canvasGroup.blocksRaycasts = false;

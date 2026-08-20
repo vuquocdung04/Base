@@ -27,7 +27,11 @@ public class ShopBox : BaseBox, IPopupSlide
             if (packs[i] != null) packs[i].Init();
         }
 
-        if (PackManager.Instance != null) PackManager.Instance.OnPurchased += HandlePurchased;
+        if (PackManager.Instance != null)
+        {
+            PackManager.Instance.OnPurchased += HandlePurchased;
+            PackManager.Instance.OnPricesChanged += RefreshAll;
+        }
     }
 
     protected override void InitState()
@@ -37,7 +41,11 @@ public class ShopBox : BaseBox, IPopupSlide
 
     protected override void OnDestroy()
     {
-        if (PackManager.Instance != null) PackManager.Instance.OnPurchased -= HandlePurchased;
+        if (PackManager.Instance != null)
+        {
+            PackManager.Instance.OnPurchased -= HandlePurchased;
+            PackManager.Instance.OnPricesChanged -= RefreshAll;
+        }
 
         base.OnDestroy();
     }

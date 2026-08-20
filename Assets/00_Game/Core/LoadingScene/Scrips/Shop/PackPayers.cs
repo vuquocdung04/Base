@@ -15,42 +15,36 @@ public static class PackPayers
         packs.BindPayer(PackCostType.Coin, PayCoin);
         packs.BindPrice(PackCostType.Coin, pack => pack.cost.amount.ToString());
 
-#if USE_IAP
-        UsingFakePayer = false;
         IapPayer.Bind(packs);
-#else
-        UsingFakePayer = true;
-        packs.BindPayer(PackCostType.Iap, PayFake);
-        packs.BindPrice(PackCostType.Iap, pack => pack.cost.fakePrice);
-#endif
 
+        UsingFakePayer = true;
         packs.BindPayer(PackCostType.Ads, PayFake);
         packs.BindPrice(PackCostType.Ads, pack => "ADS");
     }
 
-    private static Awaitable<bool> PayFree(PackConfig pack) => Completed(true);
+    private static Awaitable<PurchaseTicket> PayFree(PackConfig pack) => Completed(PurchaseTicket.Ok());
 
-    private static Awaitable<bool> PayCoin(PackConfig pack)
+    private static Awaitable<PurchaseTicket> PayCoin(PackConfig pack)
     {
         int price = Mathf.Max(0, pack.cost.amount);
 
         if (UseProfile.Coin < price)
         {
             ShowToast("Not enough Coin");
-            return Completed(false);
+            return Completed(PurchaseTicket.Failed);
         }
 
         UseProfile.Coin -= price;
         Dispatcher.Instance.PostEvent(EventID.CHANGE_COIN);
 
-        return Completed(true);
+        return Completed(PurchaseTicket.Ok());
     }
 
-    private static Awaitable<bool> PayFake(PackConfig pack)
+    private static Awaitable<PurchaseTicket> PayFake(PackConfig pack)
     {
         Debug.LogWarning($"[Pack] MUA GIA '{pack.packId}' ({pack.cost.type}) — chua noi store/ads that.");
 
-        return Completed(true);
+        return Completed(PurchaseTicket.Ok());
     }
 
     private static void ShowToast(string message)
@@ -60,10 +54,10 @@ public static class PackPayers
         if (manager != null && manager.toastManager != null) manager.toastManager.ShowToast(message);
     }
 
-    private static Awaitable<bool> Completed(bool value)
+    private static Awaitable<PurchaseTicket> Completed(PurchaseTicket ticket)
     {
-        var source = new AwaitableCompletionSource<bool>();
-        source.SetResult(value);
+        var source = new AwaitableCompletionSource<PurchaseTicket>();
+        source.SetResult(ticket);
 
         return source.Awaitable;
     }

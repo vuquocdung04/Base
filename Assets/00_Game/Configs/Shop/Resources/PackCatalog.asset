@@ -35,9 +35,9 @@ MonoBehaviour:
     purchaseMode: 0
     hideAfterPurchased: 0
     cost:
-      type: 1
+      type: 3
       amount: 1
-      productId: 
+      productId: base.pack.Bundle0
       fakePrice: $0.99
     rewardGroups:
     - rewards:
@@ -55,9 +55,9 @@ MonoBehaviour:
     purchaseMode: 0
     hideAfterPurchased: 0
     cost:
-      type: 0
+      type: 3
       amount: 1
-      productId: 
+      productId: base.pack.Bundle1
       fakePrice: $0.99
     rewardGroups:
     - rewards:
