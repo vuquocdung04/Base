@@ -1,18 +1,19 @@
-using System;
 using UnityEngine;
 
 public class LobbyScene : MonoBehaviour
 {
-    private static readonly Func<BaseBox>[] Boxes =
-    {
-        PopupManager.Peek<ShopBox>,
-        PopupManager.Peek<RankBox>,
-        PopupManager.Peek<LobbyBox>,
-        PopupManager.Peek<TeamBox>,
-        PopupManager.Peek<CollectBox>
-    };
-
     public NavController navController;
+
+    [Header("Pages")]
+    [SerializeField] private Transform pagesRoot;
+    [SerializeField] private BaseBox[] pages;
+    [SerializeField] private int shopIndex = 0;
+
+    [Header("Slide")]
+    [SerializeField] private float slideDuration = 0.3f;
+
+    private SlideAnim _slideLeft;
+    private SlideAnim _slideRight;
 
     private void OnDestroy()
     {
@@ -22,40 +23,48 @@ public class LobbyScene : MonoBehaviour
 
     public async Awaitable InitAsync()
     {
-        navController.OnSelectedChanged += OnNavChanged;
+        _slideLeft = new SlideAnim(SlideSide.Left, slideDuration);
+        _slideRight = new SlideAnim(SlideSide.Right, slideDuration);
+
         navController.Init();
 
         await PreLoad();
+
+        navController.OnSelectedChanged += OnNavChanged;
+
+        await AwaitableEx.WaitUntil(() => navController.CurrentIndex >= 0, destroyCancellationToken);
+        PageAt(navController.CurrentIndex)?.ShowDetached(true);
     }
 
-    private static async Awaitable PreLoad()
+    private async Awaitable PreLoad()
     {
-        await AwaitableEx.WhenAll(
-            PopupManager.Preload<LobbyBox>(),
-            PopupManager.Preload<ShopBox>(),
-            PopupManager.Preload<RankBox>(),
-            PopupManager.Preload<TeamBox>(),
-            PopupManager.Preload<CollectBox>());
+        ShopBox shop = await PopupManager.GetAsync<ShopBox>();
 
-        PopupManager.Peek<LobbyBox>()?.ShowDetached(true);
+        if (shop != null)
+        {
+            if (pagesRoot != null) shop.transform.SetParent(pagesRoot, false);
 
-        FXManager.Instance.isNextSceneReady = true;
+            if (pages != null && shopIndex >= 0 && shopIndex < pages.Length)
+                pages[shopIndex] = shop;
+        }
+
+        FXManager.Instance.NotifySceneReady();
     }
 
     private void OnNavChanged(int previous, int current)
     {
         bool toRight = current > previous;
 
-        BoxAt(previous)?.CloseDetached(toRight ? SlideSide.Left : SlideSide.Right);
-        BoxAt(current)?.ShowDetached(toRight ? SlideSide.Right : SlideSide.Left);
+        PageAt(previous)?.CloseDetached(toRight ? _slideLeft : _slideRight);
+        PageAt(current)?.ShowDetached(toRight ? _slideRight : _slideLeft);
     }
 
-    private static BaseBox BoxAt(int index)
+    private BaseBox PageAt(int index)
     {
-        if (index < 0 || index >= Boxes.Length)
+        if (pages == null || index < 0 || index >= pages.Length)
             return null;
 
-        return Boxes[index]();
+        return pages[index];
     }
 
     public void NavigateTo(int index) => navController.NavigateTo(index);

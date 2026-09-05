@@ -14,26 +14,32 @@ public abstract class BaseBox : MonoBehaviour
     [SerializeField] protected CanvasGroup canvasGroup;
     [SerializeField] protected List<Button> closeButtons = new();
 
-    private PopupSetting _setting;
+    private PopupEntry _setting;
     private CancellationTokenSource _animCts;
     private Tween _peekTween;
     private float _peekFactor = 1f;
     private bool _postedOpen;
+    private bool _bootstrapped;
 
-    private PopupSetting Setting => _setting ??= PopupManager.SettingFor(GetType().Name);
+    private PopupEntry Setting => _setting ??= PopupManager.SettingFor(GetType().Name);
 
     internal float BackdropAlpha => Setting.backdropAlpha * _peekFactor;
 
-    protected abstract void Init();
-    protected abstract void InitState();
+    protected virtual void Init() { }
+    protected virtual void InitState() { }
+
+    protected virtual void Awake() => Bootstrap();
 
     internal void Bootstrap()
     {
+        if (_bootstrapped) return;
+        _bootstrapped = true;
+
         canvasGroup.SetCanvasState(false, 0f);
 
         for (int i = 0; i < closeButtons.Count; i++)
         {
-            if (closeButtons[i] != null) closeButtons[i].OnClicked(Close);
+            if (closeButtons[i] != null) closeButtons[i].onClick.AddListener(Close);
         }
 
         Init();
@@ -55,13 +61,13 @@ public abstract class BaseBox : MonoBehaviour
 
     public void ShowDetached(bool instant = false) => ShowInternal(null, true, instant);
 
-    public void ShowDetached(SlideSide from, bool instant = false) => ShowInternal(from, true, instant);
+    public void ShowDetached(IPopupAnim anim) => ShowInternal(anim, true, false);
 
     public void Close() => CloseInternal(null, true);
 
-    public void CloseDetached(SlideSide to) => CloseInternal(to, false);
+    public void CloseDetached(IPopupAnim anim = null) => CloseInternal(anim, false);
 
-    private void ShowInternal(SlideSide? side, bool detached, bool instant)
+    private void ShowInternal(IPopupAnim anim, bool detached, bool instant)
     {
         InitState();
         CancelPeek();
@@ -72,51 +78,48 @@ public abstract class BaseBox : MonoBehaviour
         if (!_postedOpen)
         {
             _postedOpen = true;
-            PostPopupEvent(EventID.POPUP_OPENED);
+            PostEventSafe(EventID.POPUP_OPENED);
         }
 
-        RunShow(side, instant).Forget();
+        RunShow(anim, instant).Forget();
     }
 
-    private void CloseInternal(SlideSide? side, bool notifyStack)
+    private void CloseInternal(IPopupAnim anim, bool notifyStack)
     {
         if (_postedOpen)
         {
             _postedOpen = false;
-            PostPopupEvent(EventID.POPUP_CLOSED);
+            PostEventSafe(EventID.POPUP_CLOSED);
         }
 
         CancelPeek();
-        RunClose(side, notifyStack).Forget();
+        RunClose(anim, notifyStack).Forget();
     }
 
-    private async Awaitable RunShow(SlideSide? side, bool instant)
+    private async Awaitable RunShow(IPopupAnim anim, bool instant)
     {
-        await PlayShow(side, instant, RestartAnim());
+        await PlayShow(anim, instant, RestartAnim());
     }
 
-    private async Awaitable RunClose(SlideSide? side, bool notifyStack)
+    private async Awaitable RunClose(IPopupAnim anim, bool notifyStack)
     {
         CancellationToken token = RestartAnim();
 
-        try { await PlayHide(side, token); }
+        try { await PlayHide(anim, token); }
         catch (OperationCanceledException) { return; }
 
         if (token.IsCancellationRequested) return;
         FinishClose(notifyStack);
     }
 
-    private Awaitable PlayShow(SlideSide? side, bool instant, CancellationToken token)
+    private Awaitable PlayShow(IPopupAnim anim, bool instant, CancellationToken token)
     {
         if (instant) return PopupAnims.Instant(mainPanel, canvasGroup, true);
 
         float duration = Setting.animDuration;
 
-        if (side.HasValue)
-            return PopupAnims.SlideShow(mainPanel, canvasGroup, side.Value, duration, token);
-
-        if (this is IPopupSlide)
-            return PopupAnims.SlideShow(mainPanel, canvasGroup, SlideSide.Right, duration, token);
+        if (anim != null)
+            return anim.Show(mainPanel, canvasGroup, duration, token);
 
         if (this is IPopupScale)
             return PopupAnims.ScaleShow(mainPanel, canvasGroup, duration, token);
@@ -124,15 +127,12 @@ public abstract class BaseBox : MonoBehaviour
         return PopupAnims.Instant(mainPanel, canvasGroup, true);
     }
 
-    private Awaitable PlayHide(SlideSide? side, CancellationToken token)
+    private Awaitable PlayHide(IPopupAnim anim, CancellationToken token)
     {
         float duration = Setting.animDuration;
 
-        if (side.HasValue)
-            return PopupAnims.SlideHide(mainPanel, canvasGroup, side.Value, duration, token);
-
-        if (this is IPopupSlide)
-            return PopupAnims.SlideHide(mainPanel, canvasGroup, SlideSide.Right, duration, token);
+        if (anim != null)
+            return anim.Hide(mainPanel, canvasGroup, duration, token);
 
         if (this is IPopupScale)
             return PopupAnims.ScaleHide(mainPanel, canvasGroup, duration, token);
@@ -225,7 +225,7 @@ public abstract class BaseBox : MonoBehaviour
         _animCts = null;
     }
 
-    private void PostPopupEvent(EventID id)
+    protected void PostEventSafe(EventID id)
     {
         if (!EventDispatcher.EventDispatcher.HasInstance()) return;
         if (!EventDispatcher.EventDispatcher.Instance.HasListener(id)) return;

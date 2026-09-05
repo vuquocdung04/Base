@@ -17,7 +17,7 @@ public class SettingControl
         this.get = get;
         this.set = set;
 
-        btn.OnClicked(() => Apply(!get()));
+        btn.onClick.AddListener(() => Apply(!get()));
 
         Refresh();
     }

@@ -22,16 +22,16 @@ public class GameScene : InitSingleton<GameScene>
     {
         boosterController.InitInstance();
 
-        // btnSetting.OnClicked(delegate
+        // btnSetting.onClick.AddListener(delegate
         // {
         //     PopupManager.Show<SettingGameBox>().Forget();
         // });
 
-        // btnCoin.OnClicked(delegate
+        // btnCoin.onClick.AddListener(delegate
         // {
         //     PopupManager.Show<ShopBox>().Forget();
         // });
-        txtLevelDisplay.text = $"Level {GamePlayController.Instance.CurrentLevel}";
+        txtLevelDisplay.text = $"Level {GameConfigSO.Instance.CurrentLevel}";
 
         boosterController.Init();
     }

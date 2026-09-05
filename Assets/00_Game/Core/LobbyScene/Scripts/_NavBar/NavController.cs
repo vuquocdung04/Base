@@ -8,15 +8,8 @@ public class NavController : MonoBehaviour
 {
     public static NavController Instance { get; private set; }
 
-    [SerializeField] private RectTransform rectsParent;
-
     [SerializeField] private List<NavButton> navButtons = new List<NavButton>();
-    [SerializeField] private List<RectTransform> rects = new List<RectTransform>();
-    [SerializeField] private List<RectTransform> rectItems = new List<RectTransform>();
-
-    [Header("Width")]
-    [SerializeField] private bool useSelectedLarge = true;
-    [SerializeField, Range(0f, 1f)] private float selectedPercent = 0.25f;
+    [SerializeField] private RectTransform selector;
 
     [Header("Anim")]
     [SerializeField] private float duration = 0.25f;
@@ -26,17 +19,13 @@ public class NavController : MonoBehaviour
     [SerializeField] private Ease easeSelected = Ease.OutBack;
     [SerializeField] private Ease easeUnselected = Ease.OutQuad;
 
-    [Header("Selector")]
-    [SerializeField] private RectTransform selector;
-
-    [SerializeField] private int defaultIndex = 2;
-
     private int currentIndex = -1;
     private bool hasInit;
 
     public IReadOnlyList<NavButton> NavButtons => navButtons;
     public int CurrentIndex => currentIndex;
     public NavButton CurrentNav => GetNav(currentIndex);
+    public int DefaultIndex => navButtons.Count / 2;
 
     public event Action<int, int> OnSelectedChanged;
 
@@ -60,7 +49,8 @@ public class NavController : MonoBehaviour
 
     private void OnDestroy()
     {
-        KillTween();
+        if (selector != null)
+            selector.DOKill();
     }
 
     private void OnRectTransformDimensionsChange()
@@ -68,7 +58,7 @@ public class NavController : MonoBehaviour
         if (!hasInit || currentIndex < 0)
             return;
 
-        Layout(true);
+        UpdateSelector(true);
     }
 
     public void Init()
@@ -118,7 +108,7 @@ public class NavController : MonoBehaviour
             navButtons[i].SetSelected(i == currentIndex, instant);
         }
 
-        Layout(instant);
+        UpdateSelector(instant);
 
         if (previous >= 0)
             OnSelectedChanged?.Invoke(previous, currentIndex);
@@ -142,183 +132,65 @@ public class NavController : MonoBehaviour
         return navButtons[index];
     }
 
-    public void Layout(bool instant = true)
-    {
-        int count = navButtons.Count;
-
-        if (count == 0)
-            return;
-
-        float total = GetTotalWidth();
-
-        if (total <= 0f)
-            return;
-
-        float otherWidth = total / count;
-        float selectedWidth = otherWidth;
-        bool hasSelectedLarge = useSelectedLarge && count > 1 && currentIndex >= 0 && currentIndex < count;
-
-        if (hasSelectedLarge)
-        {
-            selectedWidth = total * selectedPercent;
-            otherWidth = total * (1f - selectedPercent) / (count - 1);
-        }
-
-        float positionX = -total * 0.5f;
-        float selectedWorldX = 0f;
-
-        for (int i = 0; i < count; i++)
-        {
-            float width = hasSelectedLarge && i == currentIndex ? selectedWidth : otherWidth;
-            float worldX = AnchoredToWorldX(positionX + width * 0.5f);
-
-            SetSlot(GetRect(rects, i), width, worldX, instant);
-            SetSlot(GetRect(rectItems, i), width, worldX, instant);
-
-            if (i == currentIndex)
-                selectedWorldX = worldX;
-
-            positionX += width;
-        }
-
-        if (selector != null)
-            ApplyRect(selector, selectedWidth, selectedWorldX, instant);
-    }
-
     [PropertyOrder(-1)]
     [Button("Auto", ButtonSizes.Medium)]
     public void Auto()
     {
         navButtons.Clear();
-        rects.Clear();
-        rectItems.Clear();
-
         navButtons.AddRange(GetComponentsInChildren<NavButton>(true));
 
         for (int i = 0; i < navButtons.Count; i++)
         {
-            if (navButtons[i] == null)
-                continue;
-
-            navButtons[i].AutoGetField();
-            rectItems.Add(navButtons[i].RectMain);
-        }
-
-        if (rectsParent == null)
-            return;
-
-        for (int i = 0; i < rectsParent.childCount; i++)
-        {
-            RectTransform rect = rectsParent.GetChild(i) as RectTransform;
-
-            if (rect == null || rect == selector || rect.GetComponent<NavButton>() != null)
-                continue;
-
-            rects.Add(rect);
+            if (navButtons[i] != null)
+                navButtons[i].AutoGetField();
         }
     }
 
     private async Awaitable InitAfterLayoutAsync()
     {
         await Awaitable.EndOfFrameAsync(destroyCancellationToken);
-        Select(defaultIndex, true);
+        Select(DefaultIndex, true);
     }
 
-    private void SetSlot(RectTransform rect, float width, float worldX, bool instant)
+    private void UpdateSelector(bool instant)
     {
-        if (rect == null || rect == selector)
+        NavButton navButton = CurrentNav;
+
+        if (selector == null || navButton == null)
             return;
 
-        ApplyRect(rect, width, worldX, instant);
-    }
+        RectTransform rect = navButton.RectMain;
 
-    private void ApplyRect(RectTransform rect, float width, float worldX, bool instant)
-    {
-        SetAnchorCenter(rect);
+        if (rect == null)
+            return;
 
-        rect.DOKill();
+        float width = rect.rect.width;
+        float worldX = rect.TransformPoint(rect.rect.center).x;
+
+        selector.DOKill();
 
         if (instant || duration <= 0f)
         {
-            rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            selector.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
 
-            Vector3 position = rect.position;
+            Vector3 position = selector.position;
             position.x = worldX;
-            rect.position = position;
+            selector.position = position;
             return;
         }
 
-        Vector2 sizeDelta = rect.sizeDelta;
-        sizeDelta.x = width;
+        Vector2 sizeDelta = selector.sizeDelta;
+        sizeDelta.x = width - (selector.anchorMax.x - selector.anchorMin.x) * GetParentWidth();
 
-        rect.DOSizeDelta(sizeDelta, duration).SetEase(moveEase).SetTarget(rect);
-        rect.DOMoveX(worldX, duration).SetEase(moveEase).SetTarget(rect);
+        selector.DOSizeDelta(sizeDelta, duration).SetEase(moveEase).SetTarget(selector);
+        selector.DOMoveX(worldX, duration).SetEase(moveEase).SetTarget(selector);
     }
 
-    private void SetAnchorCenter(RectTransform rect)
+    private float GetParentWidth()
     {
-        Vector2 anchorMin = rect.anchorMin;
-        Vector2 anchorMax = rect.anchorMax;
-        Vector2 pivot = rect.pivot;
+        RectTransform parent = selector.parent as RectTransform;
 
-        anchorMin.x = 0.5f;
-        anchorMax.x = 0.5f;
-        pivot.x = 0.5f;
-
-        rect.anchorMin = anchorMin;
-        rect.anchorMax = anchorMax;
-        rect.pivot = pivot;
-    }
-
-    private float AnchoredToWorldX(float anchoredX)
-    {
-        RectTransform parent = rectsParent != null ? rectsParent : transform as RectTransform;
-
-        if (parent == null)
-            return anchoredX;
-
-        float localX = anchoredX + parent.rect.width * (0.5f - parent.pivot.x);
-
-        return parent.TransformPoint(new Vector3(localX, 0f, 0f)).x;
-    }
-
-    private RectTransform GetRect(List<RectTransform> list, int index)
-    {
-        if (index < 0 || index >= list.Count)
-            return null;
-
-        return list[index];
-    }
-
-    private float GetTotalWidth()
-    {
-        if (rectsParent != null && rectsParent.rect.width > 0f)
-            return rectsParent.rect.width;
-
-        RectTransform rect = transform as RectTransform;
-
-        if (rect != null && rect.rect.width > 0f)
-            return rect.rect.width;
-
-        return Screen.width;
-    }
-
-    private void KillTween()
-    {
-        if (selector != null)
-            selector.DOKill();
-
-        for (int i = 0; i < rects.Count; i++)
-        {
-            if (rects[i] != null)
-                rects[i].DOKill();
-        }
-
-        for (int i = 0; i < rectItems.Count; i++)
-        {
-            if (rectItems[i] != null)
-                rectItems[i].DOKill();
-        }
+        return parent != null ? parent.rect.width : 0f;
     }
 
     private void OnClickNav(NavButton navButton) => Select(navButton);

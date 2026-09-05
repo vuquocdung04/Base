@@ -142,10 +142,10 @@ namespace DevTools.Addressable
 		[Title("Popup Catalog", bold: true), PropertyOrder(10)]
 		[LabelText("Catalog"), LabelWidth(80)]
 		[OnValueChanged("SyncPopup")]
-		public PopupCatalog popupCatalog;
+		public PopupCatalogSO popupCatalog;
 
 		[PropertyOrder(11)]
-		[InfoBox("Chưa có PopupCatalog. Bấm 'Tạo Catalog' để tạo trong Resources.", InfoMessageType.Warning,
+		[InfoBox("Chưa có PopupCatalogSO. Bấm 'Tạo Catalog' để tạo trong Resources.", InfoMessageType.Warning,
 			VisibleIf = "@popupCatalog == null")]
 		[Button("Tạo Catalog", ButtonSizes.Large), GUIColor(0.4f, 0.9f, 0.5f)]
 		[ShowIf("@popupCatalog == null")]
@@ -154,8 +154,8 @@ namespace DevTools.Addressable
 			Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), PopupCatalogFolder));
 			AssetDatabase.Refresh();
 
-			var asset = ScriptableObject.CreateInstance<PopupCatalog>();
-			string path = AssetDatabase.GenerateUniqueAssetPath($"{PopupCatalogFolder}/PopupCatalog.asset");
+			var asset = ScriptableObject.CreateInstance<PopupCatalogSO>();
+			string path = AssetDatabase.GenerateUniqueAssetPath($"{PopupCatalogFolder}/{PopupCatalogSO.RESOURCE_PATH}.asset");
 			AssetDatabase.CreateAsset(asset, path);
 			AssetDatabase.SaveAssets();
 
@@ -180,7 +180,7 @@ namespace DevTools.Addressable
 			foreach (string name in names)
 			{
 				if (popupCatalog.Find(name) == null)
-					popupCatalog.popups.Add(new PopupSetting { typeName = name });
+					popupCatalog.popups.Add(new PopupEntry { typeName = name });
 			}
 
 			popupCatalog.popups.Sort((a, b) => string.CompareOrdinal(a.typeName, b.typeName));
@@ -193,7 +193,7 @@ namespace DevTools.Addressable
 		[ShowInInspector, HideLabel, Searchable]
 		[TableList(ShowPaging = true, NumberOfItemsPerPage = 25)]
 		[ShowIf("@popupCatalog != null")]
-		List<PopupSetting> popupRows;
+		List<PopupEntry> popupRows;
 
 		[OnInspectorGUI, PropertyOrder(99)]
 		void MarkPopupDirty()
@@ -201,12 +201,12 @@ namespace DevTools.Addressable
 			if (popupCatalog != null && GUI.changed) EditorUtility.SetDirty(popupCatalog);
 		}
 
-		static PopupCatalog LocatePopupCatalog()
+		static PopupCatalogSO LocatePopupCatalog()
 		{
-			string guid = AssetDatabase.FindAssets("t:PopupCatalog").FirstOrDefault();
+			string guid = AssetDatabase.FindAssets("t:PopupCatalogSO").FirstOrDefault();
 			return string.IsNullOrEmpty(guid)
 				? null
-				: AssetDatabase.LoadAssetAtPath<PopupCatalog>(AssetDatabase.GUIDToAssetPath(guid));
+				: AssetDatabase.LoadAssetAtPath<PopupCatalogSO>(AssetDatabase.GUIDToAssetPath(guid));
 		}
 
 		// ===================== HELPERS =====================

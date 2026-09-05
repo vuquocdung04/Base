@@ -107,46 +107,13 @@ public static partial class UIUtils
     public static async Awaitable CountTo(
       this TMP_Text text, double target, float duration = 0.5f,
       double? from = null, Func<double, string> format = null,
-      CancellationToken token = default)
+      CancellationToken token = default, string prefix = "", string suffix = "")
     {
         format ??= NumberFormatter.Format;
-        double start = from ?? (double.TryParse(text.text, out double parsed) ? parsed : 0);
+        bool hasAffix = prefix.Length > 0 || suffix.Length > 0;
+        double start = from ?? (!hasAffix && double.TryParse(text.text, out double parsed) ? parsed : 0);
 
-        if (duration <= 0f || System.Math.Abs(start - target) < 0.5) { text.text = format(target); return; }
-
-        float elapsed = 0f;
-        string lastShown = null;
-
-        try
-        {
-            while (elapsed < duration && !token.IsCancellationRequested)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                double current = start + (target - start) * (elapsed / duration);
-                string shown = format(current);
-                if (shown != lastShown)
-                {
-                    lastShown = shown;
-                    text.text = shown;
-                }
-                await Awaitable.NextFrameAsync(token);
-            }
-        }
-        catch (OperationCanceledException) { return; }
-
-        if (!token.IsCancellationRequested) text.text = format(target);
-    }
-    // CountTo có kèm sprite icon (sprite asset). prefix/suffix là chuỗi ghép trước/sau số.
-    // vd prefix = "<sprite=0> " -> "<sprite=0> 1.2K"
-    public static async Awaitable CountToWithIcon(
-        this TMP_Text text, double target, string prefix = "", string suffix = "",
-        float duration = 0.5f, double? from = null, Func<double, string> format = null,
-        CancellationToken token = default)
-    {
-        format ??= NumberFormatter.Format;
-        double start = from ?? 0;   // không parse text vì text giờ có sprite tag, parse sẽ sai
-
-        if (duration <= 0f || System.Math.Abs(start - target) < 0.5)
+        if (duration <= 0f || Math.Abs(start - target) < 0.5)
         {
             text.text = prefix + format(target) + suffix;
             return;

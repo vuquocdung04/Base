@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public class ShopBox : BaseBox, IPopupSlide
+public class ShopBox : BaseBox, IPopupScale
 {
     [SerializeField] private ShopPackBase[] packs;
 
@@ -60,7 +60,7 @@ public class ShopBox : BaseBox, IPopupSlide
         }
     }
 
-    private void HandlePurchased(PackConfig pack) => RefreshAll();
+    private void HandlePurchased(PackEntry pack) => RefreshAll();
 
     private void CachePacks()
     {

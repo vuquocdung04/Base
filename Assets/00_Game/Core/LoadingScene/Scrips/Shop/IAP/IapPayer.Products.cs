@@ -8,12 +8,12 @@ public static partial class IapPayer
     {
         var list = new List<ProductDefinition>();
 
-        PackCatalog catalog = _packs != null ? _packs.Catalog : null;
+        PackCatalogSO catalog = _packs != null ? _packs.Catalog : null;
         if (catalog == null) return list;
 
         for (int i = 0; i < catalog.packs.Count; i++)
         {
-            PackConfig pack = catalog.packs[i];
+            PackEntry pack = catalog.packs[i];
             if (pack == null || pack.cost.type != PackCostType.Iap) continue;
             if (string.IsNullOrEmpty(pack.cost.productId)) continue;
 
@@ -25,7 +25,7 @@ public static partial class IapPayer
         return list;
     }
 
-    private static string GetPrice(PackConfig pack)
+    private static string GetPrice(PackEntry pack)
     {
         Product product = _controller != null ? _controller.GetProductById(pack.cost.productId) : null;
         string price = product != null && product.metadata != null ? product.metadata.localizedPriceString : null;

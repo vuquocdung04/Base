@@ -8,7 +8,7 @@ public static partial class IapPayer
 
     private static readonly Dictionary<string, AwaitableCompletionSource<PurchaseTicket>> _pending = new();
 
-    private static Awaitable<PurchaseTicket> PayIap(PackConfig pack)
+    private static Awaitable<PurchaseTicket> PayIap(PackEntry pack)
     {
         string productId = pack.cost.productId;
 

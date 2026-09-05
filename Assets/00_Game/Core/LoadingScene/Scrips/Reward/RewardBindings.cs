@@ -18,5 +18,23 @@ public static class RewardBindings
 
         reward.Bind(RewardKeys.RemoveAds, r => UseProfile.IsRemoveAds = true);
         reward.BindOwned(RewardKeys.RemoveAds, () => UseProfile.IsRemoveAds);
+
+        BindBoosters(reward);
+    }
+
+    private static void BindBoosters(RewardManager reward)
+    {
+        RewardCatalogSO catalog = reward.Catalog;
+        if (catalog == null) return;
+
+        for (int i = 0; i < catalog.rewards.Count; i++)
+        {
+            RewardEntry entry = catalog.rewards[i];
+            if (entry == null || entry.category != RewardCategory.Booster) continue;
+            if (string.IsNullOrEmpty(entry.id) || reward.IsBound(entry.id)) continue;
+
+            string id = entry.id;
+            reward.Bind(id, r => BoosterData.Add(id, r.quantity));
+        }
     }
 }

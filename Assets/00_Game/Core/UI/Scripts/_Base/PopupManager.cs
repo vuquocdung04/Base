@@ -8,13 +8,12 @@ public class PopupManager : Singleton<PopupManager>
 {
     [Header("Layers")]
     [SerializeField] private Transform popupRoot;
-    [SerializeField] private Transform screenRoot;
 
     [Header("Backdrop")]
     [SerializeField] private PopupBackdrop backdrop;
 
     [Header("Settings")]
-    [SerializeField] private PopupCatalog catalog;
+    [SerializeField] private PopupCatalogSO catalog;
 
     private class StackEntry
     {
@@ -28,7 +27,6 @@ public class PopupManager : Singleton<PopupManager>
     private readonly List<StackEntry> _stack = new();
 
     private Transform PopupRoot => popupRoot != null ? popupRoot : transform;
-    private Transform ScreenRoot => screenRoot != null ? screenRoot : PopupRoot;
 
     protected override void OnDestroy()
     {
@@ -36,17 +34,17 @@ public class PopupManager : Singleton<PopupManager>
         base.OnDestroy();
     }
 
-    internal static PopupSetting SettingFor(string typeName)
+    internal static PopupEntry SettingFor(string typeName)
     {
         PopupManager m = Instance;
-        PopupCatalog cat = m != null ? m.ResolveCatalog() : null;
+        PopupCatalogSO cat = m != null ? m.ResolveCatalog() : null;
 
-        return cat != null ? cat.Find(typeName) ?? PopupSetting.Fallback : PopupSetting.Fallback;
+        return cat != null ? cat.Find(typeName) ?? PopupEntry.Fallback : PopupEntry.Fallback;
     }
 
-    private PopupCatalog ResolveCatalog()
+    private PopupCatalogSO ResolveCatalog()
     {
-        if (catalog == null) catalog = Resources.Load<PopupCatalog>("PopupCatalog");
+        if (catalog == null) catalog = Resources.Load<PopupCatalogSO>(PopupCatalogSO.RESOURCE_PATH);
         return catalog;
     }
 
@@ -156,10 +154,12 @@ public class PopupManager : Singleton<PopupManager>
 
     internal static void Attach(Transform target, bool detached)
     {
+        if (detached) return;
+
         PopupManager m = Instance;
         if (m == null) return;
 
-        Transform root = detached ? m.ScreenRoot : m.PopupRoot;
+        Transform root = m.PopupRoot;
         if (target.parent != root) target.SetParent(root, false);
     }
 

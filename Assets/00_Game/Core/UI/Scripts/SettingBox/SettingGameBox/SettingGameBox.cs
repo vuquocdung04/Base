@@ -8,13 +8,13 @@ public class SettingGameBox : SettingBaseBox
 
     protected override void OnInit()
     {
-        btnReturnHome.OnClicked(() =>
+        btnReturnHome.onClick.AddListener(() =>
             PopupManager.Show<QuitLevelBox>(box => box.SetMode(QuitLevelBox.Mode.Leave), cover: true).Forget());
 
-        btnRestart.OnClicked(() =>
+        btnRestart.onClick.AddListener(() =>
             PopupManager.Show<QuitLevelBox>(box => box.SetMode(QuitLevelBox.Mode.Restart), cover: true).Forget());
 
-        btnCheat.OnClicked(() =>
+        btnCheat.onClick.AddListener(() =>
             PopupManager.Show<CheatBox>().Forget());
     }
 }

@@ -6,12 +6,12 @@ public class RewardManager : MonoBehaviour
 {
     public static RewardManager Instance { get; private set; }
 
-    [SerializeField] private RewardCatalog catalog;
+    [SerializeField] private RewardCatalogSO catalog;
 
     private readonly Dictionary<string, Action<GameReward>> _binds = new();
     private readonly Dictionary<string, Func<bool>> _owned = new();
 
-    public RewardCatalog Catalog => catalog;
+    public RewardCatalogSO Catalog => catalog;
 
     public IReadOnlyCollection<string> BoundIds => _binds.Keys;
 
@@ -29,10 +29,10 @@ public class RewardManager : MonoBehaviour
     {
         if (catalog != null) return;
 
-        catalog = Resources.Load<RewardCatalog>(RewardCatalog.RESOURCE_PATH);
+        catalog = Resources.Load<RewardCatalogSO>(RewardCatalogSO.RESOURCE_PATH);
 
         if (catalog == null)
-            Debug.LogError($"[Reward] Khong tim thay RewardCatalog trong Resources/{RewardCatalog.RESOURCE_PATH}.");
+            Debug.LogError($"[Reward] Khong tim thay RewardCatalogSO trong Resources/{RewardCatalogSO.RESOURCE_PATH}.");
     }
 
     public void Bind(string id, Action<GameReward> handler)

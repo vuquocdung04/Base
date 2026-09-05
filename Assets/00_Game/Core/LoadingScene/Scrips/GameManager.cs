@@ -21,7 +21,7 @@ public class GameManager : Singleton<GameManager>
     }
     private async Awaitable Init()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = GameConfigSO.Instance.TargetFrameRate;
         loadingBox.Init();
         var load50Task = loadingBox.LoadingAsync(0.5f, loadingStepDuration);
 

@@ -18,7 +18,7 @@ public abstract class ShopPackBase : MonoBehaviour
     [Tooltip("Object bị ẩn/hiện. Để trống = chính GameObject này.")]
     public GameObject visibilityTarget;
 
-    protected PackConfig Config { get; private set; }
+    protected PackEntry Config { get; private set; }
 
     private bool _buying;
 
@@ -28,7 +28,7 @@ public abstract class ShopPackBase : MonoBehaviour
 
     public void Init()
     {
-        if (btnPurchase != null) btnPurchase.OnClicked(Purchase);
+        if (btnPurchase != null) btnPurchase.onClick.AddListener(Purchase);
     }
 
     public void Refresh()
@@ -80,16 +80,16 @@ public abstract class ShopPackBase : MonoBehaviour
         if (btnPurchase != null) btnPurchase.interactable = value;
     }
 
-    private static PackCatalog _catalogCache;
+    private static PackCatalogSO _catalogCache;
     private static string[] _idsCache = System.Array.Empty<string>();
 
     private static IEnumerable<string> PackIds()
     {
-        PackCatalog catalog = PackManager.Instance != null ? PackManager.Instance.Catalog : _catalogCache;
+        PackCatalogSO catalog = PackManager.Instance != null ? PackManager.Instance.Catalog : _catalogCache;
 
         if (catalog == null)
         {
-            catalog = Resources.Load<PackCatalog>(PackCatalog.RESOURCE_PATH);
+            catalog = Resources.Load<PackCatalogSO>(PackCatalogSO.RESOURCE_PATH);
             if (catalog == null) return _idsCache;
         }
 
@@ -98,13 +98,13 @@ public abstract class ShopPackBase : MonoBehaviour
         return _idsCache;
     }
 
-    private static bool IsCacheStale(PackCatalog catalog)
+    private static bool IsCacheStale(PackCatalogSO catalog)
     {
         int index = 0;
 
         for (int i = 0; i < catalog.packs.Count; i++)
         {
-            PackConfig pack = catalog.packs[i];
+            PackEntry pack = catalog.packs[i];
             if (pack == null || string.IsNullOrEmpty(pack.packId)) continue;
 
             if (index >= _idsCache.Length || _idsCache[index] != pack.packId) return true;
@@ -114,13 +114,13 @@ public abstract class ShopPackBase : MonoBehaviour
         return index != _idsCache.Length;
     }
 
-    private static void RebuildCache(PackCatalog catalog)
+    private static void RebuildCache(PackCatalogSO catalog)
     {
         var ids = new List<string>(catalog.packs.Count);
 
         for (int i = 0; i < catalog.packs.Count; i++)
         {
-            PackConfig pack = catalog.packs[i];
+            PackEntry pack = catalog.packs[i];
             if (pack != null && !string.IsNullOrEmpty(pack.packId)) ids.Add(pack.packId);
         }
 

@@ -25,7 +25,7 @@ namespace DevTools.Reward
 
 		static readonly Regex IdentifierRegex = new Regex(@"^[A-Za-z_][A-Za-z0-9_]*$");
 
-		RewardCatalog _catalog;
+		RewardCatalogSO _catalog;
 		bool _located;
 		List<RewardEntry> _rows;
 		List<TestRow> _testRows = new List<TestRow> { new TestRow() };
@@ -41,7 +41,7 @@ namespace DevTools.Reward
 		[Title("Catalog", bold: true), PropertyOrder(0)]
 		[ShowInInspector, LabelText("Asset"), LabelWidth(70)]
 		[OnValueChanged(nameof(SyncRows))]
-		RewardCatalog Catalog
+		RewardCatalogSO Catalog
 		{
 			get
 			{
@@ -62,7 +62,7 @@ namespace DevTools.Reward
 		}
 
 		[PropertyOrder(1)]
-		[InfoBox("Chưa có RewardCatalog. Bấm 'Tạo Catalog' để tạo trong Configs/Reward/Resources.",
+		[InfoBox("Chưa có RewardCatalogSO. Bấm 'Tạo Catalog' để tạo trong Configs/Reward/Resources.",
 			InfoMessageType.Warning, VisibleIf = "@Catalog == null")]
 		[Button("Tạo Catalog", ButtonSizes.Large), GUIColor(0.4f, 0.9f, 0.5f)]
 		[ShowIf("@Catalog == null")]
@@ -71,8 +71,8 @@ namespace DevTools.Reward
 			Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), CatalogFolder));
 			AssetDatabase.Refresh();
 
-			RewardCatalog created = ScriptableObject.CreateInstance<RewardCatalog>();
-			string path = AssetDatabase.GenerateUniqueAssetPath($"{CatalogFolder}/{RewardCatalog.RESOURCE_PATH}.asset");
+			RewardCatalogSO created = ScriptableObject.CreateInstance<RewardCatalogSO>();
+			string path = AssetDatabase.GenerateUniqueAssetPath($"{CatalogFolder}/{RewardCatalogSO.RESOURCE_PATH}.asset");
 
 			AssetDatabase.CreateAsset(created, path);
 			AssetDatabase.SaveAssets();
@@ -365,13 +365,13 @@ namespace DevTools.Reward
 				: _rows.Where(r => r != null && !string.IsNullOrWhiteSpace(r.id)).Select(r => r.id).ToArray();
 		}
 
-		static RewardCatalog Locate()
+		static RewardCatalogSO Locate()
 		{
-			string guid = AssetDatabase.FindAssets("t:RewardCatalog").FirstOrDefault();
+			string guid = AssetDatabase.FindAssets("t:RewardCatalogSO").FirstOrDefault();
 
 			return string.IsNullOrEmpty(guid)
 				? null
-				: AssetDatabase.LoadAssetAtPath<RewardCatalog>(AssetDatabase.GUIDToAssetPath(guid));
+				: AssetDatabase.LoadAssetAtPath<RewardCatalogSO>(AssetDatabase.GUIDToAssetPath(guid));
 		}
 	}
 }

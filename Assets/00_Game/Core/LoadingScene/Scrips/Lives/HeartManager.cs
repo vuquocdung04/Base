@@ -11,9 +11,9 @@ public class HeartManager : MonoBehaviour
 
     public static bool BypassHeartCost { get; set; }
 
-    [SerializeField] private HeartConfig config;
+    [SerializeField] private HeartConfigSO config;
 
-    public HeartConfig Config => config;
+    public HeartConfigSO Config => config;
 
     public int MaxHearts => config != null ? config.maxHearts : 5;
     public double RefillSeconds => config != null ? config.RefillSeconds : 1800d;
@@ -67,11 +67,11 @@ public class HeartManager : MonoBehaviour
     {
         if (config != null) return;
 
-        config = Resources.Load<HeartConfig>(HeartConfig.RESOURCE_PATH);
+        config = Resources.Load<HeartConfigSO>(HeartConfigSO.RESOURCE_PATH);
         if (config != null) return;
 
-        config = ScriptableObject.CreateInstance<HeartConfig>();
-        Debug.LogWarning($"[HeartManager] Không tìm thấy Resources/{HeartConfig.RESOURCE_PATH}, dùng cấu hình mặc định.");
+        config = ScriptableObject.CreateInstance<HeartConfigSO>();
+        Debug.LogWarning($"[HeartManager] Không tìm thấy Resources/{HeartConfigSO.RESOURCE_PATH}, dùng cấu hình mặc định.");
     }
 
     private void GrantSessionBonus()

@@ -15,7 +15,7 @@ public class AvatarItem : MonoBehaviour
         iconAvatar.sprite = sprite;
         SetChoosing(false);
 
-        btn.OnClicked(() => onClick?.Invoke(this));
+        btn.onClick.AddListener(() => onClick?.Invoke(this));
     }
 
     public void SetChoosing(bool isOn)

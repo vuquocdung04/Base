@@ -21,11 +21,11 @@ public class AvatarBox : BaseBox, IPopupScale
 
     public int PreviewId { get; private set; }
 
-    private static AvatarDataBase Data => DataRepo.Instance != null ? DataRepo.Instance.avatarData : null;
+    private static AvatarCatalogSO Data => DataRepo.Instance != null ? DataRepo.Instance.avatarData : null;
 
     protected override void Init()
     {
-        btnSave.OnClicked(Save);
+        btnSave.onClick.AddListener(Save);
         Populate();
     }
 
@@ -42,8 +42,7 @@ public class AvatarBox : BaseBox, IPopupScale
         UseProfile.PlayerName = string.IsNullOrWhiteSpace(playerName) ? "Player" : playerName;
         UseProfile.AvatarId = PreviewId;
 
-        LobbyBox lobby = PopupManager.Peek<LobbyBox>();
-        if (lobby != null) lobby.RefreshProfile();
+        PostEventSafe(EventID.PROFILE_CHANGED);
 
         Close();
     }

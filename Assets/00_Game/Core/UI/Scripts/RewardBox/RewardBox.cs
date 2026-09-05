@@ -21,7 +21,7 @@ public class RewardBox : BaseBox, IPopupScale
 
     protected override void Init()
     {
-        if (btnClaim != null) btnClaim.OnClicked(Close);
+        if (btnClaim != null) btnClaim.onClick.AddListener(Close);
     }
 
     protected override void InitState()

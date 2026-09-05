@@ -54,7 +54,7 @@ public class NavButton : MonoBehaviour
             iconPositionY = icon.anchoredPosition.y;
 
         if (btnMain != null)
-            btnMain.OnClicked(() => OnClick?.Invoke(this));
+            btnMain.onClick.AddListener(() => OnClick?.Invoke(this));
     }
 
     public void SetConfig(float scaleSelected, float raiseY, float duration, Ease easeSelected, Ease easeUnselected)

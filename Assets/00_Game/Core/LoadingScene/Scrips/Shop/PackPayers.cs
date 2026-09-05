@@ -22,9 +22,9 @@ public static class PackPayers
         packs.BindPrice(PackCostType.Ads, pack => "ADS");
     }
 
-    private static Awaitable<PurchaseTicket> PayFree(PackConfig pack) => Completed(PurchaseTicket.Ok());
+    private static Awaitable<PurchaseTicket> PayFree(PackEntry pack) => Completed(PurchaseTicket.Ok());
 
-    private static Awaitable<PurchaseTicket> PayCoin(PackConfig pack)
+    private static Awaitable<PurchaseTicket> PayCoin(PackEntry pack)
     {
         int price = Mathf.Max(0, pack.cost.amount);
 
@@ -40,7 +40,7 @@ public static class PackPayers
         return Completed(PurchaseTicket.Ok());
     }
 
-    private static Awaitable<PurchaseTicket> PayFake(PackConfig pack)
+    private static Awaitable<PurchaseTicket> PayFake(PackEntry pack)
     {
         Debug.LogWarning($"[Pack] MUA GIA '{pack.packId}' ({pack.cost.type}) — chua noi store/ads that.");
 

@@ -4,24 +4,27 @@ using UnityEngine;
 
 public class GameIntro : InitSingleton<GameIntro>
 {
-    [SerializeField] private GameIntroConfig config;
-    [SerializeField] private List<MonoBehaviour> introSteps;
+    [SerializeField] private List<IntroStep> introSteps = new();
     [SerializeField] private bool playIntro = true;
 
     public override void Init()
     {
         if (!playIntro) return;
 
-        foreach (var step in introSteps)
-            ((IIntroStep)step).Prepare(config);
+        for (int i = 0; i < introSteps.Count; i++)
+        {
+            if (introSteps[i] != null) introSteps[i].Prepare();
+        }
     }
 
     public async Awaitable PlayPrev()
     {
         if (!playIntro) return;
 
-        foreach (var step in introSteps)
-            await ((IIntroStep)step).Play(config);
+        for (int i = 0; i < introSteps.Count; i++)
+        {
+            if (introSteps[i] != null) await introSteps[i].Play();
+        }
     }
 
     public Awaitable PlayPlaying()
@@ -41,9 +44,7 @@ public class GameIntro : InitSingleton<GameIntro>
     [Button("Auto Collect Intro Steps")]
     private void AutoCollectIntroSteps()
     {
-        introSteps = new List<MonoBehaviour>();
-        foreach (var mono in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-            if (mono is IIntroStep)
-                introSteps.Add(mono);
+        introSteps = new List<IntroStep>(
+            FindObjectsByType<IntroStep>(FindObjectsInactive.Include, FindObjectsSortMode.None));
     }
 }

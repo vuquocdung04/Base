@@ -5,22 +5,29 @@ public partial class BoosterController : InitSingleton<BoosterController>
 {
     public override void Init()
     {
+        BuildLookup();
         SeedData();
         ApplyConfigToItems();
         BindItems(true);
+
+        if (intro != null) intro.Init(catalog);
+
+        BoosterData.OnAmountChanged += HandleAmountChanged;
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
         BindItems(false);
+
+        BoosterData.OnAmountChanged -= HandleAmountChanged;
     }
 
     private void BindItems(bool bind)
     {
-        for (int i = 0; i < boosters.Count; i++)
+        for (int i = 0; i < items.Length; i++)
         {
-            BoosterItem item = boosters[i].item;
+            BoosterItem item = items[i];
             if (item == null) continue;
 
             item.OnClickBuy -= HandleBuy;
@@ -33,59 +40,61 @@ public partial class BoosterController : InitSingleton<BoosterController>
         }
     }
 
-    private void HandleBuy(BoosterItem item) => PopupManager.Show<BuyBoosterBox>().Forget();
+    private void HandleAmountChanged(string id) => GetItem(id)?.SetQuantity(BoosterData.GetAmount(id));
+
+    private void HandleBuy(BoosterItem item)
+    {
+        BoosterEntry entry = GetEntry(item.Id);
+
+        PopupManager.Show<BuyBoosterBox>(box => box.SetContent(
+            BoosterCatalogSO.IconOf(item.Id),
+            entry != null ? entry.nameKey : string.Empty,
+            entry != null ? entry.descKey : string.Empty,
+            entry != null ? entry.price.ToString() : string.Empty)).Forget();
+    }
 
     private void HandleUse(BoosterItem item)
     {
-        int index = IndexOf(item);
-        if (index < 0) return;
+        string id = item.Id;
+        if (string.IsNullOrEmpty(id)) return;
 
         if (item.IsTutorial)
         {
             item.SetTutorial(false);
-            GameScene.EnableDarkPanel(false);
+
+            if (intro != null) intro.Hide();
         }
 
-        SetTutorialDone(index);
-        Consume(index);
+        BoosterData.SetTutorialDone(id);
+        Consume(id);
 
-        this.PostEvent(EventID.BOOSTER_USED, index);
+        this.PostEvent(EventID.BOOSTER_USED, id);
     }
 
-    public bool HasTutorial => FindTutorialIndex() >= 0;
+    public bool HasTutorial => FindTutorialItem() != null;
 
     public async Awaitable ShowTutorialAsync()
     {
-        int index = FindTutorialIndex();
-        if (index < 0) return;
+        BoosterItem item = FindTutorialItem();
+        if (item == null || intro == null) return;
 
-        BoosterItem item = GetItem(index);
-        if (item == null) return;
+        BoosterEntry entry = GetEntry(item.Id);
+        if (entry == null) return;
 
-        bool jumped = false;
+        bool done = false;
 
-        await PopupManager.Show<BoosterUnlockBox>(box => box.Setup(
-            item.IconSprite,
+        intro.Show(
+            entry.levelUnlock,
             item.IconRect,
-            () => GameScene.EnableWhitePanel(true),
             () =>
             {
-                GameScene.EnableDarkPanel(true);
                 GameScene.EnableWhitePanel(false);
 
                 item.SetTutorial(true, tutorialSortingLayer, tutorialSortingOrder);
-                jumped = true;
-            }));
+                done = true;
+            },
+            () => GameScene.EnableWhitePanel(true));
 
-        await AwaitableEx.WaitUntil(() => jumped, destroyCancellationToken);
-    }
-
-    private int FindTutorialIndex()
-    {
-        for (int i = 0; i < boosters.Count; i++)
-        {
-            if (CurrentLevel == boosters[i].levelUnlock && !IsTutorialDone(i)) return i;
-        }
-        return -1;
+        await AwaitableEx.WaitUntil(() => done, destroyCancellationToken);
     }
 }

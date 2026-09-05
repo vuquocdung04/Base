@@ -839,8 +839,8 @@ MonoBehaviour:
   loadingBox: {fileID: 783918718}
   toastManager: {fileID: 175757017}
   isSkipOutPhase: 0
-  loadingStepDuration: 0.25
-  loadingFadeOutDuration: 0.25
+  loadingStepDuration: 0
+  loadingFadeOutDuration: 0
 --- !u!1 &777599145
 GameObject:
   m_ObjectHideFlags: 0
@@ -2716,7 +2716,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IrisTransition
   canvasGroup: {fileID: 8974919661717978590}
   rawImage: {fileID: 5105282254964078958}
-  openRadius: 1
   coverEase: 7
   revealEase: 7
   icon: {fileID: 1215861817}

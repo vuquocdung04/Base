@@ -49,11 +49,7 @@ public partial class GameFlow : InitSingleton<GameFlow>
         await Awaitable.EndOfFrameAsync(destroyCancellationToken);
 
         FXManager fxManager = FXManager.Instance;
-        if (fxManager != null)
-        {
-            fxManager.isNextSceneReady = true;
-            await Awaitable.WaitForSecondsAsync(fxManager.transitionDurationIn, destroyCancellationToken);
-        }
+        if (fxManager != null) await fxManager.NotifySceneReadyAsync();
 
         await GameIntro.Instance.PlayPrev();
         await GameIntro.Instance.PlayPlaying();
@@ -65,8 +61,6 @@ public partial class GameFlow : InitSingleton<GameFlow>
 
     private async Awaitable CheckTutorial()
     {
-        //Note: hien moi co tutorial booster. Sau nay gom them tutorial level/obstacle/feature vao day,
-        //Note: chay lan luot va cho xong het roi moi ChangeState(Playing).
         if (!BoosterController.Instance.HasTutorial) return;
 
         ChangeState(GameState.Tutorial);

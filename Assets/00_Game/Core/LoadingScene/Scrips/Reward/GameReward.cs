@@ -11,16 +11,16 @@ public class GameReward
 
     public int quantity;
 
-    private static RewardCatalog _catalogCache;
+    private static RewardCatalogSO _catalogCache;
     private static string[] _idsCache = Array.Empty<string>();
 
     private static IEnumerable<string> RewardIds()
     {
-        RewardCatalog catalog = RewardManager.Instance != null ? RewardManager.Instance.Catalog : _catalogCache;
+        RewardCatalogSO catalog = RewardManager.Instance != null ? RewardManager.Instance.Catalog : _catalogCache;
 
         if (catalog == null)
         {
-            catalog = Resources.Load<RewardCatalog>(RewardCatalog.RESOURCE_PATH);
+            catalog = Resources.Load<RewardCatalogSO>(RewardCatalogSO.RESOURCE_PATH);
             if (catalog == null) return _idsCache;
         }
 
@@ -29,7 +29,7 @@ public class GameReward
         return _idsCache;
     }
 
-    private static bool IsCacheStale(RewardCatalog catalog)
+    private static bool IsCacheStale(RewardCatalogSO catalog)
     {
         int index = 0;
 
@@ -45,7 +45,7 @@ public class GameReward
         return index != _idsCache.Length;
     }
 
-    private static void RebuildCache(RewardCatalog catalog)
+    private static void RebuildCache(RewardCatalogSO catalog)
     {
         var ids = new List<string>(catalog.rewards.Count);
 

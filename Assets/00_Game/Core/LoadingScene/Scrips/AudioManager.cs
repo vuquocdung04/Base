@@ -12,9 +12,9 @@ public class AudioManager : MonoBehaviour
     public float sfxSpamCooldown = 0.08f;
 
     [Header("Data")]
-    [SerializeField] private List<AudioDataBase> audioDataList;
+    [SerializeField] private List<AudioCatalogSO> audioDataList;
 
-    private Dictionary<string, AudioConfig> audioLookup;
+    private Dictionary<string, AudioEntry> audioLookup;
     private Dictionary<string, float> lastPlayTimes = new();
     private float currentSfxVolume = 1f;
 
@@ -28,13 +28,13 @@ public class AudioManager : MonoBehaviour
 
     private void BuildAudioLookup()
     {
-        audioLookup = new Dictionary<string, AudioConfig>();
+        audioLookup = new Dictionary<string, AudioEntry>();
 
         foreach (var dataBase in audioDataList)
         {
             if (dataBase == null)
             {
-                Debug.LogWarning("AudioDataBase null trong AudioManager!");
+                Debug.LogWarning("AudioCatalogSO null trong AudioManager!");
                 continue;
             }
 
@@ -65,13 +65,13 @@ public class AudioManager : MonoBehaviour
         PlayResolved(lowerKey, config, pitch ?? config.GetRandomPitch());
     }
 
-    private void PlayResolved(string lowerKey, AudioConfig config, float pitch)
+    private void PlayResolved(string lowerKey, AudioEntry config, float pitch)
     {
         float volume = lowerKey == "coins" ? 1f : currentSfxVolume;
         PlayClipInternal(lowerKey, config.GetRandomClip(), pitch, volume);
     }
 
-    private bool TryGetConfig(string key, out string lowerKey, out AudioConfig config)
+    private bool TryGetConfig(string key, out string lowerKey, out AudioEntry config)
     {
         config = null;
         lowerKey = null;

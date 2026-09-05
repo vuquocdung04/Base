@@ -38,7 +38,7 @@ public static partial class IapPayer
             string productId = ExtractProductId(confirmed[i]);
             if (string.IsNullOrEmpty(productId)) continue;
 
-            PackConfig pack = FindPackByProduct(productId);
+            PackEntry pack = FindPackByProduct(productId);
             if (pack == null || !pack.IsOneTime) continue;
 
             _packs.RestorePurchase(pack);
@@ -47,14 +47,14 @@ public static partial class IapPayer
         }
     }
 
-    private static PackConfig FindPackByProduct(string productId)
+    private static PackEntry FindPackByProduct(string productId)
     {
-        PackCatalog catalog = _packs != null ? _packs.Catalog : null;
+        PackCatalogSO catalog = _packs != null ? _packs.Catalog : null;
         if (catalog == null) return null;
 
         for (int i = 0; i < catalog.packs.Count; i++)
         {
-            PackConfig pack = catalog.packs[i];
+            PackEntry pack = catalog.packs[i];
             if (pack != null && pack.cost.type == PackCostType.Iap && pack.cost.productId == productId) return pack;
         }
 

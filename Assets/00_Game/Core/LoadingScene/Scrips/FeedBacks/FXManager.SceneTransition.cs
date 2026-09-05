@@ -8,9 +8,28 @@ public partial class FXManager
     [SerializeField] private SceneTransitionType defaultTransition = SceneTransitionType.Iris;
     public float transitionDurationOut = 1f;
     public float transitionDurationIn = 1f;
-    [HideInInspector] public bool isNextSceneReady;
 
     private SceneTransition current;
+    private bool isNextSceneReady;
+    private bool isTransitioning;
+
+    public bool IsTransitioning => isTransitioning;
+
+    public void NotifySceneReady()
+    {
+        if (!isTransitioning) return;
+
+        isNextSceneReady = true;
+    }
+
+    public async Awaitable NotifySceneReadyAsync()
+    {
+        NotifySceneReady();
+
+        if (!isTransitioning) return;
+
+        await AwaitableEx.WaitUntil(() => !isTransitioning, destroyCancellationToken);
+    }
 
     public void LoadSceneWithIrisWipe(string sceneName, bool skipOutPhase = false)
         => LoadScene(sceneName, defaultTransition, skipOutPhase);
@@ -24,6 +43,7 @@ public partial class FXManager
     private async Awaitable TransitionAsync(string sceneName, bool skipOutPhase)
     {
         isNextSceneReady = false;
+        isTransitioning = true;
 
         current.Prepare();
 
@@ -43,6 +63,8 @@ public partial class FXManager
         await current.Reveal(transitionDurationIn);
 
         current.Hide();
+
+        isTransitioning = false;
     }
 
     public void PrepareWipeClosed()

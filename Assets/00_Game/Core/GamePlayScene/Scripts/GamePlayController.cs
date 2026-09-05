@@ -4,19 +4,12 @@ using UnityEngine;
 
 public class GamePlayController : Singleton<GamePlayController>
 {
-    [Header("Testing")]
-    [SerializeField] private bool testing;
-    [SerializeField] private int currentLevel = 1;
-
     [Header("Refs")]
     public Camera cameraUI;
     public Camera cameraGameplay;
     public GameScene gameScene;
     public GameFlow gameFlow;
     public GameIntro gameIntro;
-
-    public bool Testing => testing;
-    public int CurrentLevel => testing ? currentLevel : UseProfile.Level;
 
     protected override void OnAwake()
     {

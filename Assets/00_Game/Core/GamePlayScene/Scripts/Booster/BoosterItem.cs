@@ -1,11 +1,15 @@
 using System;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BoosterItem : MonoBehaviour
 {
+    [ValueDropdown("@BoosterCatalogSO.BoosterIds()")]
+    [SerializeField] private string boosterId;
+
     public Button btnMain;
     public Image iconBooster;
 
@@ -32,6 +36,7 @@ public class BoosterItem : MonoBehaviour
     private Canvas _tutorialCanvas;
     private GraphicRaycaster _tutorialRaycaster;
 
+    public string Id => boosterId;
     public Sprite IconSprite => iconBooster.sprite;
     public RectTransform IconRect => iconBooster != null ? iconBooster.rectTransform : null;
     public int Quantity { get; private set; }
@@ -49,7 +54,7 @@ public class BoosterItem : MonoBehaviour
         hand.gameObject.SetActive(false);
     }
 
-    private void Start() => btnMain.OnClicked(HandleClick);
+    private void Start() => btnMain.onClick.AddListener(HandleClick);
 
     private void OnDestroy() => KillHand();
 
@@ -59,6 +64,13 @@ public class BoosterItem : MonoBehaviour
         if (unlockLevelText != null) unlockLevelText.text = unlockLevel.ToString();
 
         SetQuantity(quantity);
+    }
+
+    public void SetIcon(Sprite sprite)
+    {
+        if (sprite == null || iconBooster == null) return;
+
+        iconBooster.sprite = sprite;
     }
 
     public void SetQuantity(int value)

@@ -20,7 +20,7 @@ namespace DevTools.Heart
 		const float LabelWidth = 120f;
 		const float ButtonHeight = 26f;
 
-		HeartConfig _config;
+		HeartConfigSO _config;
 		bool _located;
 		float _unlimitedMinutes = 1f;
 
@@ -53,7 +53,7 @@ namespace DevTools.Heart
 		[BoxGroup("Config"), PropertyOrder(0)]
 		[ShowInInspector, HideLabel]
 		[InlineEditor(InlineEditorObjectFieldModes.Boxed, Expanded = true)]
-		HeartConfig Config
+		HeartConfigSO Config
 		{
 			get
 			{
@@ -74,14 +74,14 @@ namespace DevTools.Heart
 
 		[BoxGroup("Config"), PropertyOrder(1)]
 		[ShowIf(nameof(HasNoConfig))]
-		[InfoBox("Chưa có HeartConfig — game đang chạy bằng giá trị mặc định (5 tim / 30 phút).", InfoMessageType.Warning)]
-		[Button("Tạo HeartConfig", ButtonHeight = 28), GUIColor(0.4f, 0.9f, 0.5f)]
+		[InfoBox("Chưa có HeartConfigSO — game đang chạy bằng giá trị mặc định (5 tim / 30 phút).", InfoMessageType.Warning)]
+		[Button("Tạo HeartConfigSO", ButtonHeight = 28), GUIColor(0.4f, 0.9f, 0.5f)]
 		void CreateConfig()
 		{
 			Directory.CreateDirectory(ConfigDir);
 
-			HeartConfig created = ScriptableObject.CreateInstance<HeartConfig>();
-			string path = AssetDatabase.GenerateUniqueAssetPath($"{ConfigDir}/{HeartConfig.RESOURCE_PATH}.asset");
+			HeartConfigSO created = ScriptableObject.CreateInstance<HeartConfigSO>();
+			string path = AssetDatabase.GenerateUniqueAssetPath($"{ConfigDir}/{HeartConfigSO.RESOURCE_PATH}.asset");
 
 			AssetDatabase.CreateAsset(created, path);
 			AssetDatabase.SaveAssets();
@@ -227,13 +227,13 @@ namespace DevTools.Heart
 			GUILayout.EndHorizontal();
 		}
 
-		static HeartConfig Locate()
+		static HeartConfigSO Locate()
 		{
-			string guid = AssetDatabase.FindAssets("t:HeartConfig").FirstOrDefault();
+			string guid = AssetDatabase.FindAssets("t:HeartConfigSO").FirstOrDefault();
 
 			return string.IsNullOrEmpty(guid)
 				? null
-				: AssetDatabase.LoadAssetAtPath<HeartConfig>(AssetDatabase.GUIDToAssetPath(guid));
+				: AssetDatabase.LoadAssetAtPath<HeartConfigSO>(AssetDatabase.GUIDToAssetPath(guid));
 		}
 	}
 }

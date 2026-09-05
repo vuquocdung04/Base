@@ -15,11 +15,6 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: fa7283f1faa65574a9582a862323b3f2
   m_SerializeEntries:
-  - m_GUID: 124ff88eb109547bbb5a78c9acf74ad3
-    m_Address: LobbyBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 247865d52a6757b4eb3b25808c8a0d83
     m_Address: SettingGameBox
     m_ReadOnly: 0
@@ -40,11 +35,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 48ce984b7ec9c164f9d8a0c6fc70d2e9
-    m_Address: BoosterUnlockBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 64c36cdc8bb4243979e56a706bc81cfc
     m_Address: QuitLevelBox
     m_ReadOnly: 0
@@ -52,11 +42,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6f0aa10ad5072466096cf546797ede90
     m_Address: AvatarBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 710104988af9f2b41bc0fecfa1ddaf9c
-    m_Address: TeamBox
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -87,16 +72,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ad9fa8a04286a452d954169b3892e83d
     m_Address: MoreLivesBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: be923df720de2524cb5350b34ff3cb00
-    m_Address: CollectBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: daef24bbacefc43f7a9459fd822fb763
-    m_Address: RankBox
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

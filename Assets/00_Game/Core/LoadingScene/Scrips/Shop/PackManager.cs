@@ -8,16 +8,16 @@ public class PackManager : MonoBehaviour
 
     private const string PurchasedPrefix = "PACK_PURCHASED_";
 
-    [SerializeField] private PackCatalog catalog;
+    [SerializeField] private PackCatalogSO catalog;
 
-    private readonly Dictionary<PackCostType, Func<PackConfig, Awaitable<PurchaseTicket>>> _payers = new();
-    private readonly Dictionary<PackCostType, Func<PackConfig, string>> _prices = new();
+    private readonly Dictionary<PackCostType, Func<PackEntry, Awaitable<PurchaseTicket>>> _payers = new();
+    private readonly Dictionary<PackCostType, Func<PackEntry, string>> _prices = new();
 
-    public PackCatalog Catalog => catalog;
+    public PackCatalogSO Catalog => catalog;
 
     public static Func<int> DisplayLevelProvider { get; set; }
 
-    public event Action<PackConfig> OnPurchased;
+    public event Action<PackEntry> OnPurchased;
 
     public event Action OnPricesChanged;
 
@@ -35,13 +35,13 @@ public class PackManager : MonoBehaviour
     {
         if (catalog != null) return;
 
-        catalog = Resources.Load<PackCatalog>(PackCatalog.RESOURCE_PATH);
+        catalog = Resources.Load<PackCatalogSO>(PackCatalogSO.RESOURCE_PATH);
 
         if (catalog == null)
-            Debug.LogError($"[Pack] Khong tim thay PackCatalog trong Resources/{PackCatalog.RESOURCE_PATH}.");
+            Debug.LogError($"[Pack] Khong tim thay PackCatalogSO trong Resources/{PackCatalogSO.RESOURCE_PATH}.");
     }
 
-    public void BindPayer(PackCostType type, Func<PackConfig, Awaitable<PurchaseTicket>> payer)
+    public void BindPayer(PackCostType type, Func<PackEntry, Awaitable<PurchaseTicket>> payer)
     {
         if (payer == null) return;
 
@@ -51,7 +51,7 @@ public class PackManager : MonoBehaviour
         _payers[type] = payer;
     }
 
-    public void BindPrice(PackCostType type, Func<PackConfig, string> provider)
+    public void BindPrice(PackCostType type, Func<PackEntry, string> provider)
     {
         if (provider == null) return;
 
@@ -60,14 +60,14 @@ public class PackManager : MonoBehaviour
 
     public bool IsBound(PackCostType type) => _payers.ContainsKey(type);
 
-    public PackConfig Find(string packId) => catalog != null ? catalog.Find(packId) : null;
+    public PackEntry Find(string packId) => catalog != null ? catalog.Find(packId) : null;
 
     public int CurrentLevel => DisplayLevelProvider != null ? DisplayLevelProvider() : UseProfile.Level;
 
     public bool IsPurchased(string packId)
         => !string.IsNullOrEmpty(packId) && GamePrefs.Get(PurchasedPrefix + packId, false);
 
-    public bool CanShow(PackConfig pack)
+    public bool CanShow(PackEntry pack)
     {
         if (pack == null) return false;
         if (!pack.CanShow(CurrentLevel, IsPurchased(pack.packId))) return false;
@@ -75,7 +75,7 @@ public class PackManager : MonoBehaviour
         return !AllFlagsOwned(pack);
     }
 
-    private bool AllFlagsOwned(PackConfig pack)
+    private bool AllFlagsOwned(PackEntry pack)
     {
         RewardManager reward = RewardManager.Instance;
         if (reward == null || pack.rewardGroups == null) return false;
@@ -100,14 +100,14 @@ public class PackManager : MonoBehaviour
         return hasFlag;
     }
 
-    public List<PackConfig> GetVisible()
+    public List<PackEntry> GetVisible()
     {
-        var result = new List<PackConfig>();
+        var result = new List<PackEntry>();
         if (catalog == null) return result;
 
         for (int i = 0; i < catalog.packs.Count; i++)
         {
-            PackConfig pack = catalog.packs[i];
+            PackEntry pack = catalog.packs[i];
             if (CanShow(pack)) result.Add(pack);
         }
 
@@ -116,18 +116,18 @@ public class PackManager : MonoBehaviour
 
     public string GetPriceText(string packId) => GetPriceText(Find(packId));
 
-    public string GetPriceText(PackConfig pack)
+    public string GetPriceText(PackEntry pack)
     {
         if (pack == null) return string.Empty;
 
-        return _prices.TryGetValue(pack.cost.type, out Func<PackConfig, string> provider)
+        return _prices.TryGetValue(pack.cost.type, out Func<PackEntry, string> provider)
             ? provider(pack)
             : pack.cost.amount.ToString();
     }
 
     public Awaitable<bool> TryPurchase(string packId) => TryPurchase(Find(packId));
 
-    public async Awaitable<bool> TryPurchase(PackConfig pack)
+    public async Awaitable<bool> TryPurchase(PackEntry pack)
     {
         if (pack == null)
         {
@@ -141,7 +141,7 @@ public class PackManager : MonoBehaviour
             return false;
         }
 
-        if (!_payers.TryGetValue(pack.cost.type, out Func<PackConfig, Awaitable<PurchaseTicket>> payer))
+        if (!_payers.TryGetValue(pack.cost.type, out Func<PackEntry, Awaitable<PurchaseTicket>> payer))
         {
             Debug.LogError($"[Pack] Chua BindPayer cho {pack.cost.type} — khong mua duoc '{pack.packId}'.");
             return false;
@@ -163,7 +163,7 @@ public class PackManager : MonoBehaviour
 
     public void RestorePurchase(string packId) => RestorePurchase(Find(packId));
 
-    public void RestorePurchase(PackConfig pack)
+    public void RestorePurchase(PackEntry pack)
     {
         if (pack == null) return;
 
@@ -173,7 +173,7 @@ public class PackManager : MonoBehaviour
         OnPurchased?.Invoke(pack);
     }
 
-    private void GrantFlags(PackConfig pack)
+    private void GrantFlags(PackEntry pack)
     {
         RewardManager reward = RewardManager.Instance;
         if (reward == null || pack.rewardGroups == null) return;

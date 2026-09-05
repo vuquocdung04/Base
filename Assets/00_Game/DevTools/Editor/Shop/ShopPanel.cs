@@ -22,9 +22,9 @@ namespace DevTools.Shop
 
 		const double ValidateInterval = 0.5d;
 
-		PackCatalog _catalog;
+		PackCatalogSO _catalog;
 		bool _located;
-		List<PackConfig> _rows;
+		List<PackEntry> _rows;
 		readonly List<string> _errors = new();
 		readonly List<string> _warnings = new();
 		double _nextValidate;
@@ -44,7 +44,7 @@ namespace DevTools.Shop
 		[Title("Catalog", bold: true), PropertyOrder(0)]
 		[ShowInInspector, LabelText("Asset"), LabelWidth(70)]
 		[OnValueChanged(nameof(SyncRows))]
-		PackCatalog Catalog
+		PackCatalogSO Catalog
 		{
 			get
 			{
@@ -65,7 +65,7 @@ namespace DevTools.Shop
 		}
 
 		[PropertyOrder(1)]
-		[InfoBox("Chưa có PackCatalog. Bấm 'Tạo Catalog' để tạo trong Configs/Shop/Resources.",
+		[InfoBox("Chưa có PackCatalogSO. Bấm 'Tạo Catalog' để tạo trong Configs/Shop/Resources.",
 			InfoMessageType.Warning, VisibleIf = "@Catalog == null")]
 		[Button("Tạo Catalog", ButtonSizes.Large), GUIColor(0.4f, 0.9f, 0.5f)]
 		[ShowIf("@Catalog == null")]
@@ -74,8 +74,8 @@ namespace DevTools.Shop
 			Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), CatalogFolder));
 			AssetDatabase.Refresh();
 
-			PackCatalog created = ScriptableObject.CreateInstance<PackCatalog>();
-			string path = AssetDatabase.GenerateUniqueAssetPath($"{CatalogFolder}/{PackCatalog.RESOURCE_PATH}.asset");
+			PackCatalogSO created = ScriptableObject.CreateInstance<PackCatalogSO>();
+			string path = AssetDatabase.GenerateUniqueAssetPath($"{CatalogFolder}/{PackCatalogSO.RESOURCE_PATH}.asset");
 
 			AssetDatabase.CreateAsset(created, path);
 			AssetDatabase.SaveAssets();
@@ -89,8 +89,8 @@ namespace DevTools.Shop
 		[ShowInInspector, HideLabel]
 		[ShowIf("@Catalog != null")]
 		[ListDrawerSettings(ShowFoldout = true, DraggableItems = true, ShowPaging = false,
-			ListElementLabelName = nameof(PackConfig.packId))]
-		List<PackConfig> Rows
+			ListElementLabelName = nameof(PackEntry.packId))]
+		List<PackEntry> Rows
 		{
 			get => _rows;
 			set => _rows = value;
@@ -109,7 +109,7 @@ namespace DevTools.Shop
 			if (GUILayout.Button("＋ Thêm pack", GUILayout.Width(AddWidth), GUILayout.Height(ButtonHeight + 2f)))
 			{
 				Undo.RecordObject(Catalog, "Add Pack");
-				_rows.Add(new PackConfig());
+				_rows.Add(new PackEntry());
 				EditorUtility.SetDirty(Catalog);
 			}
 
@@ -158,7 +158,7 @@ namespace DevTools.Shop
 
 			for (int i = 0; i < _rows.Count; i++)
 			{
-				PackConfig pack = _rows[i];
+				PackEntry pack = _rows[i];
 				if (pack == null) continue;
 
 				string id = pack.packId ?? "";
@@ -204,7 +204,7 @@ namespace DevTools.Shop
 
 			for (int i = 0; i < _rows.Count; i++)
 			{
-				PackConfig pack = _rows[i];
+				PackEntry pack = _rows[i];
 				if (pack == null || string.IsNullOrWhiteSpace(pack.packId)) continue;
 
 				bool purchased = live.IsPurchased(pack.packId);
@@ -258,13 +258,13 @@ namespace DevTools.Shop
 			if (!ReferenceEquals(_rows, _catalog.packs)) _rows = _catalog.packs;
 		}
 
-		static PackCatalog Locate()
+		static PackCatalogSO Locate()
 		{
-			string guid = AssetDatabase.FindAssets("t:PackCatalog").FirstOrDefault();
+			string guid = AssetDatabase.FindAssets("t:PackCatalogSO").FirstOrDefault();
 
 			return string.IsNullOrEmpty(guid)
 				? null
-				: AssetDatabase.LoadAssetAtPath<PackCatalog>(AssetDatabase.GUIDToAssetPath(guid));
+				: AssetDatabase.LoadAssetAtPath<PackCatalogSO>(AssetDatabase.GUIDToAssetPath(guid));
 		}
 	}
 }

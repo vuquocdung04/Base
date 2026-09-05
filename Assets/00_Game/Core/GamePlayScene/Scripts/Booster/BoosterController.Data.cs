@@ -1,121 +1,101 @@
-using System;
 using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 public partial class BoosterController
 {
-    [Serializable]
-    public class BoosterConfig
-    {
-        [TableColumnWidth(170, resizable: false)]
-        public BoosterItem item;
-        public int levelUnlock;
-        public int quantity;
-        public bool doneTutorial;
-    }
-
-    [TableList(AlwaysExpanded = true, DrawScrollView = false)]
-    [SerializeField] private List<BoosterConfig> boosters = new();
+    [SerializeField] private BoosterCatalogSO catalog;
+    [SerializeField] private BoosterItem[] items = new BoosterItem[0];
 
     [Header("Tutorial")]
+    [SerializeField] private BoosterIntro intro;
     [SerializeField] private string tutorialSortingLayer = "UI";
     [SerializeField] private int tutorialSortingOrder = 100;
 
-    private int CurrentLevel => GamePlayController.Instance.CurrentLevel;
-    private bool Testing => GamePlayController.Instance.Testing;
+    private readonly Dictionary<string, BoosterItem> lookup = new();
 
-    public int Count => boosters.Count;
+    private int CurrentLevel => GameConfigSO.Instance.CurrentLevel;
+    private bool Testing => GameConfigSO.Instance.Testing;
 
-    public BoosterItem GetItem(int index) => ConfigOf(index)?.item;
+    public int Count => items.Length;
 
-    private BoosterConfig ConfigOf(int index)
-        => index >= 0 && index < boosters.Count ? boosters[index] : null;
+    public BoosterItem GetItem(string id)
+        => !string.IsNullOrEmpty(id) && lookup.TryGetValue(id, out BoosterItem item) ? item : null;
 
-    private int IndexOf(BoosterItem item)
+    public BoosterEntry GetEntry(string id) => catalog != null ? catalog.Find(id) : null;
+
+    public int GetQuantity(string id) => BoosterData.GetAmount(id);
+
+    public void AddQuantity(string id, int amount) => BoosterData.Add(id, amount);
+
+    private void Consume(string id) => BoosterData.Add(id, -1);
+
+    private void BuildLookup()
     {
-        for (int i = 0; i < boosters.Count; i++)
+        lookup.Clear();
+
+        for (int i = 0; i < items.Length; i++)
         {
-            if (boosters[i].item == item) return i;
+            BoosterItem item = items[i];
+            if (item == null || string.IsNullOrEmpty(item.Id)) continue;
+
+            if (lookup.ContainsKey(item.Id))
+            {
+                Debug.LogError($"[Booster] Trung boosterId '{item.Id}' tren nhieu BoosterItem.");
+                continue;
+            }
+
+            lookup[item.Id] = item;
         }
-        return -1;
     }
 
     private void SeedData()
     {
-        if (Testing) return;
+        if (Testing) BoosterData.UseMemoryOnly();
+        if (catalog == null) return;
 
-        for (int i = 0; i < boosters.Count; i++)
+        for (int i = 0; i < catalog.boosters.Count; i++)
         {
-            if (BoosterData.Has(i)) continue;
-            BoosterData.Get(i).Amount = boosters[i].quantity;
+            BoosterEntry entry = catalog.boosters[i];
+            if (entry == null || string.IsNullOrEmpty(entry.id)) continue;
+
+            BoosterRecord record = BoosterData.Get(entry.id);
+            if (record.Seeded) continue;
+
+            record.Amount += entry.startQuantity;
+            record.Seeded = true;
         }
+
         BoosterData.Save();
     }
 
     private void ApplyConfigToItems()
     {
-        for (int i = 0; i < boosters.Count; i++)
+        for (int i = 0; i < items.Length; i++)
         {
-            BoosterConfig config = boosters[i];
-            if (config.item == null) continue;
+            BoosterItem item = items[i];
+            if (item == null || string.IsNullOrEmpty(item.Id)) continue;
 
-            config.item.Setup(GetQuantity(i), config.levelUnlock, CurrentLevel);
+            BoosterEntry entry = GetEntry(item.Id);
+            if (entry == null) Debug.LogError($"[Booster] boosterId '{item.Id}' khong co trong BoosterCatalogSO.");
+
+            item.SetIcon(BoosterCatalogSO.IconOf(item.Id));
+            item.Setup(BoosterData.GetAmount(item.Id), entry != null ? entry.levelUnlock : 0, CurrentLevel);
         }
     }
 
-    public int GetQuantity(int index)
+    public BoosterItem FindTutorialItem()
     {
-        BoosterConfig config = ConfigOf(index);
-        if (config == null) return 0;
-
-        return Testing ? config.quantity : BoosterData.Get(index).Amount;
-    }
-
-    public void AddQuantity(int index, int amount) => SetQuantity(index, GetQuantity(index) + amount);
-
-    private void Consume(int index) => SetQuantity(index, GetQuantity(index) - 1);
-
-    private void SetQuantity(int index, int amount)
-    {
-        BoosterConfig config = ConfigOf(index);
-        if (config == null) return;
-
-        amount = Mathf.Max(0, amount);
-
-        if (Testing)
+        for (int i = 0; i < items.Length; i++)
         {
-            config.quantity = amount;
-        }
-        else
-        {
-            BoosterData.Get(index).Amount = amount;
-            BoosterData.Save();
+            BoosterItem item = items[i];
+            if (item == null || string.IsNullOrEmpty(item.Id)) continue;
+
+            BoosterEntry entry = GetEntry(item.Id);
+            if (entry == null || CurrentLevel != entry.levelUnlock) continue;
+
+            if (!BoosterData.IsTutorialDone(item.Id)) return item;
         }
 
-        config.item?.SetQuantity(amount);
-    }
-
-    private bool IsTutorialDone(int index)
-    {
-        BoosterConfig config = ConfigOf(index);
-        if (config == null) return true;
-
-        return Testing ? config.doneTutorial : BoosterData.Get(index).TutorialDone;
-    }
-
-    private void SetTutorialDone(int index)
-    {
-        BoosterConfig config = ConfigOf(index);
-        if (config == null || IsTutorialDone(index)) return;
-
-        if (Testing)
-        {
-            config.doneTutorial = true;
-            return;
-        }
-
-        BoosterData.Get(index).TutorialDone = true;
-        BoosterData.Save();
+        return null;
     }
 }
