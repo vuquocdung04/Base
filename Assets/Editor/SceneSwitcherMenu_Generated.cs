@@ -13,17 +13,8 @@ public static class SceneSwitcherMenu_Generated
         }
     }
 
-    [MenuItem("OpenScene/2. LobbyScene &2", priority = 2)]
+    [MenuItem("OpenScene/2. GamePlayScene &2", priority = 2)]
     public static void OpenScene2()
-    {
-        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-        {
-            EditorSceneManager.OpenScene("Assets/00_Game/Scenes/LobbyScene.unity");
-        }
-    }
-
-    [MenuItem("OpenScene/3. GamePlayScene &3", priority = 3)]
-    public static void OpenScene3()
     {
         if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
         {

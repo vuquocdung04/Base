@@ -20,16 +20,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 2986a114e4ba57443a52ae5c3867c920
-    m_Address: BuyBoosterBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 3baa788837b7740f18476516c07013e4
-    m_Address: NoAdsBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3bd7f65c1ff274b9aa1627535d027076
     m_Address: LoseBox
     m_ReadOnly: 0
@@ -40,23 +30,8 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 6f0aa10ad5072466096cf546797ede90
-    m_Address: AvatarBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 7a1e31bbd706d47ad9356921f7f79543
-    m_Address: KeepPlayingBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7d3513a169e2d43f1bd09717c46f2d67
     m_Address: CheatBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9c86585c7c2c14403be009ded636b510
-    m_Address: ShopBox
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -72,11 +47,6 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ad9fa8a04286a452d954169b3892e83d
     m_Address: MoreLivesBox
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: e777f1cb797489e45a7050d50cd9e008
-    m_Address: SettingLobbyBox
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

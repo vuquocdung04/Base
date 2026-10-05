@@ -28,23 +28,3 @@ MonoBehaviour:
     category: 0
     displayStyle: 3
     suffix: 
-  - icon: {fileID: 21300000, guid: e7cd9fce9834ccc40af535fd9dea9abf, type: 3}
-    id: Booster0
-    category: 2
-    displayStyle: 0
-    suffix: 
-  - icon: {fileID: -390218204, guid: 6e4dedd810d7b5d4c81a5732578de784, type: 3}
-    id: RemoveAds
-    category: 3
-    displayStyle: 4
-    suffix: No Ads
-  - icon: {fileID: 0}
-    id: Booster1
-    category: 2
-    displayStyle: 0
-    suffix: 
-  - icon: {fileID: 0}
-    id: Booster2
-    category: 2
-    displayStyle: 0
-    suffix: 

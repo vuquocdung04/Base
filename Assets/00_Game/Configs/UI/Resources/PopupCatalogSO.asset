@@ -13,43 +13,7 @@ MonoBehaviour:
   m_Name: PopupCatalogSO
   m_EditorClassIdentifier: Assembly-CSharp::PopupCatalogSO
   popups:
-  - typeName: AvatarBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: BoosterUnlockBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: BuyBoosterBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 1
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
   - typeName: CheatBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: CollectBox
-    animDuration: 0.3
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: KeepPlayingBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: LobbyBox
     animDuration: 0.15
     backdropAlpha: 0.95
     closeOnBackdropClick: 0
@@ -67,19 +31,7 @@ MonoBehaviour:
     closeOnBackdropClick: 0
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15
-  - typeName: NoAdsBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
   - typeName: QuitLevelBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: RankBox
     animDuration: 0.15
     backdropAlpha: 0.95
     closeOnBackdropClick: 0
@@ -95,24 +47,6 @@ MonoBehaviour:
     animDuration: 0.15
     backdropAlpha: 0.95
     closeOnBackdropClick: 1
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: SettingLobbyBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: ShopBox
-    animDuration: 0.15
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
-    peekFadeDuration: 0.15
-  - typeName: TeamBox
-    animDuration: 0.3
-    backdropAlpha: 0.95
-    closeOnBackdropClick: 0
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15
   - typeName: WinBox

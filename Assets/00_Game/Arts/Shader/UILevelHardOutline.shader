@@ -86,15 +86,17 @@ Shader "Custom/UILevelHardOutline"
             float4 _ClipRect;
 
             fixed4 _OutlineColor;
-            half _OutlineWidth;
-            half _PulseSpeed;
-            half _NoiseScale;
-            half _NoiseStrength;
-            half _NoiseSpeed;
+            float _OutlineWidth;
+            float _PulseSpeed;
+            float _NoiseScale;
+            float _NoiseStrength;
+            float _NoiseSpeed;
 
             float Hash(float2 p)
             {
-                return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453);
+                float3 p3 = frac(float3(p.xyx) * 0.1031);
+                p3 += dot(p3, p3.yzx + 33.33);
+                return frac((p3.x + p3.y) * p3.z);
             }
 
             float Noise(float2 p)
@@ -104,10 +106,13 @@ Shader "Custom/UILevelHardOutline"
 
                 local = local * local * (3.0 - 2.0 * local);
 
-                float a = Hash(cell);
-                float b = Hash(cell + float2(1, 0));
-                float c = Hash(cell + float2(0, 1));
-                float d = Hash(cell + float2(1, 1));
+                float2 i0 = fmod(cell, 256.0);
+                float2 i1 = fmod(cell + 1.0, 256.0);
+
+                float a = Hash(i0);
+                float b = Hash(float2(i1.x, i0.y));
+                float c = Hash(float2(i0.x, i1.y));
+                float d = Hash(i1);
 
                 return lerp(lerp(a, b, local.x), lerp(c, d, local.x), local.y);
             }
@@ -136,18 +141,20 @@ Shader "Custom/UILevelHardOutline"
                 float2 edge = min(IN.texcoord, 1.0 - IN.texcoord) * quadPx;
 
                 float aspect = texel.y / texel.x;
-                float2 noiseUV = float2(IN.texcoord.x * aspect, IN.texcoord.y) * _NoiseScale + _Time.y * _NoiseSpeed;
+                float noiseTime = frac(_Time.y * _NoiseSpeed / 256.0) * 256.0;
+                float2 noiseUV = float2(IN.texcoord.x * aspect, IN.texcoord.y) * _NoiseScale + noiseTime;
 
-                half noise = Noise(noiseUV);
-                half maxWidth = _OutlineWidth * min(quadPx.x, quadPx.y);
-                half width = max(maxWidth * (1.0 - _NoiseStrength * noise), 1e-4);
+                float noise = Noise(noiseUV);
+                float maxWidth = _OutlineWidth * min(quadPx.x, quadPx.y);
+                float width = max(maxWidth * (1.0 - _NoiseStrength * noise), 1e-4);
 
-                half dist = min(edge.x, edge.y);
-                half border = saturate(1.0 - dist / width);
+                float dist = min(edge.x, edge.y);
+                float border = saturate(1.0 - dist / width);
 
                 border *= border;
 
-                half pulse = sin(_Time.y * _PulseSpeed) * 0.5 + 0.5;
+                float phase = frac(_Time.y * _PulseSpeed * 0.15915494);
+                float pulse = sin(phase * 6.2831853) * 0.5 + 0.5;
                 half outline = border * pulse * _OutlineColor.a * IN.color.a;
 
                 color.rgb = lerp(color.rgb, _OutlineColor.rgb, outline);

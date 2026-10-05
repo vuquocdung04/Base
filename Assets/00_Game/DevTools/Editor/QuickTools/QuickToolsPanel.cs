@@ -13,12 +13,9 @@ namespace DevTools.QuickTools
 		public FastPlayModeSection fastPlayMode = new FastPlayModeSection();
 
 		[InlineProperty, HideLabel, PropertyOrder(1)]
-		public BootFromLoadingSection bootFromLoading = new BootFromLoadingSection();
-
-		[InlineProperty, HideLabel, PropertyOrder(2)]
 		public SpriteAtlasSection spriteAtlas = new SpriteAtlasSection();
 
-		[InlineProperty, HideLabel, PropertyOrder(3)]
+		[InlineProperty, HideLabel, PropertyOrder(2)]
 		public SpriteSetupSection spriteSetup = new SpriteSetupSection();
 	}
 }
