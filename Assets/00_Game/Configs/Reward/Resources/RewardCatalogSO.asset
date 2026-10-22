@@ -18,12 +18,12 @@ MonoBehaviour:
     category: 0
     displayStyle: 0
     suffix: 
-  - icon: {fileID: -1749798897, guid: 6e4dedd810d7b5d4c81a5732578de784, type: 3}
+  - icon: {fileID: 21300000, guid: 36116bb21810ae541a9f8b1374ffaf79, type: 3}
     id: Heart
     category: 0
     displayStyle: 2
     suffix: 
-  - icon: {fileID: 172571188, guid: 6e4dedd810d7b5d4c81a5732578de784, type: 3}
+  - icon: {fileID: 21300000, guid: 57253a0254bc2c44c924fbda4ce797fb, type: 3}
     id: HeartUnlimited
     category: 0
     displayStyle: 3

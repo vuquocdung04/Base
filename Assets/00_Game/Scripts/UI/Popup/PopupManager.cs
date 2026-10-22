@@ -28,6 +28,8 @@ public class PopupManager : Singleton<PopupManager>
 
     private Transform PopupRoot => popupRoot != null ? popupRoot : transform;
 
+    private void Start() => PreloadFromCatalog();
+
     protected override void OnDestroy()
     {
         ReleaseAll();
@@ -74,16 +76,36 @@ public class PopupManager : Singleton<PopupManager>
         await GetAsync<T>();
     }
 
-    private async Awaitable<T> LoadAsync<T>() where T : BaseBox
+    private void PreloadFromCatalog()
     {
-        Type type = typeof(T);
+        PopupCatalogSO cat = ResolveCatalog();
+        if (cat == null) return;
 
-        if (_instances.TryGetValue(type, out BaseBox cached)) return cached as T;
+        foreach (PopupEntry entry in cat.popups)
+        {
+            if (entry == null || !entry.preload) continue;
+
+            Type type = typeof(BaseBox).Assembly.GetType(entry.typeName);
+            if (type == null || !typeof(BaseBox).IsAssignableFrom(type))
+            {
+                Debug.LogError($"[PopupManager] Preload: khong tim thay type BaseBox '{entry.typeName}'.");
+                continue;
+            }
+
+            LoadAsync(type).Forget();
+        }
+    }
+
+    private async Awaitable<T> LoadAsync<T>() where T : BaseBox => await LoadAsync(typeof(T)) as T;
+
+    private async Awaitable<BaseBox> LoadAsync(Type type)
+    {
+        if (_instances.TryGetValue(type, out BaseBox cached)) return cached;
 
         if (_loading.Contains(type))
         {
             await AwaitableEx.WaitUntil(() => !_loading.Contains(type), destroyCancellationToken);
-            return Peek<T>();
+            return _instances.TryGetValue(type, out BaseBox loaded) ? loaded : null;
         }
 
         _loading.Add(type);
@@ -101,7 +123,7 @@ public class PopupManager : Singleton<PopupManager>
             return null;
         }
 
-        T box = obj.GetComponent<T>();
+        BaseBox box = obj.GetComponent(type) as BaseBox;
         if (box == null)
         {
             Debug.LogError($"[PopupManager] Prefab '{type.Name}' thieu component {type.Name}.");

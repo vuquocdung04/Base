@@ -7,6 +7,7 @@ public class PopupEntry
 {
     public string typeName;
 
+    public bool preload;
     public float animDuration = 0.3f;
     [Range(0f, 1f)] public float backdropAlpha = 0.95f;
     public bool closeOnBackdropClick;

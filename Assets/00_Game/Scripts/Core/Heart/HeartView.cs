@@ -1,6 +1,7 @@
 using EventDispatcher;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HeartView : MonoBehaviour
 {
@@ -12,9 +13,22 @@ public class HeartView : MonoBehaviour
     [SerializeField] private GameObject normalHeartIcon;
     [SerializeField] private GameObject unlimitedHeartIcon;
 
+    [Header("Optional")]
+    [SerializeField] private Button btnOpenOffer;
+
+    private void Awake()
+    {
+        if (btnOpenOffer != null) btnOpenOffer.onClick.AddListener(OnOpenOffer);
+    }
+
     private void Start()
     {
-        timerText.BindHeartTimer(this);   
+        timerText.BindHeartTimer(this);
+    }
+
+    private void OnOpenOffer()
+    {
+        if (HeartManager.Instance != null) HeartManager.Instance.TryShowHeartOffer();
     }
 
     private void OnEnable()

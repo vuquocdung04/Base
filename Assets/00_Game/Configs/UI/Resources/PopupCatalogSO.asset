@@ -14,44 +14,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PopupCatalogSO
   popups:
   - typeName: CheatBox
+    preload: 0
     animDuration: 0.15
     backdropAlpha: 0.95
     closeOnBackdropClick: 0
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15
   - typeName: LoseBox
+    preload: 0
     animDuration: 0.15
-    backdropAlpha: 0.95
+    backdropAlpha: 0.85
     closeOnBackdropClick: 0
-    peekOnBackdropHold: 0
+    peekOnBackdropHold: 1
     peekFadeDuration: 0.15
   - typeName: MoreLivesBox
+    preload: 0
     animDuration: 0.15
     backdropAlpha: 0.95
     closeOnBackdropClick: 0
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15
   - typeName: QuitLevelBox
+    preload: 1
     animDuration: 0.15
     backdropAlpha: 0.95
     closeOnBackdropClick: 0
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15
   - typeName: RewardBox
+    preload: 0
     animDuration: 0.3
     backdropAlpha: 0.95
     closeOnBackdropClick: 0
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15
   - typeName: SettingGameBox
+    preload: 1
     animDuration: 0.15
     backdropAlpha: 0.95
     closeOnBackdropClick: 1
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15
   - typeName: WinBox
+    preload: 0
     animDuration: 0.15
-    backdropAlpha: 0.95
+    backdropAlpha: 0.5
     closeOnBackdropClick: 0
     peekOnBackdropHold: 0
     peekFadeDuration: 0.15

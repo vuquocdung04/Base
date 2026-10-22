@@ -8,6 +8,7 @@ public class SettingControl
     public Button btn;
     public GameObject objOn;
     public GameObject objOff;
+    public UIToggleSwitch toggle;
 
     private Func<bool> get;
     private Action<bool> set;
@@ -27,8 +28,9 @@ public class SettingControl
         if (get == null) return;
 
         bool isOn = get();
-        objOn.SetActive(isOn);
-        objOff.SetActive(!isOn);
+        if (objOn != null) objOn.SetActive(isOn);
+        if (objOff != null) objOff.SetActive(!isOn);
+        if (toggle != null) toggle.SetOn(isOn);
     }
 
     private void Apply(bool value)

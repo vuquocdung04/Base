@@ -146,7 +146,7 @@ public class HeartManager : MonoBehaviour
         return _current.TryUseHeart();
     }
 
-    public bool TryAddHeart(int amount = 1)
+    public bool CanAddHeart()
     {
         if (IsUnlimited)
         {
@@ -159,6 +159,13 @@ public class HeartManager : MonoBehaviour
             toastManager.ShowToast("Heart is full");
             return false;
         }
+
+        return true;
+    }
+
+    public bool TryAddHeart(int amount = 1)
+    {
+        if (!CanAddHeart()) return false;
 
         SetHearts(CurrentHeart + amount);
         return true;
@@ -168,17 +175,7 @@ public class HeartManager : MonoBehaviour
 
     public void TryShowHeartOffer()
     {
-        if (IsUnlimited)
-        {
-            toastManager.ShowToast("You have unlimited hearts");
-            return;
-        }
-
-        if (IsFull)
-        {
-            toastManager.ShowToast("Heart is full");
-            return;
-        }
+        if (!CanAddHeart()) return;
 
         PopupManager.Show<MoreLivesBox>().Forget();
     }
