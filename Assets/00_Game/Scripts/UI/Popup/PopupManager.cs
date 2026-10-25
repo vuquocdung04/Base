@@ -56,7 +56,27 @@ public class PopupManager : Singleton<PopupManager>
         PopupManager m = Instance;
         if (m == null) return null;
 
-        return m._instances.TryGetValue(typeof(T), out BaseBox box) ? box as T : null;
+        return Peek(typeof(T)) as T;
+    }
+
+    public static BaseBox Peek(Type type)
+    {
+        PopupManager m = Instance;
+        if (m == null || type == null) return null;
+
+        return m._instances.TryGetValue(type, out BaseBox box) ? box : null;
+    }
+
+    public static async Awaitable<BaseBox> GetAsync(Type type)
+    {
+        PopupManager m = Instance;
+        if (m == null)
+        {
+            Debug.LogError($"[PopupManager] Scene chua co PopupManager, khong mo duoc {type.Name}.");
+            return null;
+        }
+
+        return await m.LoadAsync(type);
     }
 
     public static async Awaitable<T> GetAsync<T>() where T : BaseBox

@@ -84,6 +84,79 @@ namespace ModuleTools.Popup
 			EditorUtility.SetDirty(popupCatalog);
 		}
 
+		[VerticalGroup(Left), PropertyOrder(3)]
+		[Title("Test popup", bold: true)]
+		[InfoBox("Vào Play mode để test popup.", VisibleIf = "@!UnityEngine.Application.isPlaying")]
+		[ShowInInspector, LabelText("Popup"), LabelWidth(70)]
+		[ValueDropdown("TestPopupNames")]
+		[ShowIf("@popupCatalog != null")]
+		string testPopup;
+
+		IEnumerable<string> TestPopupNames() =>
+			popupCatalog != null ? popupCatalog.popups.Where(p => p != null).Select(p => p.typeName) : Enumerable.Empty<string>();
+
+		[HorizontalGroup(Left + "/Test", Order = 4), PropertyOrder(4)]
+		[Button("Show", ButtonSizes.Medium), GUIColor(0.4f, 0.9f, 0.5f)]
+		[EnableIf("@UnityEngine.Application.isPlaying && !string.IsNullOrEmpty(testPopup)")]
+		[ShowIf("@popupCatalog != null")]
+		void TestShow()
+		{
+			System.Type type = ResolvePopupType(testPopup);
+			if (type == null) return;
+
+			EnsurePopupManager();
+			ShowPopup(type).Forget();
+		}
+
+		[HorizontalGroup(Left + "/Test", Order = 4), PropertyOrder(5)]
+		[Button("Close", ButtonSizes.Medium), GUIColor(1f, 0.5f, 0.5f)]
+		[EnableIf("@UnityEngine.Application.isPlaying && !string.IsNullOrEmpty(testPopup)")]
+		[ShowIf("@popupCatalog != null")]
+		void TestClose()
+		{
+			System.Type type = ResolvePopupType(testPopup);
+			if (type == null) return;
+
+			BaseBox box = PopupManager.Peek(type);
+			if (box == null)
+			{
+				Debug.LogWarning($"[PopupCatalog] {testPopup} chưa được load.");
+				return;
+			}
+
+			box.Close();
+		}
+
+		static async Awaitable ShowPopup(System.Type type)
+		{
+			BaseBox box = await PopupManager.GetAsync(type);
+			if (box != null) box.Show();
+		}
+
+		static void EnsurePopupManager()
+		{
+			if (PopupManager.Instance != null) return;
+
+			PopupManager found = Object.FindFirstObjectByType<PopupManager>(FindObjectsInactive.Include);
+			if (found != null)
+			{
+				if (!found.gameObject.activeSelf) found.gameObject.SetActive(true);
+				return;
+			}
+
+			new GameObject(nameof(PopupManager)).AddComponent<PopupManager>();
+			Debug.Log("[PopupCatalog] Scene chưa có PopupManager, đã tạo mới.");
+		}
+
+		static System.Type ResolvePopupType(string typeName)
+		{
+			System.Type type = TypeCache.GetTypesDerivedFrom<BaseBox>()
+				.FirstOrDefault(t => !t.IsAbstract && t.Name == typeName);
+
+			if (type == null) Debug.LogError($"[PopupCatalog] Không tìm thấy type BaseBox '{typeName}'.");
+			return type;
+		}
+
 		[VerticalGroup(Right), PropertyOrder(10)]
 		[Title("Danh sách popup", bold: true)]
 		[ShowInInspector, HideLabel, Searchable]
